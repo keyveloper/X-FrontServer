@@ -2,6 +2,7 @@ package com.example.frontServer.controller
 
 import com.example.frontServer.dto.logstash.BoardEventLog
 import com.example.frontServer.enum.LogEvent
+import com.example.frontServer.service.noti.NotificationApiTestService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class TestController {
+class TestController(
+    private val notificationApiTestService: NotificationApiTestService
+) {
     private val logger = KotlinLogging.logger {}
     private val logstashLogger = LoggerFactory.getLogger("com.example.logstash")
     @GetMapping("/loafBalancing")
@@ -34,5 +37,10 @@ class TestController {
             "alerting test ... ",
             StructuredArguments.keyValue("boardEvent", event)
         )
+    }
+
+    @GetMapping("/test/noti-server")
+    fun testNoti() {
+
     }
 }

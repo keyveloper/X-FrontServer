@@ -64,4 +64,8 @@ management:
       exposure:
         include: "*"
 
-# jenkins test!
+# kubernetes 대응
+msa:
+  api:
+    notificationUrl: ${NOTIFICATION_API_URL:http://x-noti-service:8080}
+    likeUrl: ${LIKE_API_URL:http://x-like-service:8080}
