@@ -3,6 +3,7 @@ package com.example.frontServer.service
 import com.example.frontServer.dto.ResponseToServerDto
 import com.example.frontServer.dto.UserSummaryDto
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
@@ -21,6 +22,9 @@ class LikeService(
                     .queryParam("boardId", boardId)
                     .queryParam("userId", userId)
                     .build()
+            }
+            .headers { headers ->
+                headers.remove(HttpHeaders.AUTHORIZATION)
             }
             .retrieve()
             .bodyToMono(ResponseToServerDto::class.java) // 응답이 String인 경우

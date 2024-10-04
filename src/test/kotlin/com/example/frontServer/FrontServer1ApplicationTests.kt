@@ -1,4 +1,4 @@
-package org.example.frontServer
+package com.example.frontServer
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

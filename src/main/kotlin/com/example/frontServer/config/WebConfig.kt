@@ -17,7 +17,7 @@ class WebConfig: WebMvcConfigurer {
     @Bean
     fun webClient(): WebClient {
         return WebClient.builder()
-            .baseUrl("http://localhost:8080")
+            .baseUrl("http://localhost:8081")
             .build()
     }
 }
