@@ -70,6 +70,9 @@ dependencies {
 
     // webClient
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Circuit Breaker : Resilience4j
+    implementation("io.github.resilience4j:resilience4j-all:2.2.0")
 }
 
 kotlin {

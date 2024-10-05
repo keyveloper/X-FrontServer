@@ -32,3 +32,13 @@ jwt:
 server:
   error:
     include-stacktrace: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      liveApiCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 5
