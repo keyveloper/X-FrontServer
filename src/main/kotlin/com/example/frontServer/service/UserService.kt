@@ -37,7 +37,7 @@ class UserService(
         userRoleRepository.save(
             UserRole(
                 user = user.id!!,
-                role = request.role.ordinal
+                role = request.role.ordinal.toLong()
             )
         )
         return SignUpStatus.SUCCESS

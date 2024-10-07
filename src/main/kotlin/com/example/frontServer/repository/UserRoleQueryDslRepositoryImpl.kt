@@ -10,17 +10,17 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 class UserRoleQueryDslRepositoryImpl (
     private val queryFactory: JPAQueryFactory
 ) : UserRoleQueryDslRepository{
-    private val qUserRole = QUserRole.userRole
-    private val qUser = QUser.user
-    private val qRole = QRole.role
+    private val userRole = QUserRole.userRole
+    private val user = QUser.user
+    private val role = QRole.role
 
     override fun findRolesByUsername(username: String): List<Role> {
         return queryFactory
-            .select(qUserRole.role())
-            .from(qUserRole)
-            .join(qUserRole.user(), qUser)
-            .join(qUserRole.role(), qRole)
-            .where(qUser.username.eq(username))
+            .select(role)
+            .from(user)
+            .join(userRole).on(user.id.eq(userRole.user))
+            .join(role).on(userRole.role.eq(role.id))
+            .where(user.username.eq(username))
             .fetch()
     }
 }

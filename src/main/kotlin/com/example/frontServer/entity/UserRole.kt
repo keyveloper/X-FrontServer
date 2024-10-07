@@ -17,9 +17,11 @@ class UserRole(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
+    @Column(name = "user_id", nullable = false)
     var user: Long,
 
-    var role: Int,
+    @Column(name = "role_id", nullable = false)
+    var role: Long,
 
     @Column(name = "created_at")
     @CreatedDate
