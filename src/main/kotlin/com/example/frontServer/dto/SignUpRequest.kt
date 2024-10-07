@@ -2,6 +2,7 @@ package com.example.frontServer.dto
 
 import com.example.frontServer.annotaion.ValidBirthday
 import com.example.frontServer.annotaion.ValidPassword
+import com.example.frontServer.enum.RoleNumber
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
@@ -30,5 +31,8 @@ data class SignUpRequest (
     @field:ValidBirthday(message = "Birth date must be after 2012 and before today")
     @NotEmpty
     val birthday: LocalDate,
-    val country: String? = null
+
+    val country: String? = null,
+
+    var role: RoleNumber = RoleNumber.NORMAL
     )//

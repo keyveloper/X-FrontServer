@@ -33,6 +33,4 @@ class User (
 
     var country: String? = null,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var userRole: MutableSet<UserRole> = mutableSetOf()
     )

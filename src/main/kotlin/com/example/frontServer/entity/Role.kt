@@ -10,8 +10,4 @@ class Role (
     var id: Long? = null,
 
     var name: String,
-
-    // mappedBy는 UserRole의 필드 이름과 대응
-    @OneToMany(mappedBy = "role", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var useRole: MutableSet<UserRole> = mutableSetOf(),
-) : Serializable
+)

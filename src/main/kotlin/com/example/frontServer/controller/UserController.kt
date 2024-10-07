@@ -1,7 +1,10 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.GetUserResponse
+import com.example.frontServer.dto.ResponseToClientDto
 import com.example.frontServer.dto.SignUpRequest
+import com.example.frontServer.enum.ResponseCode
+import com.example.frontServer.enum.SignUpStatus
 import com.example.frontServer.service.UserService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
@@ -17,10 +20,23 @@ class UserController(
     @PostMapping("/sign-up")
     fun signUp(
         @Valid @RequestBody signUpRequest: SignUpRequest
-    ): ResponseEntity<String> {
-        logger.info("signUpRequest: {}",signUpRequest)
-        val message = userService.signUp(signUpRequest)
-        return ResponseEntity(message, HttpStatus.OK)
+    ): ResponseEntity<ResponseToClientDto> {
+        val status: SignUpStatus = userService.signUp(signUpRequest)
+        return when (status) {
+            SignUpStatus.SUCCESS -> ResponseEntity.ok().body(
+                ResponseToClientDto(
+                    errorCode = ResponseCode.SUCCESS,
+                    data = status.message
+                )
+            )
+
+            SignUpStatus.DUPLICATED -> ResponseEntity.ok().body(
+                ResponseToClientDto(
+                    errorCode = ResponseCode.SAVE_FAILURE,
+                    data = status.message
+                )
+            )
+        }
     }
 
     @GetMapping("/user")

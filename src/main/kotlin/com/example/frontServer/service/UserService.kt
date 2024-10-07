@@ -4,8 +4,7 @@ import com.example.frontServer.dto.GetUserResult
 import com.example.frontServer.dto.SignUpRequest
 import com.example.frontServer.entity.User
 import com.example.frontServer.entity.UserRole
-import com.example.frontServer.enum.RoleNumber
-import com.example.frontServer.repository.RoleRepository
+import com.example.frontServer.enum.SignUpStatus
 import com.example.frontServer.repository.UserRepository
 import com.example.frontServer.repository.UserRoleRepository
 import jakarta.transaction.Transactional
@@ -16,16 +15,15 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userRepository: UserRepository,
     private val userRoleRepository: UserRoleRepository,
-    private val roleRepository: RoleRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
     @Transactional
-    fun signUp(request: SignUpRequest): String {
+    fun signUp(request: SignUpRequest): SignUpStatus {
         if (userRepository.existsUserByUsername(request.username) ||
             userRepository.existsUserByEmail(request.email)) {
-            return "exist username or email"
+            return SignUpStatus.DUPLICATED
         }
-            
+
         val user = User(
             email = request.email,
             username = request.username,
@@ -34,18 +32,15 @@ class UserService(
             birthday = request.birthday,
             country = request.country
         )
-        // 이 시점에 JPA가 ID와 Auditing기능으로 속성값을 추가할까?
-
-        val normalRole = roleRepository.findByName(RoleNumber.NORMAL.name)
-        val userRole = UserRole(
-            user = user,
-            role = normalRole
-        )
-
-        user.userRole.add(userRole)
         userRepository.save(user)
 
-        return "new account enrollment"
+        userRoleRepository.save(
+            UserRole(
+                user = user.id!!,
+                role = request.role.ordinal
+            )
+        )
+        return SignUpStatus.SUCCESS
     }
 
     fun findUserByLoginId(loginId: String): GetUserResult? {
