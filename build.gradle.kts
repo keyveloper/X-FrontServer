@@ -72,7 +72,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     // Circuit Breaker : Resilience4j
-    implementation("io.github.resilience4j:resilience4j-all:2.2.0")
+    implementation("org.springframework.boot:spring-boot-starter-aop:3.3.4")
+    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.2.0")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.3.4")
+
 }
 
 kotlin {

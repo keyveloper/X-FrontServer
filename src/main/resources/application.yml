@@ -35,10 +35,18 @@ server:
 
 resilience4j:
   circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        failure-rate-threshold: 50 # 총 몇 번중에 몇 %
+        permitted-number-of-calls-in-half-open-state: 5
+        sliding-window-size: 10  # 총 몇 번중에
+        sliding-window-type: COUNT_BASED
+        wait-duration-in-open-state: 1m
+        automatic-transition-from-open-to-half-open-enabled: true
+        record-exceptions:
+          - com.example.frontServer.exception.FallbackFailureException
+
     instances:
       liveApiCircuitBreaker:
-        registerHealthIndicator: true
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-        permittedNumberOfCallsInHalfOpenState: 5
+        base-config: default

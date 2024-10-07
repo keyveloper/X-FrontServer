@@ -1,10 +1,10 @@
 package com.example.frontServer.service
 
 import com.example.frontServer.dto.ResponseToServerDto
-import com.example.frontServer.dto.ServerErrorDto
 import com.example.frontServer.dto.UserSummaryDto
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import com.example.frontServer.exception.FallbackFailureException
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
@@ -17,30 +17,40 @@ import org.springframework.web.util.UriBuilder
 class LikeService(
     private val client : WebClient,
     private val circuitBreakerRegistry: CircuitBreakerRegistry
+
 ) {
+    private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("liveApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
-    private val circuitBreaker: CircuitBreaker = circuitBreakerRegistry.circuitBreaker("liveApiCircuitBreaker")
-
+    @CircuitBreaker(
+        name = "liveApiCircuitBreaker",
+        fallbackMethod = "fallbackMethod",)
     fun save(boardId: Long, userId: Long): Boolean {
-        val response = client.post()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder
-                    .path("/live/like")
-                    .queryParam("boardId", boardId)
-                    .queryParam("userId", userId)
-                    .build()
-            }
-            .headers { headers ->
-                headers.remove(HttpHeaders.AUTHORIZATION)
-            }
-            .retrieve()
-            .bodyToMono(ResponseToServerDto::class.java) // 응답이 String인 경우
-            .block()
+       return try {
+           val response = client.post()
+               .uri { uriBuilder: UriBuilder ->
+                   uriBuilder
+                       .path("/live/like")
+                       .queryParam("boardId", boardId)
+                       .queryParam("userId", userId)
+                       .build()
+               }
+               .headers { headers ->
+                   headers.remove(HttpHeaders.AUTHORIZATION)
+               }
+               .retrieve()
+               .bodyToMono(ResponseToServerDto::class.java)
+               .block()
 
-        if (response!!.error != null) {
-            return false
-        }
-        return true
+           if (response?.error != null) {
+               logCircuitBreakerInfo()
+               throw FallbackFailureException("Response contains an error: ${response.error}")
+           }
+           logCircuitBreakerInfo()
+           true
+       } catch (ex: FallbackFailureException) {
+           logger.error {ex.message}
+           false
+       }
     }
 
     @Transactional(readOnly = true)
@@ -57,8 +67,20 @@ class LikeService(
             .block()
     }
 
-    private fun handleFallback(error: ServerErrorDto): Boolean {
-        logger.error { error.toString() }
-        return false
+    private fun fallbackMethod(boardId: Long, userId: Long, throwable: Throwable): Boolean {
+        logger.error { "Fallback called due to ${throwable.message}"}
+        logCircuitBreakerInfo()
+
+        throw FallbackFailureException("Fallback method executed, marking as failure")
     }
+
+    private fun logCircuitBreakerInfo() {
+        val metrics = circuitBreaker.metrics
+
+        logger.info { "CircuitBreaker state: ${circuitBreaker.state}" }
+        logger.info { "Number of successful calls: ${metrics.numberOfSuccessfulCalls}" }
+        logger.info { "Number of failed calls: ${metrics.numberOfFailedCalls}" }
+        logger.info { "Failure rate: ${metrics.failureRate}%" }
+    }
+
 }
