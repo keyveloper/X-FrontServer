@@ -24,26 +24,16 @@ class LikeController(
         @RequestParam boardId: Long,
         @AuthenticationPrincipal user: AuthUserDetails
     ): ResponseEntity<ResponseToClientDto> {
-        return try {
-            val isSaved: Boolean = likeService.save(boardId, user.getUserId()) // not null
-            if (isSaved) {
-                ResponseEntity.ok().body(
-                    ResponseToClientDto(
-                        errorCode = ResponseCode.SUCCESS,
-                        data = null
-                    )
+        val isSaved: Boolean = likeService.save(boardId, user.getUserId()) // not null
+        return if (isSaved) {
+            ResponseEntity.ok().body(
+                ResponseToClientDto(
+                    errorCode = ResponseCode.SUCCESS,
+                    data = null
                 )
-            } else {
-                 ResponseEntity.ok().body(
-                    ResponseToClientDto(
-                        errorCode = ResponseCode.SAVE_FAILURE,
-                        data = null
-                    )
-                )
-            }
-        } catch (e: FallbackFailureException) {
-            logger.error {e.message}
-            return ResponseEntity.ok().body(
+            )
+        } else {
+            ResponseEntity.ok().body(
                 ResponseToClientDto(
                     errorCode = ResponseCode.SAVE_FAILURE,
                     data = null

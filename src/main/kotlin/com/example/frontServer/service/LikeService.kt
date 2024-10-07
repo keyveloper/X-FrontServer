@@ -23,34 +23,28 @@ class LikeService(
     private val logger = KotlinLogging.logger {}
     @CircuitBreaker(
         name = "liveApiCircuitBreaker",
-        fallbackMethod = "fallbackMethod",)
+        fallbackMethod = "fallbackMethod")
     fun save(boardId: Long, userId: Long): Boolean {
-       return try {
-           val response = client.post()
-               .uri { uriBuilder: UriBuilder ->
-                   uriBuilder
-                       .path("/live/like")
-                       .queryParam("boardId", boardId)
-                       .queryParam("userId", userId)
-                       .build()
-               }
-               .headers { headers ->
-                   headers.remove(HttpHeaders.AUTHORIZATION)
-               }
-               .retrieve()
-               .bodyToMono(ResponseToServerDto::class.java)
-               .block()
+        val response = client.post()
+            .uri { uriBuilder: UriBuilder ->
+                uriBuilder
+                    .path("/live/like")
+                    .queryParam("boardId", boardId)
+                    .queryParam("userId", userId)
+                    .build()
+            }
+            .headers { headers ->
+                headers.remove(HttpHeaders.AUTHORIZATION)
+            }
+            .retrieve()
+            .bodyToMono(ResponseToServerDto::class.java)
+            .block()
 
-           if (response?.error != null) {
-               logCircuitBreakerInfo()
-               throw FallbackFailureException("Response contains an error: ${response.error}")
-           }
-           logCircuitBreakerInfo()
-           true
-       } catch (ex: FallbackFailureException) {
-           logger.error {ex.message}
-           false
-       }
+        if (response?.error != null) {
+            logCircuitBreakerInfo()
+        }
+        logCircuitBreakerInfo()
+        return true
     }
 
     @Transactional(readOnly = true)
@@ -67,11 +61,10 @@ class LikeService(
             .block()
     }
 
-    private fun fallbackMethod(boardId: Long, userId: Long, throwable: Throwable): Boolean {
+    fun fallbackMethod(boardId: Long, userId: Long, throwable: Throwable): Boolean {
         logger.error { "Fallback called due to ${throwable.message}"}
         logCircuitBreakerInfo()
-
-        throw FallbackFailureException("Fallback method executed, marking as failure")
+        return false
     }
 
     private fun logCircuitBreakerInfo() {
