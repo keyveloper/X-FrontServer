@@ -7,8 +7,12 @@ import java.io.Serializable
 import java.time.LocalDateTime
 
 @Entity
-@IdClass(UserRoleId::class)
-@Table(name = "user_roles")
+@Table(
+    name = "user_roles",
+    uniqueConstraints = [
+        UniqueConstraint(columnNames = ["user_id", "role_id"])
+    ]
+)
 @EntityListeners(AuditingEntityListener::class)
 class UserRole(
     @Id
@@ -25,4 +29,4 @@ class UserRole(
     @CreatedDate
     var createdAt: LocalDateTime? = null,
 
-) : Serializable
+)

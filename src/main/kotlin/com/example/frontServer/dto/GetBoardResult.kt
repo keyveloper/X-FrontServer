@@ -19,7 +19,7 @@ class GetBoardResult (
         fun of(board: Board): GetBoardResult {
             return GetBoardResult(//
                 id = board.id!!,
-                writer = board.writer!!.username,
+                writer = board.writer,
                 textContent = board.textContent,
                 imgUrl = board.imgUri,
                 firstWritingDate = board.firstWritingDate!!,

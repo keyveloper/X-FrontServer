@@ -19,7 +19,7 @@ class GetAllBoardResult(
         fun of(board: Board, commentCount: Long): GetAllBoardResult {
             return GetAllBoardResult(
                 id = board.id!!,
-                writer = board.writer!!.username,
+                writer = board.writer,
                 textContent = board.textContent,
                 imgUrl = board.imgUri,
                 firstWritingDate = board.firstWritingDate!!,

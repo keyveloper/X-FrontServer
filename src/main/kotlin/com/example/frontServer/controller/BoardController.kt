@@ -1,9 +1,11 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.*
+import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.BoardService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -27,14 +29,20 @@ class BoardController(
     }
 
     @PostMapping("/board")
-    fun save(@Valid @RequestBody saveBoardRequest: SaveBoardRequest): ResponseEntity<String> {
-        val message = boardService.save(saveBoardRequest)
+    fun save(
+        @Valid @RequestBody saveBoardRequest: SaveBoardRequest,
+        @AuthenticationPrincipal user: AuthUserDetails
+    ): ResponseEntity<String> {
+        val message = boardService.save(saveBoardRequest, user.username)
         return ResponseEntity.ok().body(message)
     }
 
     @PostMapping("/board-reply")
-    fun saveReply(@Valid @RequestBody saveReplyRequest: SaveReplyRequest): ResponseEntity<String> {
-        val message = boardService.saveReply(saveReplyRequest)
+    fun saveReply(
+        @Valid @RequestBody saveReplyRequest: SaveReplyRequest,
+        @AuthenticationPrincipal user: AuthUserDetails
+    ): ResponseEntity<String> {
+        val message = boardService.saveReply(saveReplyRequest, user.username)
         return ResponseEntity.ok().body(message)
     }
 

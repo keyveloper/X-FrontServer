@@ -25,7 +25,7 @@ class JwtAuthenticationProvider(
     fun generateToken(authentication: Authentication): String {
         logger.info { "start generate token method! " }
         val usePrincipal = authentication.principal as AuthUserDetails
-        logger.info("userPrincipal: ${usePrincipal}")
+        logger.info {"userPrincipal: ${usePrincipal}"}
         val now = Date()
         val expiryDate = Date(now.time + jwtExpirationMs)
 

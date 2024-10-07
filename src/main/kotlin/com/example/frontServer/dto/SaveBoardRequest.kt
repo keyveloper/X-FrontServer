@@ -8,5 +8,5 @@ data class SaveBoardRequest(
     val textContent: String,
 
     val imgFile: MultipartFile?,
-)
+    )
 //

@@ -42,7 +42,7 @@ class BoardService(
         boardRepository.save(board)
     }
 
-    fun save(request: SaveBoardRequest) : String {
+    fun save(request: SaveBoardRequest, username: String) : String {
         return try {
             var imgUrl : String? = null
             if (request.imgFile != null && !request.imgFile.isEmpty) {
@@ -50,6 +50,7 @@ class BoardService(
             }
 
             val board = Board(
+                writer = username,
                 textContent = request.textContent,
                 imgUri = imgUrl,
                 readingCount = 0,
@@ -65,7 +66,7 @@ class BoardService(
 
     @Transactional
     // check id exist
-    fun saveReply(request: SaveReplyRequest): String {
+    fun saveReply(request: SaveReplyRequest, username: String): String {
         return try {
             var imgUrl : String? = null
             if (request.imgFile != null && !request.imgFile.isEmpty) {
@@ -73,12 +74,13 @@ class BoardService(
             }
             if (boardRepository.existsById(request.parentId.toLong())) {
                 val board = Board(
+                    writer = username,
                     textContent = request.textContent,
                     imgUri = imgUrl,
                     readingCount = 0,
                     likeCount = 0,
                     type = BoardType.NORMAL,
-                    parentId = request.parentId.toLong()
+                    parentId = request.parentId
                 )
                 boardRepository.save(board)
                 "save board successfully"

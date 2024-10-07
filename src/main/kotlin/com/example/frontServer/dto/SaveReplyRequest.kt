@@ -10,5 +10,5 @@ data class SaveReplyRequest (
     val imgFile: MultipartFile?,
 
     @field:NotEmpty
-    val parentId: String,
+    val parentId: Long,
 )

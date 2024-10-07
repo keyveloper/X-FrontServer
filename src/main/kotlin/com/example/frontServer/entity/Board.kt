@@ -15,10 +15,7 @@ data class Board (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "writer", referencedColumnName = "id")
-    @CreatedBy
-    var writer : User? = null,
+    val writer : String,
 
     @Column(name = "text_content")
     var textContent: String,
