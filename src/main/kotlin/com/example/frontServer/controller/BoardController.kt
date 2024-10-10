@@ -33,7 +33,7 @@ class BoardController(
         @Valid @RequestBody saveBoardRequest: SaveBoardRequest,
         @AuthenticationPrincipal user: AuthUserDetails
     ): ResponseEntity<String> {
-        val message = boardService.save(saveBoardRequest, user.username)
+        val message = boardService.save(saveBoardRequest, user.getUserId())
         return ResponseEntity.ok().body(message)
     }
 

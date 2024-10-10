@@ -32,5 +32,5 @@ class User (
     var firstMadeDate : LocalDateTime? = null,
 
     var country: String? = null,
-
     )
+

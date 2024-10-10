@@ -15,7 +15,7 @@ data class Board (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    val writer : String,
+    val writer : Long,
 
     @Column(name = "text_content")
     var textContent: String,
