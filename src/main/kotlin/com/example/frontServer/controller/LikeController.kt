@@ -1,8 +1,7 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.ResponseToClientDto
-import com.example.frontServer.enum.ResponseCode
-import com.example.frontServer.exception.FallbackFailureException
+import com.example.frontServer.enum.ErrorCode
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.LikeService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -28,14 +27,14 @@ class LikeController(
         return if (isSaved) {
             ResponseEntity.ok().body(
                 ResponseToClientDto(
-                    errorCode = ResponseCode.SUCCESS,
+                    errorCode = null,
                     data = null
                 )
             )
         } else {
             ResponseEntity.ok().body(
                 ResponseToClientDto(
-                    errorCode = ResponseCode.SAVE_FAILURE,
+                    errorCode = ErrorCode.SAVE_FAILURE,
                     data = null
                 )
             )
@@ -48,7 +47,7 @@ class LikeController(
     ): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.SUCCESS,
+                errorCode = null,
                 data = likeService.findUserLikeThisBoard(boardId)
             )
         )

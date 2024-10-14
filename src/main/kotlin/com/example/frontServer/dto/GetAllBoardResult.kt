@@ -5,14 +5,12 @@ import java.time.LocalDateTime
 
 class GetAllBoardResult(
     val id: Long,
-    val writer: String,
+    val writer: Long,
     val textContent: String,
-    val imgUrl: String?,
+    val fileApiUrl: String?,
     val firstWritingDate: LocalDateTime,
     val lastModifiedDate: LocalDateTime,
     val readingCount : Long,
-    val likeCount: Long,
-    val type: String,
     val commentCount: Long,
 ) {
     companion object {
@@ -21,14 +19,13 @@ class GetAllBoardResult(
                 id = board.id!!,
                 writer = board.writer,
                 textContent = board.textContent,
-                imgUrl = board.imgUri,
+                fileApiUrl = board.fileApiUri,
                 firstWritingDate = board.firstWritingDate!!,
                 lastModifiedDate = board.lastModifiedDate!!,
                 readingCount = board.readingCount,
-                likeCount = board.likeCount,
-                type = board.type.toString(),
                 commentCount = commentCount
             )
+            // like count should be added
         }
     }
 }

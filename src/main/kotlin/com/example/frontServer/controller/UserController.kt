@@ -3,12 +3,11 @@ package com.example.frontServer.controller
 import com.example.frontServer.dto.GetUserResponse
 import com.example.frontServer.dto.ResponseToClientDto
 import com.example.frontServer.dto.SignUpRequest
-import com.example.frontServer.enum.ResponseCode
+import com.example.frontServer.enum.ErrorCode
 import com.example.frontServer.enum.SignUpStatus
 import com.example.frontServer.service.UserService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -25,14 +24,14 @@ class UserController(
         return when (status) {
             SignUpStatus.SUCCESS -> ResponseEntity.ok().body(
                 ResponseToClientDto(
-                    errorCode = ResponseCode.SUCCESS,
+                    errorCode = null,
                     data = status.message
                 )
             )
 
             SignUpStatus.DUPLICATED -> ResponseEntity.ok().body(
                 ResponseToClientDto(
-                    errorCode = ResponseCode.SAVE_FAILURE,
+                    errorCode = ErrorCode.SAVE_FAILURE,
                     data = status.message
                 )
             )

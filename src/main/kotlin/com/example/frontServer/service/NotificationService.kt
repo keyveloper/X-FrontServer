@@ -1,7 +1,7 @@
 package com.example.frontServer.service
 
 import com.example.frontServer.dto.NotificationDto
-import com.example.frontServer.dto.NotificationInfo
+import com.example.frontServer.dto.NotificationInfoDto
 import com.example.frontServer.entity.Notification
 import com.example.frontServer.repository.NotificationRepository
 import org.springframework.stereotype.Service
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 class NotificationService(
     private val notificationRepository: NotificationRepository
 ) {
-    fun save(notificationInfo: NotificationInfo): Boolean {
+    fun save(notificationInfo: NotificationInfoDto): Boolean {
         val receivers = notificationInfo.receivers
         val notifications: List<Notification> = receivers.map {makeBoardNotification(
             notificationInfo.contentImg,

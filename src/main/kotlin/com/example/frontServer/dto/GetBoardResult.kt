@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 class GetBoardResult (
     val id: Long,
-    val writer: String,
+    val writer: Long,
     val textContent: String,
     val imgUrl: String?,
     val firstWritingDate: LocalDateTime,

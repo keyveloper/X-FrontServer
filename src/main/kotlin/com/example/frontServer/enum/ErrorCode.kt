@@ -1,6 +1,6 @@
 package com.example.frontServer.enum
 
-enum class ResponseCode {
+enum class ErrorCode {
 
     SAVE_FAILURE,
 
@@ -21,4 +21,6 @@ enum class ResponseCode {
     ACCESS_DENIED,     // failed access premium service
 
     BODY_TYPE_ERROR,
+
+    FILE_NOT_EXIST,
 }

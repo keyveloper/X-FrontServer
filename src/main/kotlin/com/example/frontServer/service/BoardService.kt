@@ -15,8 +15,9 @@ class BoardService(
     val fileService: FileService,
     val followRepository: FollowRepository,
 ) {
+    @Transactional
     fun findAll() : List<GetAllBoardResult> {
-        val boards : List<Board> = boardRepository.findAll()
+        val boards : List<Board> = boardRepository.findAllWithUsername()
         return boards.map { GetAllBoardResult.of(it, countRepliesById(it.id!!)) }
     }
 
@@ -68,7 +69,6 @@ class BoardService(
                     receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
                 )
             )
-
             true
         }
     }

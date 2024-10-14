@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface BoardImgRepository: JpaRepository<BoardImg, Long> {
+    fun findAllByToken(token: String): List<BoardImg>
 }

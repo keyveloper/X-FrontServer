@@ -27,7 +27,7 @@ file:
 
 jwt:
   secret: "hasdhfidfhosfjsifjoewifhofhouhsfewhfoiwehfufhowufhoiudhsfoshfoeufhaowehfoudafhsadufhsdafhuisodhfuoshfuewhfuowaehfufhiwhwufwaefwaee"
-  expiration: 3600000
+  expiration: 360000000000
 
 server:
   error:

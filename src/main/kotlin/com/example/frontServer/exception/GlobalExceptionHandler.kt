@@ -1,7 +1,7 @@
 package com.example.frontServer.exception
 
 import com.example.frontServer.dto.ResponseToClientDto
-import com.example.frontServer.enum.ResponseCode
+import com.example.frontServer.enum.ErrorCode
 import io.jsonwebtoken.io.IOException
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -17,7 +17,7 @@ class GlobalExceptionHandler {
     fun handleIOException(ex: IOException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.CONNECTION_ERROR,
+                errorCode = ErrorCode.CONNECTION_ERROR,
                 data = null
             )
         )
@@ -27,7 +27,7 @@ class GlobalExceptionHandler {
     fun handleParameterException(ex: MissingServletRequestParameterException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.PARAMETER_ERROR,
+                errorCode = ErrorCode.PARAMETER_ERROR,
                 data = null
             )
         )
@@ -37,7 +37,7 @@ class GlobalExceptionHandler {
     fun handleValidationException(ex: MethodArgumentNotValidException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.VALIDATION_ERROR,
+                errorCode = ErrorCode.VALIDATION_ERROR,
                 data = null
             )
         )
@@ -47,7 +47,7 @@ class GlobalExceptionHandler {
     fun handleCredentialsException(ex: ResourceAccessException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.CREDENTIALS_ERROR,
+                errorCode = ErrorCode.CREDENTIALS_ERROR,
                 data = null
             )
         )
@@ -57,7 +57,7 @@ class GlobalExceptionHandler {
     fun handleAccessDeniedException(ex: AccessDeniedException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.ACCESS_DENIED,
+                errorCode = ErrorCode.ACCESS_DENIED,
                 data = null
             )
         )
@@ -67,7 +67,7 @@ class GlobalExceptionHandler {
     fun handleNotFoundEntityException(ex: NotFoundEntityException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.NOT_FOUND_ENTITY,
+                errorCode = ErrorCode.NOT_FOUND_ENTITY,
                 data = null
             )
         )
@@ -77,7 +77,7 @@ class GlobalExceptionHandler {
     fun handleEntitySaveFailureException(ex: EntitySaveFailure): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.SAVE_FAILURE,
+                errorCode = ErrorCode.SAVE_FAILURE,
                 data = null
             )
         )
@@ -87,7 +87,17 @@ class GlobalExceptionHandler {
     fun handleEntityDeleteFailureException(ex: EntityDeleteFailureException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ResponseCode.DELETE_FAILURE,
+                errorCode = ErrorCode.DELETE_FAILURE,
+                data = null
+            )
+        )
+    }
+
+    @ExceptionHandler
+    fun handleFileNotExistException(ex: FileNotExistException): ResponseEntity<ResponseToClientDto> {
+        return ResponseEntity.ok().body(
+            ResponseToClientDto(
+                errorCode = ErrorCode.FILE_NOT_EXIST,
                 data = null
             )
         )
