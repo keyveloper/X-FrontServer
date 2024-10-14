@@ -7,6 +7,6 @@ data class SaveBoardRequest(
     @field:NotEmpty
     val textContent: String,
 
-    val imgFile: MultipartFile?,
+    val files: FilesDto?,
     )
 //

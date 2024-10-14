@@ -1,9 +1,8 @@
 package com.example.frontServer.dto
 
-data class BoardNotificationInfo(
-    val publisher: Long,
+data class NotificationInfoDto(
     val publisherImg: String? = null,
-    val text: String,
+    val message: String,
     val contentImg: String? = null,
     val receivers: List<Long>
 )

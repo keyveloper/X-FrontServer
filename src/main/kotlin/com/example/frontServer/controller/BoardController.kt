@@ -1,6 +1,9 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.*
+import com.example.frontServer.exception.EntityDeleteFailureException
+import com.example.frontServer.exception.EntitySaveFailure
+import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.BoardService
 import jakarta.validation.Valid
@@ -14,41 +17,56 @@ class BoardController(
 ) {
 
     @GetMapping("/boards")
-    fun findBoards(): ResponseEntity<List<GetAllBoardResponse>> {
+    fun findBoards(): ResponseEntity<ResponseToClientDto> {
         val results : List<GetAllBoardResult> = boardService.findAll();
-        return ResponseEntity.ok().body(results.map { GetAllBoardResponse.of(it) })
+        return ResponseEntity.ok().body(
+            ResponseToClientDto(
+                errorCode = null,
+                data = results.map {GetAllBoardResponse.of(it)}
+            )
+        )
     }
 
     @GetMapping("/board")
-    fun findById(@RequestParam id: Long): ResponseEntity<GetBoardResponse> {
-        val result : GetBoardResult? = boardService.findById(id)
-        if (result != null) {
-            return ResponseEntity.ok().body(GetBoardResponse.of(result))
-        }//
-        return ResponseEntity.notFound().build()
+    fun findById(@RequestParam id: Long): ResponseEntity<ResponseToClientDto> {
+        return boardService.findById(id)?.let {
+            ResponseEntity.ok().body(
+                ResponseToClientDto(
+                    errorCode = null,
+                    data = GetBoardResponse.of(it)
+                )
+            )
+        } ?: run {
+            throw NotFoundEntityException("boardId: $id not found")
+        }
+        // Exception : notFound
     }
 
     @PostMapping("/board")
     fun save(
-        @Valid @RequestBody saveBoardRequest: SaveBoardRequest,
+        @Valid @ModelAttribute saveBoardRequest: SaveBoardRequest,
         @AuthenticationPrincipal user: AuthUserDetails
-    ): ResponseEntity<String> {
-        val message = boardService.save(saveBoardRequest, user.getUserId())
-        return ResponseEntity.ok().body(message)
+    ): ResponseEntity<ResponseToClientDto> {
+        if (boardService.save(saveBoardRequest, user.getUserId(), user.username)) {
+            return ResponseEntity.badRequest().body(
+                ResponseToClientDto(
+                    errorCode = null,
+                    data = null
+                )
+            )
+        } else throw EntitySaveFailure("save Board Failure")
     }
 
-    @PostMapping("/board-reply")
-    fun saveReply(
-        @Valid @RequestBody saveReplyRequest: SaveReplyRequest,
-        @AuthenticationPrincipal user: AuthUserDetails
-    ): ResponseEntity<String> {
-        val message = boardService.saveReply(saveReplyRequest, user.username)
-        return ResponseEntity.ok().body(message)
-    }
 
     @DeleteMapping("/board")
-    fun delete(@RequestParam id: Long): ResponseEntity<String> {
-        val message = boardService.deleteById(id)
-        return ResponseEntity.ok().body(message)
+    fun delete(@RequestParam id: Long): ResponseEntity<ResponseToClientDto> {
+        if (boardService.deleteById(id)) {
+            return ResponseEntity.badRequest().body(
+                ResponseToClientDto(
+                    errorCode = null,
+                    data = null
+                )
+            )
+        } else throw EntityDeleteFailureException("Delete Board failure")
     }
 }

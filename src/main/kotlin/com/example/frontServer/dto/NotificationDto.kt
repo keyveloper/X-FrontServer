@@ -2,9 +2,8 @@ package com.example.frontServer.dto
 
 import java.time.LocalDateTime
 
-data class BoardNotification(
+data class NotificationDto(
     val message: String,
     val createAt: LocalDateTime,
     var publisherImg: String? = null,
-    var imgContent: String? = null
 )

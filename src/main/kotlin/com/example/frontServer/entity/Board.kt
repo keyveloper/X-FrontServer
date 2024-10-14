@@ -1,6 +1,5 @@
 package com.example.frontServer.entity
 
-import com.example.frontServer.enum.BoardType
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
@@ -11,7 +10,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "boards")
 @EntityListeners(AuditingEntityListener::class)
-data class Board (
+class Board (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
@@ -20,8 +19,8 @@ data class Board (
     @Column(name = "text_content")
     var textContent: String,
 
-    @Column(name="img_url")
-    var imgUri: String? = null, // filesystem url
+    @Column(name="file_api_url")
+    var fileApiUri: String? = null, // api url
 
     @CreatedDate
     @Column(name = "first_writing_time")
@@ -32,15 +31,11 @@ data class Board (
     var lastModifiedDate: LocalDateTime? = null,
 
     @Column(name = "reading_count")
-    var readingCount : Long,
+    var readingCount : Long = 0,
 
-    @Column(name = "like_count")
-    var likeCount: Long = 0,
-
-    @Enumerated(EnumType.STRING)
-    var type: BoardType,
 
     @Column(name = "parent_id")
     var parentId: Long? = null,
 
+    var inValid: Boolean = false
 )

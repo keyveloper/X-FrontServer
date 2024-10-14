@@ -20,7 +20,7 @@ class Notification(
     var message: String,
 
     @CreatedDate
-    var createAt: LocalDateTime? = null
+    var createAt: LocalDateTime? = null,
 
     var isSent: Boolean = false
 )

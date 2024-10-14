@@ -44,9 +44,6 @@ resilience4j:
         sliding-window-type: COUNT_BASED
         wait-duration-in-open-state: 10m
         automatic-transition-from-open-to-half-open-enabled: true
-        record-exceptions:
-          - com.example.frontServer.exception.FallbackFailureException
-
     instances:
       liveApiCircuitBreaker:
         base-config: default

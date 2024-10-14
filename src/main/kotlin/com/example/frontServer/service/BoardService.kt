@@ -1,27 +1,20 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.GetAllBoardResult
-import com.example.frontServer.dto.GetBoardResult
-import com.example.frontServer.dto.SaveBoardRequest
-import com.example.frontServer.dto.SaveReplyRequest
+import com.example.frontServer.dto.*
 import com.example.frontServer.entity.Board
-import com.example.frontServer.enum.BoardType
 import com.example.frontServer.repository.BoardRepository
+import com.example.frontServer.repository.FollowRepository
 import jakarta.transaction.Transactional
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.util.*
 
 @Service
 class BoardService(
-    val boardRepository: BoardRepository
+    val boardRepository: BoardRepository,
+    val notificationService: NotificationService,
+    val fileService: FileService,
+    val followRepository: FollowRepository,
 ) {
-    @Value("\${file.upload-dir}")
-    private lateinit var uploadDirectory: String
-
     fun findAll() : List<GetAllBoardResult> {
         val boards : List<Board> = boardRepository.findAll()
         return boards.map { GetAllBoardResult.of(it, countRepliesById(it.id!!)) }
@@ -42,74 +35,51 @@ class BoardService(
         boardRepository.save(board)
     }
 
-    fun save(request: SaveBoardRequest, userId: Long) : Boolean {
-        return try {
-            var imgUrl : String? = null
-            if (request.imgFile != null && !request.imgFile.isEmpty) {
-                imgUrl = saveFile(request.imgFile)
-            }
-
-            val board = Board(
-                writer = userId,
-                textContent = request.textContent,
-                imgUri = imgUrl,
-                readingCount = 0,
-                likeCount = 0,
-                type = BoardType.NORMAL
-            )
-            boardRepository.save(board)
-            true
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
     @Transactional
-    // check id exist
-    fun saveReply(request: SaveReplyRequest, userId: Long):  {
-        return try {
-            var imgUrl : String? = null
-            if (request.imgFile != null && !request.imgFile.isEmpty) {
-                imgUrl = saveFile(request.imgFile)
-            }
-            if (boardRepository.existsById(request.parentId)) {
-                val board = Board(
-                    writer = ,
-                    textContent = request.textContent,
-                    imgUri = imgUrl,
-                    readingCount = 0,
-                    likeCount = 0,
-                    type = BoardType.NORMAL,
-                    parentId = request.parentId
+    fun save(request: SaveBoardRequest, userId: Long, username: String) : Boolean {
+        return if (request.files != null) {
+            val token = UUID.randomUUID().toString()
+            fileService.saveBoardFile(request.files, token)
+            boardRepository.save(
+                Board(
+                    writer = userId,
+                    fileApiUri = "/img/${token}",
+                    textContent = request.textContent
                 )
-                boardRepository.save(board)
-                "save board successfully"
-            } else {
-                "no exist Id"
-            }
-        } catch (e: Exception) {
-            throw e
+            )
+            sendNotification(
+                NotificationInfoDto(
+                    message = "new post from $username",
+                    receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
+                )
+            )
+
+            true
+        } else {
+            boardRepository.save(
+                Board(
+                    writer = userId,
+                    textContent = request.textContent
+                )
+            )
+            sendNotification(
+                NotificationInfoDto(
+                    message = "new post from $username",
+                    receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
+                )
+            )
+
+            true
         }
     }
 
-    fun deleteById(id: Long): String {
-        boardRepository.deleteById(id)
-        return "delete Successfully"
+    private fun sendNotification(boardNotificationInfo: NotificationInfoDto) {
+        notificationService.save(boardNotificationInfo)
     }
 
-    private fun saveFile(file: MultipartFile): String {
-        val fileName = file.originalFilename ?: "unknown.jpg"
-        val filePath = Paths.get(uploadDirectory, fileName)
-        file.inputStream.use { inputStream ->
-            Files.copy(inputStream, filePath)
-        }
-
-        // url 생성
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-            .path("/image/")
-            .path(fileName)
-            .toUriString()
-    }//
+    fun deleteById(id: Long): Boolean {
+        return boardRepository.deleteBoardById(id) > 0
+    }
 
     private fun countRepliesById(id: Long) : Long {
         return boardRepository.countRepliesById(id)
