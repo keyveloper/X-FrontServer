@@ -1,7 +1,5 @@
 package com.example.frontServer.exception
 
-class FileNotExistException(message : String) : Exception(message) {
-    fun main() {
-        throw FileNotExistException("stored file not exist")
-    }
-}
+import com.example.frontServer.enum.ErrorCode
+
+class FileNotExistException: ApplicationException(ErrorCode.FILE_NOT_EXIST.ordinal, "Can't send File: File Not Found")

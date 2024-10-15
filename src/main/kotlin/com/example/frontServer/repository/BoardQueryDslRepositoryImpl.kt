@@ -38,7 +38,7 @@ class BoardQueryDslRepositoryImpl(
             }
     }
 
-    override fun finByIdWithUsername(id: Long): BoardWithUsernameDto? {
+    override fun findByIdWithUsername(id: Long): BoardWithUsernameDto? {
         return queryFactory
             .select(
                 qBoard,

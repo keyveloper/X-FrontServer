@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 class GetAllBoardResult(
     val id: Long,
-    val writer: Long,
+    val writer: String,
     val textContent: String,
     val fileApiUrl: String?,
     val firstWritingDate: LocalDateTime,
@@ -14,15 +14,15 @@ class GetAllBoardResult(
     val commentCount: Long,
 ) {
     companion object {
-        fun of(board: Board, commentCount: Long): GetAllBoardResult {
+        fun of(boardDto: BoardWithUsernameDto, commentCount: Long): GetAllBoardResult {
             return GetAllBoardResult(
-                id = board.id!!,
-                writer = board.writer,
-                textContent = board.textContent,
-                fileApiUrl = board.fileApiUri,
-                firstWritingDate = board.firstWritingDate!!,
-                lastModifiedDate = board.lastModifiedDate!!,
-                readingCount = board.readingCount,
+                id = boardDto.board.id!!,
+                writer = boardDto.username,
+                textContent = boardDto.board.textContent,
+                fileApiUrl = boardDto.board.fileApiUri,
+                firstWritingDate = boardDto.board.firstWritingDate!!,
+                lastModifiedDate = boardDto.board.lastModifiedDate!!,
+                readingCount = boardDto.board.readingCount,
                 commentCount = commentCount
             )
             // like count should be added

@@ -17,16 +17,16 @@ class BoardService(
 ) {
     @Transactional
     fun findAll() : List<GetAllBoardResult> {
-        val boards : List<Board> = boardRepository.findAllWithUsername()
-        return boards.map { GetAllBoardResult.of(it, countRepliesById(it.id!!)) }
+        val boards : List<BoardWithUsernameDto> = boardRepository.findAllWithUsername()
+        return boards.map { GetAllBoardResult.of(it, countRepliesById(it.board.id!!)) }
     }
 
     @Transactional
     fun findById(id: Long): GetBoardResult? {
-        val board : Board? = boardRepository.findById(id).orElse(null) // optional -> ?
+        val board : BoardWithUsernameDto? = boardRepository.findByIdWithUsername(id) // optional -> ?
 
         return board?.let {
-            addReadingCount(it)
+            addReadingCount(it.board)
             GetBoardResult.of(it)
         }
     }
@@ -38,24 +38,17 @@ class BoardService(
 
     @Transactional
     fun save(request: SaveBoardRequest, userId: Long, username: String) : Boolean {
-        return if (request.files != null) {
+        if (request.files != null) {
             val token = UUID.randomUUID().toString()
             fileService.saveBoardFile(request.files, token)
             boardRepository.save(
                 Board(
                     writer = userId,
                     fileApiUri = "/img/${token}",
-                    textContent = request.textContent
+                    textContent = request.
+                    textContent
                 )
             )
-            sendNotification(
-                NotificationInfoDto(
-                    message = "new post from $username",
-                    receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
-                )
-            )
-
-            true
         } else {
             boardRepository.save(
                 Board(
@@ -63,14 +56,15 @@ class BoardService(
                     textContent = request.textContent
                 )
             )
-            sendNotification(
-                NotificationInfoDto(
-                    message = "new post from $username",
-                    receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
-                )
-            )
-            true
         }
+
+        sendNotification(
+            NotificationInfoDto(
+                message = "new post from $username \n${request.textContent}",
+                receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
+            )
+        )
+        return true
     }
 
     private fun sendNotification(boardNotificationInfo: NotificationInfoDto) {

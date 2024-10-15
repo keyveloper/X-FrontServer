@@ -12,6 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 interface BoardRepository: JpaRepository<Board, Long>, BoardQueryDslRepository {
     @Modifying
     @Transactional
-    @Query("UPDATE Board b SET b.inValid = TRUE where b.id = :id")
+    @Query("UPDATE Board b SET b.invalid = TRUE where b.id = :id")
     fun deleteBoardById(@Param("id") id: Long): Int // 수정된 행 갯수 반환
 }

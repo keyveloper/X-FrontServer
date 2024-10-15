@@ -1,7 +1,5 @@
 package com.example.frontServer.exception
 
-class EntitySaveFailure(message: String): RuntimeException(message){
-    fun main() {
-        throw EntitySaveFailure("Entity save failure")
-    }
-}
+import com.example.frontServer.enum.ErrorCode
+
+class EntitySaveFailure: ApplicationException(ErrorCode.SAVE_FAILURE.ordinal, "Save Failure"){}

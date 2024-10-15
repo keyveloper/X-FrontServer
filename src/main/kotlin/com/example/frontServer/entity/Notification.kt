@@ -12,7 +12,6 @@ class Notification(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @Column(name = "publisher_img")
     var publisherImg: String? = null,
 
     var receiver: Long,
@@ -20,7 +19,7 @@ class Notification(
     var message: String,
 
     @CreatedDate
-    var createAt: LocalDateTime? = null,
+    var createdAt: LocalDateTime? = null,
 
     var isSent: Boolean = false
 )

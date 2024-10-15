@@ -1,7 +1,5 @@
 package com.example.frontServer.exception
 
-class NotFoundEntityException(message: String): RuntimeException(message) {
-    fun main() {
-        throw NotFoundEntityException("Can't find entity")
-    }
-}
+import com.example.frontServer.enum.ErrorCode
+
+class UnKnownIdException: ApplicationException(ErrorCode.UNKNOWN_ID.ordinal, "Unknown Id."){}

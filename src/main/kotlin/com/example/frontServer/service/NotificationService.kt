@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 class NotificationService(
     private val notificationRepository: NotificationRepository
 ) {
+
     fun save(notificationInfo: NotificationInfoDto): Boolean {
         val receivers = notificationInfo.receivers
         val notifications: List<Notification> = receivers.map {makeBoardNotification(
@@ -35,12 +36,21 @@ class NotificationService(
     }
 
     fun findAllByReceiver(receiver: Long): List<NotificationDto> {
-        return notificationRepository.findAllByReceiver(receiver).map {
+        val notifications: List<Notification> = notificationRepository.findAllByReceiver(receiver)
+
+        val notificationDtos = notifications.map {
             NotificationDto(
                 message = it.message,
-                createAt = it.createAt!!, // neve null - spring injected
-                publisherImg = it.publisherImg,
+                createAt = it.createdAt!!, // never null - spring injected
+                publisherImg = it.publisherImg
             )
         }
+
+        notifications.forEach {
+            it.isSent = true
+        }
+
+        notificationRepository.saveAll(notifications)
+        return notificationDtos
     }
 }

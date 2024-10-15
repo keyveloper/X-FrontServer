@@ -3,9 +3,10 @@ package com.example.frontServer.controller
 import com.example.frontServer.dto.*
 import com.example.frontServer.exception.EntityDeleteFailureException
 import com.example.frontServer.exception.EntitySaveFailure
-import com.example.frontServer.exception.NotFoundEntityException
+import com.example.frontServer.exception.UnKnownIdException
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.BoardService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*
 class BoardController(
     private val boardService: BoardService,
 ) {
+    private val logger = KotlinLogging.logger {}
 
     @GetMapping("/boards")
     fun findBoards(): ResponseEntity<ResponseToClientDto> {
@@ -37,7 +39,7 @@ class BoardController(
                 )
             )
         } ?: run {
-            throw NotFoundEntityException("boardId: $id not found")
+            throw UnKnownIdException()
         }
         // Exception : notFound
     }
@@ -47,14 +49,15 @@ class BoardController(
         @Valid @ModelAttribute saveBoardRequest: SaveBoardRequest,
         @AuthenticationPrincipal user: AuthUserDetails
     ): ResponseEntity<ResponseToClientDto> {
+        logger.info { "start save baord!! " }
         if (boardService.save(saveBoardRequest, user.getUserId(), user.username)) {
-            return ResponseEntity.badRequest().body(
+            return ResponseEntity.ok().body(
                 ResponseToClientDto(
                     errorCode = null,
                     data = null
                 )
             )
-        } else throw EntitySaveFailure("save Board Failure")
+        } else throw EntitySaveFailure()
     }
 
 
@@ -67,6 +70,6 @@ class BoardController(
                     data = null
                 )
             )
-        } else throw EntityDeleteFailureException("Delete Board failure")
+        } else throw EntityDeleteFailureException()
     }
 }

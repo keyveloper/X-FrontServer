@@ -6,12 +6,10 @@ data class GetBoardResponse (
     val id: Long,
     val writer: String,
     val textContent: String,
-    val imgUrl: String?,
+    val fileApiUrl: String?,
     val firstWritingDate: LocalDateTime,
     val lastModifiedDate: LocalDateTime,
     val readingCount : Long,
-    val likeCount: Long,
-    val type: String,
 ) {//
 
     companion object {
@@ -20,12 +18,10 @@ data class GetBoardResponse (
                 id = result.id,
                 writer = result.writer,
                 textContent = result.textContent,
-                imgUrl = result.imgUrl,
+                fileApiUrl = result.fileApiUrl,
                 firstWritingDate = result.firstWritingDate,
                 lastModifiedDate = result.lastModifiedDate,
                 readingCount = result.readingCount,
-                likeCount = result.likeCount,
-                type = result.type
             )
         }
     }

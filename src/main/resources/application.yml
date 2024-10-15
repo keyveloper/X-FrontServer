@@ -38,11 +38,11 @@ resilience4j:
     configs:
       default:
         registerHealthIndicator: true
-        failure-rate-threshold: 1 # 총 몇 번중에 몇 %
+        failure-rate-threshold: 10 # 총 몇 번중에 몇 %
         permitted-number-of-calls-in-half-open-state: 5
-        sliding-window-size: 2  # 총 몇 번중에
+        sliding-window-size: 5  # 총 몇 번중에
         sliding-window-type: COUNT_BASED
-        wait-duration-in-open-state: 10m
+        wait-duration-in-open-state: 10s # 해당 시간 이후 Open이 유지된다.
         automatic-transition-from-open-to-half-open-enabled: true
     instances:
       liveApiCircuitBreaker:

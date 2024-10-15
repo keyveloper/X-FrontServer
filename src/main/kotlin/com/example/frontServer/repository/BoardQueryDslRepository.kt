@@ -7,5 +7,5 @@ interface BoardQueryDslRepository {
 
     fun findAllWithUsername(): List<BoardWithUsernameDto>
 
-    fun finByIdWithUsername(id: Long): BoardWithUsernameDto?
+    fun findByIdWithUsername(id: Long): BoardWithUsernameDto?
 }

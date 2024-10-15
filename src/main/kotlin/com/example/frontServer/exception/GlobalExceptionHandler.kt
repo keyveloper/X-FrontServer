@@ -64,41 +64,11 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    fun handleNotFoundEntityException(ex: NotFoundEntityException): ResponseEntity<ResponseToClientDto> {
+    fun handleCustomAppException(ex: ApplicationException): ResponseEntity<ResponseToClientDto> {
         return ResponseEntity.ok().body(
             ResponseToClientDto(
-                errorCode = ErrorCode.NOT_FOUND_ENTITY,
-                data = null
-            )
-        )
-    }
-
-    @ExceptionHandler
-    fun handleEntitySaveFailureException(ex: EntitySaveFailure): ResponseEntity<ResponseToClientDto> {
-        return ResponseEntity.ok().body(
-            ResponseToClientDto(
-                errorCode = ErrorCode.SAVE_FAILURE,
-                data = null
-            )
-        )
-    }
-
-    @ExceptionHandler
-    fun handleEntityDeleteFailureException(ex: EntityDeleteFailureException): ResponseEntity<ResponseToClientDto> {
-        return ResponseEntity.ok().body(
-            ResponseToClientDto(
-                errorCode = ErrorCode.DELETE_FAILURE,
-                data = null
-            )
-        )
-    }
-
-    @ExceptionHandler
-    fun handleFileNotExistException(ex: FileNotExistException): ResponseEntity<ResponseToClientDto> {
-        return ResponseEntity.ok().body(
-            ResponseToClientDto(
-                errorCode = ErrorCode.FILE_NOT_EXIST,
-                data = null
+                errorCode = ErrorCode.UNKNOWN_ID,
+                data = null,
             )
         )
     }

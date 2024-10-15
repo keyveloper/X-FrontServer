@@ -6,9 +6,9 @@ enum class ErrorCode {
 
     DELETE_FAILURE,
 
-    NOT_FOUND,        // wrong url
+    NOT_FOUND_404,        // wrong url
 
-    NOT_FOUND_ENTITY,
+    UNKNOWN_ID,
 
     CONNECTION_ERROR,
 

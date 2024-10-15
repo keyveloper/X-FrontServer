@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 data class GetAllBoardResponse (
     val id: Long,
-    val writer: Long,
+    val writer: String,
     val textContent: String,
     val fileApiUrl: String?,
     val firstWritingDate: LocalDateTime,
