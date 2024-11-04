@@ -20,11 +20,11 @@ class BoardController(
 
     @GetMapping("/boards")
     fun findBoards(): ResponseEntity<ResponseToClientDto> {
-        val results : List<GetAllBoardResult> = boardService.findAll();
+        val results : List<BoardAdditionalInfo> = boardService.findAll();
         return ResponseEntity.ok().body(
             ResponseToClientDto(
                 errorCode = null,
-                data = results.map {GetAllBoardResponse.of(it)}
+                data = results
             )
         )
     }
@@ -35,7 +35,7 @@ class BoardController(
             ResponseEntity.ok().body(
                 ResponseToClientDto(
                     errorCode = null,
-                    data = GetBoardResponse.of(it)
+                    data = it
                 )
             )
         } ?: run {

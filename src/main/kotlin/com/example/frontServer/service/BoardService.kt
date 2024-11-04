@@ -2,7 +2,8 @@ package com.example.frontServer.service
 
 import com.example.frontServer.dto.*
 import com.example.frontServer.entity.Board
-import com.example.frontServer.entity.Timeline
+import com.example.frontServer.entity.QBoard.board
+import com.example.frontServer.entity.QUser.user
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.FollowRepository
 import jakarta.transaction.Transactional
@@ -15,22 +16,47 @@ class BoardService(
     val notificationService: NotificationService,
     val fileService: FileService,
     val followRepository: FollowRepository,
-    val timelineService: TimelineService
+    val timelineService: TimelineService,
+    val likeService: LikeService
 
 ) {
+
     @Transactional
-    fun findAll() : List<GetAllBoardResult> {
-        val boards : List<BoardWithUsernameDto> = boardRepository.findAllWithUsername()
-        return boards.map { GetAllBoardResult.of(it, countRepliesById(it.board.id!!)) }
+    fun findAll(): List<BoardAdditionalInfo> {
+        val boardInfos = boardRepository.findAllWithUsername()
+
+        return boardInfos.map {
+            BoardAdditionalInfo.of(
+                boardInfo = it,
+                likeCount = countLikes(it.board.id!!),
+                replyCount = boardRepository.countRepliesById(it.board.id!!)
+                )
+        }
     }
 
     @Transactional
-    fun findById(id: Long): GetBoardResult? {
-        val board : BoardWithUsernameDto? = boardRepository.findByIdWithUsername(id) // optional -> ?
+    fun findById(id: Long): BoardAdditionalInfo? {
+        val boardInfo = boardRepository.findByIdWithUsername(id)
 
-        return board?.let {
-            addReadingCount(it.board)
-            GetBoardResult.of(it)
+        return boardInfo?.let {
+            BoardAdditionalInfo.of(
+                boardInfo = it,
+                likeCount = countLikes(it.board.id!!),
+                replyCount = boardRepository.countRepliesById(it.board.id!!)
+            )
+        }
+    }
+
+    @Transactional
+    fun findRepliesByParentId(parentId: Long): List<BoardAdditionalInfo> {
+        val boardInfos = boardRepository.findRepliesByParentId(parentId)
+
+        return boardInfos.map {
+            BoardAdditionalInfo.of(
+                boardInfo = it,
+                likeCount = countLikes(it.board.id!!),
+                replyCount = boardRepository.countRepliesById(it.board.id!!)
+            )
         }
     }
 
@@ -46,7 +72,7 @@ class BoardService(
             fileService.saveBoardFile(request.files, token)
             boardRepository.save(
                 Board(
-                    writer = userId,
+                    writerId = userId,
                     fileApiUri = "/img/${token}",
                     textContent = request.
                     textContent
@@ -55,7 +81,7 @@ class BoardService(
         } else {
             boardRepository.save(
                 Board(
-                    writer = userId,
+                    writerId = userId,
                     textContent = request.textContent
                 )
             )
@@ -82,11 +108,12 @@ class BoardService(
         notificationService.save(boardNotificationInfo)
     }
 
-    fun deleteById(id: Long): Boolean {
-        return boardRepository.deleteBoardById(id) > 0
+    private fun countLikes(boardId: Long): Long {
+        val users = likeService.findAllByBoardId(boardId)
+        return users.size.toLong()
     }
 
-    private fun countRepliesById(id: Long) : Long {
-        return boardRepository.countRepliesById(id)
+    fun deleteById(id: Long): Boolean {
+        return boardRepository.deleteBoardById(id) > 0
     }
 }

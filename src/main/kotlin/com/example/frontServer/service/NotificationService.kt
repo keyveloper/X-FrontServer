@@ -30,13 +30,13 @@ class NotificationService(
     ): Notification {
         return Notification(
             publisherImg = publisherImg,
-            receiver = receiver,
+            receiverId = receiver,
             message = message,
         )
     }
 
     fun findAllByReceiver(receiver: Long): List<NotificationDto> {
-        val notifications: List<Notification> = notificationRepository.findAllByReceiver(receiver)
+        val notifications: List<Notification> = notificationRepository.findAllByReceiverId(receiver)
 
         val notificationDtos = notifications.map {
             NotificationDto(

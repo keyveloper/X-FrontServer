@@ -14,7 +14,7 @@ class Notification(
 
     var publisherImg: String? = null,
 
-    var receiver: Long,
+    var receiverId: Long,
 
     var message: String,
 

@@ -48,7 +48,7 @@ class LikeController(
         return ResponseEntity.ok().body(
             ResponseToClientDto(
                 errorCode = null,
-                data = likeService.findUserLikeThisBoard(boardId)
+                data = likeService.findAllByBoardId(boardId)
             )
         )
     }

@@ -1,10 +1,7 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.BoardWithUsernameDto
-import com.example.frontServer.dto.GetAllBoardResponse
-import com.example.frontServer.dto.GetAllBoardResult
-import com.example.frontServer.dto.GetBoardResult
-import com.example.frontServer.entity.Board
+import com.example.frontServer.dto.BoardAdditionalInfo
+import com.example.frontServer.dto.BoardInfo
 import com.example.frontServer.entity.Timeline
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.TimelineRepository
@@ -15,21 +12,23 @@ class TimelineService(
     private val timelineRepository: TimelineRepository,
     private val boardRepository: BoardRepository
 ) {
-    fun findBoardsByReceiverId(receiverId: Long): List<GetAllBoardResult> {
+    fun findBoardsByReceiverId(receiverId: Long): List<BoardAdditionalInfo> {
         // find all board id in timeline rep
         val timelineBoardIds: List<Long> =
             timelineRepository.findAllByReceiverIdWithInOneDay(receiverId).map {it.boardId}
 
         // find all board in board rep
-        val boardWithUsernames: List<BoardWithUsernameDto> = timelineBoardIds.mapNotNull {
-            boardRepository.findByIdWithUsername(it)
-        }
+        val boardInfos: List<BoardInfo> = boardRepository.findByIdsWithUsername(
+            timelineBoardIds
+        )
 
-        val results: List<GetAllBoardResult> = boardWithUsernames.map {
-            GetAllBoardResult.of(it, countRepliesById(it.board.id!!))
+        return boardInfos.map {
+            BoardAdditionalInfo.of(
+                boardInfo = it,
+                likeCount = 0,
+                replyCount = 0
+            )
         }
-
-        return results
     }
 
     private fun countRepliesById(id: Long) : Long {

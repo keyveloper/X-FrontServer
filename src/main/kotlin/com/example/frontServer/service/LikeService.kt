@@ -47,7 +47,7 @@ class LikeService(
     }
 
     @Transactional(readOnly = true)
-    fun findUserLikeThisBoard(boardId: Long): List<UserSummaryDto>? {
+    fun findAllByBoardId(boardId: Long): List<UserSummaryDto> {
         return client.get()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
@@ -57,7 +57,7 @@ class LikeService(
             }
             .retrieve()
             .bodyToMono(object: ParameterizedTypeReference<List<UserSummaryDto>>() {})
-            .block()
+            .block() ?: emptyList()
     }
 
     fun fallbackMethod(boardId: Long, userId: Long, throwable: Throwable): Boolean {

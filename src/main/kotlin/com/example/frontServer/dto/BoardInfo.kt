@@ -2,7 +2,7 @@ package com.example.frontServer.dto
 
 import com.example.frontServer.entity.Board
 
-data class BoardWithUsernameDto(
+data class BoardInfo(
     val board: Board,
-    val username: String
-)
+    val username: String,
+    )

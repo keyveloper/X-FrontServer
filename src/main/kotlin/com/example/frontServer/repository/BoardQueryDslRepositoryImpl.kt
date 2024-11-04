@@ -1,6 +1,6 @@
 package com.example.frontServer.repository
 
-import com.example.frontServer.dto.BoardWithUsernameDto
+import com.example.frontServer.dto.BoardInfo
 import com.example.frontServer.entity.QBoard
 import com.example.frontServer.entity.QUser
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -10,56 +10,75 @@ import org.springframework.stereotype.Repository
 class BoardQueryDslRepositoryImpl(
     val queryFactory: JPAQueryFactory
 ): BoardQueryDslRepository {
-    private val qBoard = QBoard.board
-    private val qUser = QUser.user
+    private val board = QBoard.board
+    private val user = QUser.user
 
-    override fun countRepliesById(id: Long) : Long {
-        return queryFactory
-            .select(qBoard.count())
-            .from(qBoard)
-            .where(qBoard.parentId.eq(id))
-            .fetchOne() ?: 0L
-    }
-
-    override fun findAllWithUsername(): List<BoardWithUsernameDto> {
+    override fun findAllWithUsername(): List<BoardInfo> {
         return queryFactory
             .select(
-                qBoard,
-                qUser.username
+                board, user.username,
             )
-            .from(qBoard)
-            .join(qUser).on(qBoard.writer.eq(qUser.id))
+            .from(board)
+            .join(user).on(board.writerId.eq(user.id))
             .fetch()
             .map { tuple ->
-                BoardWithUsernameDto(
-                    board = tuple.get(qBoard)!!,
-                    username = tuple.get(qUser.username)!!
+                BoardInfo(
+                    board = tuple.get(board)!!,
+                    username = tuple.get(user.username)!!
                 )
             }
     }
 
-    override fun findByIdWithUsername(id: Long): BoardWithUsernameDto? {
+    // replies 같이
+    override fun findByIdWithUsername(id: Long): BoardInfo? {
         return queryFactory
-            .select(
-                qBoard,
-                qUser.username
-            )
-            .from(qBoard)
-            .join(qUser).on(qBoard.writer.eq(qUser.id))
-            .where(qBoard.id.eq(id))
+            .select(board, user.username)
+            .from(board)
+            .join(user).on(board.writerId.eq(user.id))
+            .where(board.id.eq(id))
             .fetchOne()
-            ?.let{ tuple ->
-                val board = tuple.get(qBoard)
-                val username = tuple.get(qUser.username)
-                if (board != null && username != null) {
-                    BoardWithUsernameDto(
-                        board = board,          // BoardEntity 값 가져오기
-                        username = username // username 값 가져오기
-                    )
-                } else {
-                    return null
-                }
+            ?.let {
+                BoardInfo(
+                    board = it.get(board)!!,
+                    username = it.get(user.username)!!
+                )
             }
     }
 
+    override fun findByIdsWithUsername(ids: List<Long>): List<BoardInfo> {
+        return queryFactory
+            .select(board, user.username)
+            .from(board)
+            .join(user).on(board.writerId.eq(user.id))
+            .where(board.id.`in`(ids))
+            .fetch()
+            .map { tuple ->
+                BoardInfo(
+                    board = tuple.get(board)!!,
+                    username = tuple.get(user.username)!!
+                )
+            }
+    }
+
+    override fun findRepliesByParentId(parentId: Long): List<BoardInfo> {
+        return queryFactory
+            .select(board, user.username)
+            .join(user).on(board.writerId.eq(user.id))
+            .where(board.parentId.eq(parentId))
+            .fetch()
+            .map { tuple ->
+                BoardInfo(
+                    board = tuple.get(board)!!,
+                    username = tuple.get(user.username)!!
+                )
+            }
+    }
+
+    override fun countRepliesById(id: Long): Long {
+        return queryFactory
+            .select(board.count())
+            .from(board)
+            .where(board.parentId.eq(id))
+            .fetchOne() ?: 0L
+    }
 }

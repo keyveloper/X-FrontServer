@@ -1,6 +1,5 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.GetAllBoardResponse
 import com.example.frontServer.dto.ResponseToClientDto
 import com.example.frontServer.service.TimelineService
 import org.springframework.http.ResponseEntity
@@ -20,7 +19,7 @@ class TimelineController(
            ResponseToClientDto(
                errorCode = null,
                data = timelineService.findBoardsByReceiverId(receiverId).map {
-                   GetAllBoardResponse.of(it)
+
                }
            )
        )
