@@ -3,7 +3,6 @@ package com.example.frontServer.service
 import com.example.frontServer.dto.ResponseToServerDto
 import com.example.frontServer.dto.UserSummaryDto
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
-import com.example.frontServer.exception.FallbackFailureException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import org.springframework.core.ParameterizedTypeReference

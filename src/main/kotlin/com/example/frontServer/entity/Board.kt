@@ -37,5 +37,5 @@ class Board (
     @Column(name = "parent_id")
     var parentId: Long? = null,
 
-    var invalid: Boolean = false
-)
+    var invalid: Boolean = false,
+    )

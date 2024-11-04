@@ -14,6 +14,7 @@ class BoardService(
     val notificationService: NotificationService,
     val fileService: FileService,
     val followRepository: FollowRepository,
+
 ) {
     @Transactional
     fun findAll() : List<GetAllBoardResult> {
