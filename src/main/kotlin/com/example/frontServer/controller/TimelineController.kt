@@ -1,6 +1,7 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.GetBoardResponse
+import com.example.frontServer.dto.GetAllBoardResponse
+import com.example.frontServer.dto.ResponseToClientDto
 import com.example.frontServer.service.TimelineService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,7 +15,14 @@ class TimelineController(
    @GetMapping("/timeline")
    fun findAllByReceiverId(
        @RequestParam receiverId: Long
-   ): ResponseEntity<List<GetBoardResponse>> {
-
+   ): ResponseEntity<ResponseToClientDto> {
+       return ResponseEntity.ok().body(
+           ResponseToClientDto(
+               errorCode = null,
+               data = timelineService.findBoardsByReceiverId(receiverId).map {
+                   GetAllBoardResponse.of(it)
+               }
+           )
+       )
    }
 }

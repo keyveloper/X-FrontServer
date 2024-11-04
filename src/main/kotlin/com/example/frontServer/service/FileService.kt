@@ -43,7 +43,7 @@ class FileService(
             val file = File(filePath)
 
             if (!file.exists()) {
-                throw FileNotExistException("file Not Exist")
+                throw FileNotExistException()
             }
             CustomMultipartFile(file)
         }

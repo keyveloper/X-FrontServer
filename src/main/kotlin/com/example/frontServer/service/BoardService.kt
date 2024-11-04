@@ -2,6 +2,7 @@ package com.example.frontServer.service
 
 import com.example.frontServer.dto.*
 import com.example.frontServer.entity.Board
+import com.example.frontServer.entity.Timeline
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.FollowRepository
 import jakarta.transaction.Transactional
@@ -14,6 +15,7 @@ class BoardService(
     val notificationService: NotificationService,
     val fileService: FileService,
     val followRepository: FollowRepository,
+    val timelineService: TimelineService
 
 ) {
     @Transactional
@@ -39,7 +41,7 @@ class BoardService(
 
     @Transactional
     fun save(request: SaveBoardRequest, userId: Long, username: String) : Boolean {
-        if (request.files != null) {
+        val savedBoard: Board = if (request.files != null) {
             val token = UUID.randomUUID().toString()
             fileService.saveBoardFile(request.files, token)
             boardRepository.save(
@@ -58,14 +60,22 @@ class BoardService(
                 )
             )
         }
+        val boardId= savedBoard.id!!
+        val receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
 
         sendNotification(
             NotificationInfoDto(
                 message = "new post from $username \n${request.textContent}",
-                receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
+                receivers = receivers
             )
         )
+
+        saveTimeline(boardId, receivers)
         return true
+    }
+
+    private fun saveTimeline(boardId: Long, followers: List<Long>) {
+        timelineService.save(boardId, followers)
     }
 
     private fun sendNotification(boardNotificationInfo: NotificationInfoDto) {

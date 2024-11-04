@@ -14,7 +14,7 @@ class TimelineQueryDslRepositoryImpl(
             .selectFrom(qTimeline)
             .where(
                 qTimeline.receiverId.eq(receiverId)
-                .and(qTimeline.createAt.after(LocalDateTime.now().minusDays(1)))
+                .and(qTimeline.createdAt.after(LocalDateTime.now().minusDays(1)))
             )
             .fetch()
     }
