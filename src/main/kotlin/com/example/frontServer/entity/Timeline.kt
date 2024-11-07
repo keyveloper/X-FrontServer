@@ -18,5 +18,5 @@ class Timeline(
     val boardId: Long,
 
     @CreatedDate
-    val createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null
 )

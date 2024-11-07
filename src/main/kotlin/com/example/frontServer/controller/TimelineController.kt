@@ -18,9 +18,7 @@ class TimelineController(
        return ResponseEntity.ok().body(
            ResponseToClientDto(
                errorCode = null,
-               data = timelineService.findBoardsByReceiverId(receiverId).map {
-
-               }
+               data = timelineService.findByReceiverId(receiverId)
            )
        )
    }

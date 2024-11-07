@@ -16,25 +16,18 @@ class Board (
 
     val writerId : Long,
 
-    @Column(name = "text_content")
     var textContent: String,
 
-    @Column(name="file_api_url")
-    var fileApiUri: String? = null, // api url
+    var fileApiUrl: String? = null, // api url
 
     @CreatedDate
-    @Column(name = "first_writing_time")
-    var firstWritingDate: LocalDateTime? = null,
+    var createdAt: LocalDateTime? = null,
 
     @LastModifiedDate
-    @Column(name = "last_modified_time")
-    var lastModifiedDate: LocalDateTime? = null,
+    var lastModifiedAt: LocalDateTime? = null,
 
-    @Column(name = "reading_count")
     var readingCount : Long = 0,
 
-
-    @Column(name = "parent_id")
     var parentId: Long? = null,
 
     var invalid: Boolean = false,

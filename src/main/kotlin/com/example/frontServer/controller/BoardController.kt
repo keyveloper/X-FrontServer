@@ -19,8 +19,8 @@ class BoardController(
     private val logger = KotlinLogging.logger {}
 
     @GetMapping("/boards")
-    fun findBoards(): ResponseEntity<ResponseToClientDto> {
-        val results : List<BoardAdditionalInfo> = boardService.findAll();
+    fun findBoards(): ResponseEntity<BoardResponse> {
+        val results  = boardService.findAll();
         return ResponseEntity.ok().body(
             ResponseToClientDto(
                 errorCode = null,

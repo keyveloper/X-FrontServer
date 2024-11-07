@@ -1,14 +1,11 @@
 package com.example.frontServer.service
 
 import com.example.frontServer.dto.ResponseToServerDto
-import com.example.frontServer.dto.UserSummaryDto
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 
@@ -22,7 +19,7 @@ class LikeService(
     private val logger = KotlinLogging.logger {}
     @CircuitBreaker(
         name = "liveApiCircuitBreaker",
-        fallbackMethod = "fallbackMethod")
+        fallbackMethod = "saveFallbackMethod")
     fun save(boardId: Long, userId: Long): Boolean {
         val response = client.post()
             .uri { uriBuilder: UriBuilder ->
@@ -46,24 +43,42 @@ class LikeService(
         return true
     }
 
-    @Transactional(readOnly = true)
-    fun findAllByBoardId(boardId: Long): List<UserSummaryDto> {
-        return client.get()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder
-                    .path("/like/users")
-                    .queryParam("boardId", boardId)
-                    .build()
-            }
-            .retrieve()
-            .bodyToMono(object: ParameterizedTypeReference<List<UserSummaryDto>>() {})
-            .block() ?: emptyList()
+    @CircuitBreaker(
+        name = "liveApiCircuitBreaker",
+        fallbackMethod = "findAllByBoardIdFallbackMethod"
+    )
+    fun findAllByBoardId(boardId: Long): List<Long> {
+        return  try {
+            val response = client.get()
+                .uri { uriBuilder: UriBuilder ->
+                    uriBuilder
+                        .path("/like/users")
+                        .queryParam("boardId", boardId)
+                        .build()
+                }
+                .retrieve()
+                .bodyToMono(ResponseToServerDto::class.java)
+                .block()
+
+            response?.data as? List<Long> ?: emptyList()
+        } catch (ex: Exception) {
+            logger.error { "Exception caught in findAllByBoardId: ${ex.message}"}
+            emptyList()
+        }
     }
 
-    fun fallbackMethod(boardId: Long, userId: Long, throwable: Throwable): Boolean {
-        logger.error { "Fallback called due to ${throwable.message}"}
+    // save 메서드의 fallbackMethod
+    fun saveFallbackMethod(boardId: Long, userId: Long, throwable: Throwable): Boolean {
+        logger.error { "Fallback called in save due to ${throwable.message}" }
         logCircuitBreakerInfo()
         return false
+    }
+
+    // findAllByBoardId 메서드의 fallbackMethod
+    fun findAllByBoardIdFallbackMethod(boardId: Long, throwable: Throwable): List<Long> {
+        logger.error { "Fallback called in findAllByBoardId due to ${throwable.message}" }
+        logCircuitBreakerInfo()
+        return emptyList()
     }
 
     private fun logCircuitBreakerInfo() {
@@ -74,5 +89,4 @@ class LikeService(
         logger.info { "Number of failed calls: ${metrics.numberOfFailedCalls}" }
         logger.info { "Failure rate: ${metrics.failureRate}%" }
     }
-
 }

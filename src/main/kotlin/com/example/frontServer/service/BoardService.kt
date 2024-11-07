@@ -22,20 +22,16 @@ class BoardService(
 ) {
 
     @Transactional
-    fun findAll(): List<BoardAdditionalInfo> {
-        val boardInfos = boardRepository.findAllWithUsername()
+    fun findAll(): List<BoardResponse> {
+        val boardWithUsernames = boardRepository.findAllWithUsername()
 
-        return boardInfos.map {
-            BoardAdditionalInfo.of(
-                boardInfo = it,
-                likeCount = countLikes(it.board.id!!),
-                replyCount = boardRepository.countRepliesById(it.board.id!!)
-                )
+        return boardWithUsernames.mapNotNull {
+            BoardResponse.of(it)
         }
     }
 
     @Transactional
-    fun findById(id: Long): BoardAdditionalInfo? {
+    fun findById(id: Long): BoardWithCommentResult? {
         val boardInfo = boardRepository.findByIdWithUsername(id)
 
         return boardInfo?.let {
@@ -73,7 +69,7 @@ class BoardService(
             boardRepository.save(
                 Board(
                     writerId = userId,
-                    fileApiUri = "/img/${token}",
+                    fileApiUrl = "/img/${token}",
                     textContent = request.
                     textContent
                 )
@@ -110,6 +106,9 @@ class BoardService(
 
     private fun countLikes(boardId: Long): Long {
         val users = likeService.findAllByBoardId(boardId)
+        if (users.isEmpty()) {
+            return -1
+        }
         return users.size.toLong()
     }
 
