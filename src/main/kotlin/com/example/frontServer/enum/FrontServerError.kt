@@ -1,33 +1,18 @@
 package com.example.frontServer.enum
 
 enum class FrontServerError {
-    SAVE_FAILURE,
-
-    DELETE_FAILURE,
-
-    NOT_FOUND_404,        // wrong url
-
-    UNKNOWN_ID,
-
-
-    // vs
-    UNEXPECTED_ERROR,
-
-    SERVICE_SERVER_ERROR,
-
-    //
-
-    CONNECTION_ERROR,
-
-    PARAMETER_ERROR,  // parameter 누락
-
-    VALIDATION_ERROR, // sign up or param valid error
-
-    CREDENTIALS_ERROR, // login failed
-
-    ACCESS_DENIED,     // failed access premium service
-
+    NOT_FOUND_404,           // Wrong URL
+    INVALID_ID,              // invalid Id : boardId, userId, ....
+    DUPLICATED,              // unique key
+    BAD_REQUEST,             // HTTP BAD_REQUEST
+    UNEXPECTED_ERROR,        // UnExpected case
+    FATAL_SERVER_ERROR,      // fatal server error ex) db connection error
+    PARAMETER_ERROR,         // Parameter missing
+    VALIDATION_ERROR,        // Sign-up or param validation error
+    PARSING_ERROR,           // can't read request body
+    CANNOT_ACCESS_RESOURCE,  // can't access resources for network
+    CREDENTIALS_ERROR,       // Login failed
+    ACCESS_DENIED,           // Failed access to premium service
     BODY_TYPE_ERROR,
-
     FILE_NOT_EXIST,
 }

@@ -1,7 +1,8 @@
 package com.example.frontServer.dto.board
 
+import com.example.frontServer.dto.ServerErrorDetails
+import com.example.frontServer.enum.FrontServerError
 import java.time.LocalDateTime
-import kotlin.math.ceil
 
 data class BoardResponse(
     val id: Long,
@@ -25,7 +26,9 @@ data class BoardResponse(
     val likeCount: Int
     ) {
     companion object {
-        fun of(boardResult: BoardResult) : BoardResponse {
+        fun of(
+            boardResult: BoardResult
+        ) : BoardResponse {
             return BoardResponse(
                 id = boardResult.id,
                 writerName = boardResult.writerName,

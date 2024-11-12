@@ -1,11 +1,9 @@
 package com.example.frontServer.service
 
 import com.example.frontServer.dto.*
-import com.example.frontServer.dto.board.BoardResponse
 import com.example.frontServer.dto.board.BoardResult
-import com.example.frontServer.dto.board.SaveBoardRequest
+import com.example.frontServer.dto.board.BoardSaveRequest
 import com.example.frontServer.entity.Board
-import com.example.frontServer.entity.QBoard.board
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.FollowRepository
 import jakarta.transaction.Transactional
@@ -27,31 +25,27 @@ class BoardService(
     fun findAll(): List<BoardResult> {
         return boardRepository.findAllBoardWithComment()
             .map {
-                BoardResult.of(it, )
+                BoardResult.of(it, it.board.writerId.toString(), 0)
             }
     }
 
+    @Transactional
+    fun findById(id: Long): BoardResult? {
+        val boardWithComment = boardRepository.findBoardWithCommentById(id)
+        return boardWithComment?.let {
+            BoardResult.of(it, it.board.writerId.toString(), 0)
+        }
+    }
 
     private fun findUsernameByWriterId(writerId: Long): String {
-
+        /*TODO*/
+        return ""
     }
 
     private fun countLikesByBoardId(boardId: Long): Int {
-
+        return 0
     }
 
-    @Transactional
-    fun findRepliesByParentId(parentId: Long): List<BoardAdditionalInfo> {
-        val boardInfos = boardRepository.findRepliesByParentId(parentId)
-
-        return boardInfos.map {
-            BoardAdditionalInfo.of(
-                boardInfo = it,
-                likeCount = countLikes(it.board.id!!),
-                replyCount = boardRepository.countRepliesById(it.board.id!!)
-            )
-        }
-    }
 
     private fun addReadingCount(board: Board) {
         board.readingCount++
@@ -59,7 +53,7 @@ class BoardService(
     }
 
     @Transactional
-    fun save(request: SaveBoardRequest, userId: Long, username: String) : Boolean {
+    fun save(request: BoardSaveRequest, userId: Long, username: String) : Boolean {
         val savedBoard: Board = if (request.files != null) {
             val token = UUID.randomUUID().toString()
             fileService.saveBoardFile(request.files, token)
