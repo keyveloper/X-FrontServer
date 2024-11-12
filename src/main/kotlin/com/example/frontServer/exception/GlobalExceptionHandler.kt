@@ -1,6 +1,5 @@
 package com.example.frontServer.exception
 
-import com.example.frontServer.dto.ResponseToClientDto
 import com.example.frontServer.enum.FrontServerError
 import io.jsonwebtoken.io.IOException
 import org.springframework.http.ResponseEntity

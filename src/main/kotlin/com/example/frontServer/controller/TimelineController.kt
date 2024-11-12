@@ -1,6 +1,5 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.ResponseToClientDto
 import com.example.frontServer.service.TimelineService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

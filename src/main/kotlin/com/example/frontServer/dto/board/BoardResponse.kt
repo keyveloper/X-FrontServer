@@ -1,6 +1,7 @@
-package com.example.frontServer.dto
+package com.example.frontServer.dto.board
 
 import java.time.LocalDateTime
+import kotlin.math.ceil
 
 data class BoardResponse(
     val id: Long,
@@ -11,29 +12,32 @@ data class BoardResponse(
 
     val fileApiUrl: String?,
 
-    val firstWritingTime: LocalDateTime,
+    val createdAt: LocalDateTime,
 
-    val lastModifiedTime: LocalDateTime,
+    val lastModifiedAt: LocalDateTime,
 
     val readingCount: Long,
 
-    val commentCount: Long,
+    val commentCount:Int,
 
-    val likeCount: Long
+    val jsonComment: String?,
+
+    val likeCount: Int
     ) {
     companion object {
-        fun of(boardResult: BoardResult, likeCount: Long) : BoardResponse {
+        fun of(boardResult: BoardResult) : BoardResponse {
             return BoardResponse(
                 id = boardResult.id,
                 writerName = boardResult.writerName,
                 textContent = boardResult.textContent,
                 fileApiUrl = boardResult.fileApiUrl,
-                firstWritingTime = boardResult.createdAt,
-                lastModifiedTime = boardResult.lastModifiedAt,
+                createdAt = boardResult.createdAt,
+                lastModifiedAt = boardResult.lastModifiedAt,
                 readingCount = boardResult.readingCount,
                 commentCount = boardResult.commentCount,
-                likeCount = likeCount
-                )
+                jsonComment = boardResult.jsonComment,
+                likeCount = boardResult.likeCount
+            )
         }
     }
 }

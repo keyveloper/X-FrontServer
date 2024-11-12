@@ -1,4 +1,4 @@
-package com.example.frontServer.dto
+package com.example.frontServer.dto.board
 
 import jakarta.validation.constraints.NotEmpty
 import org.springframework.web.multipart.MultipartFile

@@ -1,6 +1,8 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.*
+import com.example.frontServer.dto.board.BoardResponse
+import com.example.frontServer.dto.board.SaveBoardRequest
 import com.example.frontServer.exception.EntityDeleteFailureException
 import com.example.frontServer.exception.EntitySaveFailure
 import com.example.frontServer.exception.UnKnownIdException
@@ -19,29 +21,18 @@ class BoardController(
     private val logger = KotlinLogging.logger {}
 
     @GetMapping("/boards")
-    fun findBoards(): ResponseEntity<BoardResponse> {
+    fun findAll(): ResponseEntity<List<BoardResponse>> {
         val results  = boardService.findAll();
         return ResponseEntity.ok().body(
-            ResponseToClientDto(
-                errorCode = null,
-                data = results
-            )
+
         )
     }
 
     @GetMapping("/board")
-    fun findById(@RequestParam id: Long): ResponseEntity<ResponseToClientDto> {
+    fun findById(@RequestBody id: Long): ResponseEntity<BoardResponse> {
         return boardService.findById(id)?.let {
-            ResponseEntity.ok().body(
-                ResponseToClientDto(
-                    errorCode = null,
-                    data = it
-                )
-            )
-        } ?: run {
-            throw UnKnownIdException()
+
         }
-        // Exception : notFound
     }
 
     @PostMapping("/board")
@@ -51,12 +42,7 @@ class BoardController(
     ): ResponseEntity<ResponseToClientDto> {
         logger.info { "start save baord!! " }
         if (boardService.save(saveBoardRequest, user.getUserId(), user.username)) {
-            return ResponseEntity.ok().body(
-                ResponseToClientDto(
-                    errorCode = null,
-                    data = null
-                )
-            )
+
         } else throw EntitySaveFailure()
     }
 

@@ -1,9 +1,11 @@
 package com.example.frontServer.service
 
 import com.example.frontServer.dto.*
+import com.example.frontServer.dto.board.BoardResponse
+import com.example.frontServer.dto.board.BoardResult
+import com.example.frontServer.dto.board.SaveBoardRequest
 import com.example.frontServer.entity.Board
 import com.example.frontServer.entity.QBoard.board
-import com.example.frontServer.entity.QUser.user
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.FollowRepository
 import jakarta.transaction.Transactional
@@ -22,25 +24,20 @@ class BoardService(
 ) {
 
     @Transactional
-    fun findAll(): List<BoardResponse> {
-        val boardWithUsernames = boardRepository.findAllWithUsername()
-
-        return boardWithUsernames.mapNotNull {
-            BoardResponse.of(it)
-        }
+    fun findAll(): List<BoardResult> {
+        return boardRepository.findAllBoardWithComment()
+            .map {
+                BoardResult.of(it, )
+            }
     }
 
-    @Transactional
-    fun findById(id: Long): BoardWithCommentResult? {
-        val boardInfo = boardRepository.findByIdWithUsername(id)
 
-        return boardInfo?.let {
-            BoardAdditionalInfo.of(
-                boardInfo = it,
-                likeCount = countLikes(it.board.id!!),
-                replyCount = boardRepository.countRepliesById(it.board.id!!)
-            )
-        }
+    private fun findUsernameByWriterId(writerId: Long): String {
+
+    }
+
+    private fun countLikesByBoardId(boardId: Long): Int {
+
     }
 
     @Transactional

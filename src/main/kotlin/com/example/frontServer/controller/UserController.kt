@@ -1,7 +1,6 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.GetUserResponse
-import com.example.frontServer.dto.ResponseToClientDto
 import com.example.frontServer.dto.SignUpRequest
 import com.example.frontServer.enum.FrontServerError
 import com.example.frontServer.enum.SignUpStatus

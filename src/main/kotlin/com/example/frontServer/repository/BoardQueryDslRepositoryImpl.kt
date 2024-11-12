@@ -1,87 +1,74 @@
 package com.example.frontServer.repository
-import com.querydsl.core.types.dsl.Expressions
 
-import com.example.frontServer.dto.BoardInfo
-import com.example.frontServer.dto.BoardWithUsernameAndComment
+import com.example.frontServer.dto.board.BoardWithComment
 import com.example.frontServer.entity.QBoard
-import com.example.frontServer.entity.QUser
-import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
+import com.querydsl.core.types.dsl.Expressions
+
 
 @Repository
 class BoardQueryDslRepositoryImpl(
     val queryFactory: JPAQueryFactory
 ): BoardQueryDslRepository {
     private val board = QBoard.board
-    private val user = QUser.user
-    val childBoard = QBoard("childBoard") // 같은 테이블에 대해 두 번째 별칭 생성
+    val comment = QBoard("comment") // 같은 테이블에 대해 두 번째 별칭 생성
 
-    override fun findAllBoardInfo(): List<BoardInfo> {
+    //
+    override fun findAllBoardWithComment(): List<BoardWithComment> {
+        val jsonComments = Expressions.stringTemplate(
+            "JSON_ARRAYAGG(JSON_OBJECT('id', {0}.id, 'writer_id', {0}.writer_id, " +
+                    "'text_content', {0}.text_content, " + "'file_api_url', {0}.file_api_url, " +
+                    "'created_at', {0}.created_at, 'last_modified_at', {0}.last_modified_at, " +
+                    "'reading_count', {0}.reading_count, 'invalid', {0}.invalid))",
+            comment
+        )
+
         return queryFactory
             .select(
                 board,
-                user.username,
-                childBoard,
+                jsonComments.`as`("comments")
             )
             .from(board)
-            .join(user).on(board.writerId.eq(user.id))
-            .leftJoin(childBoard).on(childBoard.parentId.eq(board.id))
+            .leftJoin(comment).on(comment.parentId.eq(board.id))
+            .where(board.parentId.isNull
+                .and(board.invalid.eq(false)))
+            .groupBy(board.id)
             .fetch()
-            .map { tuple ->
-                BoardInfo(
+            .map {tuple ->
+                BoardWithComment(
                     board = tuple.get(board)!!,
-                    username = tuple.get(user.username)!!,
-                    commentCount = tuple.get(childBoard.count())!!
+                    jsonComments = tuple.get(jsonComments)?: "[]"
                 )
             }
     }
 
-    // replies 같이
-    override fun findByBoardInfoWithComments(id: Long): BoardWithUsernameAndComment? {
-        val childUser = QUser("childUser")
-        val grandSonBoard = QBoard("grandSonBoard") // 댓글 수를 계산하기 위한 서브 별칭
+    override fun findBoardWithCommentById(boardId: Long): BoardWithComment? {
+        val jsonComments = Expressions.stringTemplate(
+            "JSON_ARRAYAGG(JSON_OBJECT('id', {0}.id, 'writer_id', {0}.writer_id, " +
+                    "'text_content', {0}.text_content, " + "'file_api_url', {0}.file_api_url, " +
+                    "'created_at', {0}.created_at, 'last_modified_at', {0}.last_modified_at, " +
+                    "'reading_count', {0}.reading_count, 'invalid', {0}.invalid))",
+            comment
+        )
 
-        val results = queryFactory
+        val tuple = queryFactory
             .select(
                 board,
-                user.username,
-                childBoard,
-                childUser.username,
-                grandSonBoard.id.count()
+                jsonComments.`as`("comments")
             )
             .from(board)
-            .join(user).on(board.writerId.eq(user.id))
-            .leftJoin(childBoard).on(childBoard.parentId.eq(board.id))
-            .join(user).on(childBoard.writerId.eq(user.id))
-            .leftJoin(grandSonBoard).on(grandSonBoard.parentId.eq(childBoard.id))
-            .where(board.id.eq(id))
-            .groupBy(board.id, childBoard.id, user.username, childUser.username)
-            .fetch()
+            .leftJoin(comment).on(comment.parentId.eq(boardId))
+            .where(board.id.eq(boardId)
+                .and(board.invalid.eq(false)))
+            .groupBy(board.id)
+            .fetchOne()
 
-        val mainBoardWithUsername = results.firstOrNull()?.let { result ->
-            val mainBoard = result.get(board)
-            val mainUsername = result.get(user.username)
-
-            val comments = results.mapNotNull { row ->
-                row.get(childBoard)?.let {child ->
-                    BoardInfo(
-                        board = child,
-                        username = row.get(user.username)!!,
-                        commentCount = row.get(grandSonBoard.id.count()) ?: 0L
-                    )
-                }
-            }
-
-            BoardWithUsernameAndComment(
-                boardWithUsername = BoardInfo(
-                    board = mainBoard!!,
-                    username = mainUsername!!,
-                    commentCount = comments.size.toLong()
-                ),
-                comments = comments
+        return tuple?.let {
+            BoardWithComment(
+                board = it.get(board)!!,
+                jsonComments = it.get(jsonComments)?: "[]"
             )
         }
-        return mainBoardWithUsername
     }
 }

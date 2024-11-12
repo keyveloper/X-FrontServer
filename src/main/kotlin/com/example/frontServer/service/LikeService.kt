@@ -1,9 +1,8 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.LikeRequest
-import com.example.frontServer.dto.LikeSaveResult
-import com.example.frontServer.dto.LikeServerSaveResponse
-import com.example.frontServer.dto.ServiceServerError
+import com.example.frontServer.dto.like.LikeRequest
+import com.example.frontServer.dto.like.LikeSaveResult
+import com.example.frontServer.dto.like.LikeServerSaveResponse
 import com.example.frontServer.enum.FrontServerError
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -48,18 +47,10 @@ class LikeService(
             return LikeSaveResult(
                 error = FrontServerError.UNEXPECTED_ERROR
             )
+            // fallback으로 처리 할 수 는 없을까?
         }
 
-        return if (response.error == null) {
-            LikeSaveResult(
-                error = null
-            )
-        } else {
-            LikeSaveResult(
-                error = FrontServerError.UNKNOWN_ID
-                // Server에러 별로 나눠야 하는지 ??
-            )
-        }
+        return LikeSaveResult.of(response)
     }
 
     @CircuitBreaker(

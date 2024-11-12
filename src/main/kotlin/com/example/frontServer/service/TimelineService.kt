@@ -1,6 +1,6 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.BoardInfo
+import com.example.frontServer.dto.board.BoardWithCommentCount
 import com.example.frontServer.entity.Timeline
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.TimelineRepository
@@ -19,7 +19,7 @@ class TimelineService(
             timelineRepository.findAllByReceiverIdWithInOneDay(receiverId).map {it.boardId}
 
         // find all board in board rep
-        val boardInfos: List<BoardInfo> = boardRepository.findByIdsWithUsername(
+        val boardInfos: List<BoardWithCommentCount> = boardRepository.findByIdsWithUsername(
             timelineBoardIds
         )
 

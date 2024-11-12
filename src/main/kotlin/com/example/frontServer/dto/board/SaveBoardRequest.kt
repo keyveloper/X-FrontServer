@@ -1,5 +1,6 @@
-package com.example.frontServer.dto
+package com.example.frontServer.dto.board
 
+import com.example.frontServer.dto.FilesDto
 import jakarta.validation.constraints.NotEmpty
 
 data class SaveBoardRequest(
