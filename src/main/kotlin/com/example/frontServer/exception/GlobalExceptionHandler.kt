@@ -89,4 +89,14 @@ class GlobalExceptionHandler {
     // Access Denied 필요
 
 
+    // Invalid Id Error
+    @ExceptionHandler(InValidIdException::class)
+    fun handleCustomErrorException(ex: CustomErrorException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.ok().body(
+            ErrorResponse(
+                code = ex.errorCode,
+                message = ex.message
+            )
+        )
+    }
 }

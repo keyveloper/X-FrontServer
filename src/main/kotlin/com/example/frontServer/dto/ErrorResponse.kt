@@ -4,5 +4,5 @@ import com.example.frontServer.enum.FrontServerError
 
 data class ErrorResponse(
     val code: FrontServerError,
-    val message: String
+    val message: String?
 )
