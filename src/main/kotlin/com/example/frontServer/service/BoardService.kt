@@ -33,6 +33,7 @@ class BoardService(
     fun findById(id: Long): BoardResult? {
         val boardWithComment = boardRepository.findBoardWithCommentById(id)
         return boardWithComment?.let {
+            addReadingCount(it.board)
             BoardResult.of(it, it.board.writerId.toString(), 0)
         }
     }
@@ -53,7 +54,7 @@ class BoardService(
     }
 
     @Transactional
-    fun save(request: BoardSaveRequest, userId: Long, username: String) : Boolean {
+    fun save(request: BoardSaveRequest, userId: Long, username: String) {
         val savedBoard: Board = if (request.files != null) {
             val token = UUID.randomUUID().toString()
             fileService.saveBoardFile(request.files, token)
@@ -84,7 +85,6 @@ class BoardService(
         )
 
         saveTimeline(boardId, receivers)
-        return true
     }
 
     private fun saveTimeline(boardId: Long, followers: List<Long>) {

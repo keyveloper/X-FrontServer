@@ -14,4 +14,5 @@ interface BoardRepository: JpaRepository<Board, Long>, BoardQueryDslRepository {
     @Transactional
     @Query("UPDATE Board b SET b.invalid = TRUE where b.id = :id")
     fun deleteBoardById(@Param("id") id: Long): Int // 수정된 행 갯수 반환
+    // 예외 : 존재하지 않는 id, 이미 true인 경우, 트랜잯션오류 -> 둘다 0을 발생
 }

@@ -41,23 +41,23 @@ class BoardController(
     fun save(
         @Valid @ModelAttribute saveBoardRequest: BoardSaveRequest,
         @AuthenticationPrincipal user: AuthUserDetails
-    ): ResponseEntity<ResponseToClientDto> {
-        logger.info { "start save baord!! " }
-        if (boardService.save(saveBoardRequest, user.getUserId(), user.username)) {
-
-        } else throw EntitySaveFailure()
+    ): ResponseEntity<Void> {
+        boardService.save(
+            request = saveBoardRequest,
+            userId = user.getUserId(),
+            username = user.username
+        )
+        return ResponseEntity.ok().build()
     }
+    // 예외 처리로 끝내기
 
 
     @DeleteMapping("/board")
-    fun delete(@RequestParam id: Long): ResponseEntity<BoardResponse> {
-        if (boardService.deleteById(id)) {
-            return ResponseEntity.badRequest().body(
-                ResponseToClientDto(
-                    errorCode = null,
-                    data = null
-                )
-            )
-        } else throw EntityDeleteFailureException()
+    fun delete(@RequestParam id: Long): ResponseEntity<Void> {
+        if (!boardService.deleteById(id)) {
+            throw InValidIdException()
+        }
+        return ResponseEntity.ok().build()
     }
+    // 예외처리로 끝내기
 }
