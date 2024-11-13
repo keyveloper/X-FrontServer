@@ -2,24 +2,24 @@ package com.example.frontServer.dto.user
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-
+//
 data class UserResponse(
     val email: String,
     val username: String,
     val introduction: String?,
     val birthday: LocalDate?,
-    val firstMadeDate: LocalDateTime,
+    val accountCreatingDay: LocalDateTime,
     val country: String?,
 ) {
-    companion object{
-        fun of(userResponse: UserResponse): UserResponse{
+    companion object {
+        fun of(request: UserResult): UserResponse {
             return UserResponse(
-                email = userResponse.email,
-                username = userResponse.username,
-                introduction = userResponse.introduction,
-                birthday = userResponse.birthday,
-                firstMadeDate = userResponse.firstMadeDate,
-                country = userResponse.country,
+                email = request.email,
+                username = request.username,
+                introduction = request.introduction,
+                birthday = request.birthday,
+                accountCreatingDay = request.firstMadeDate,
+                country = request.country,
             )
         }
     }

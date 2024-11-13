@@ -2,15 +2,12 @@ package com.example.frontServer.exception
 
 import com.example.frontServer.dto.ErrorResponse
 import com.example.frontServer.enum.FrontServerError
-import io.jsonwebtoken.io.IOException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.jdbc.CannotGetJdbcConnectionException
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.ResourceAccessException
@@ -102,7 +99,7 @@ class GlobalExceptionHandler {
     }
 
     // Invalid Id Error
-    @ExceptionHandler(InValidIdException::class)
+    @ExceptionHandler(InvalidIdException::class)
     fun handleCustomErrorException(ex: CustomErrorException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.ok().body(
             ErrorResponse(

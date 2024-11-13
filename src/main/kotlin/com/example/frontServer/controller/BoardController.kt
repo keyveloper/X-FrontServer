@@ -1,9 +1,8 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.*
 import com.example.frontServer.dto.board.BoardResponse
 import com.example.frontServer.dto.board.BoardSaveRequest
-import com.example.frontServer.exception.InValidIdException
+import com.example.frontServer.exception.InvalidIdException
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.BoardService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -34,7 +33,7 @@ class BoardController(
             ResponseEntity.ok().body(
                 BoardResponse.of(it)
             )
-        } ?: throw InValidIdException()
+        } ?: throw InvalidIdException()
     }
 
     @PostMapping("/board")
@@ -55,7 +54,7 @@ class BoardController(
     @DeleteMapping("/board")
     fun delete(@RequestParam id: Long): ResponseEntity<Void> {
         if (!boardService.deleteById(id)) {
-            throw InValidIdException()
+            throw InvalidIdException()
         }
         return ResponseEntity.ok().build()
     }

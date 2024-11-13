@@ -4,8 +4,8 @@ import com.example.frontServer.dto.user.UserResult
 import com.example.frontServer.dto.auth.SignUpRequest
 import com.example.frontServer.entity.User
 import com.example.frontServer.entity.UserRole
-import com.example.frontServer.exception.CanNotFindEntity
-import com.example.frontServer.exception.InValidIdException
+import com.example.frontServer.exception.CanNotFindEntityException
+import com.example.frontServer.exception.InvalidIdException
 import com.example.frontServer.repository.UserRepository
 import com.example.frontServer.repository.UserRoleRepository
 import jakarta.transaction.Transactional
@@ -41,9 +41,9 @@ class UserService(
         )
     }
 
-    fun findUserByuUsername(username: String): UserResult? {
+    fun findByuUsername(username: String): UserResult? {
         val user = userRepository.findByUsername(username)
-            ?: throw CanNotFindEntity()
+            ?: throw CanNotFindEntityException()
 
         return UserResult.of(user)
     }
@@ -53,7 +53,7 @@ class UserService(
         return if (optionalUser.isPresent) {
             optionalUser.get().username
         } else {
-            throw InValidIdException()
+            throw InvalidIdException()
         }
     }
 }

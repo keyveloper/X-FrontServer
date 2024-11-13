@@ -1,8 +1,7 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.GetUserResponse
+import com.example.frontServer.dto.user.UserResponse
 import com.example.frontServer.dto.auth.SignUpRequest
-import com.example.frontServer.enum.FrontServerError
 import com.example.frontServer.service.UserService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
@@ -23,13 +22,12 @@ class UserController(
     }
 
     @GetMapping("/user")
-    fun findUserInfoById(
-        @RequestParam loginId: String
-    ): ResponseEntity<GetUserResponse> {
-        val result = userService.findUserByLoginId(loginId)
-        if (result != null) {
-            return ResponseEntity.ok().body(GetUserResponse.of(result))
-        }
-        return ResponseEntity.notFound().build()
+    fun findUserByUsername(
+        @RequestParam username: String
+    ): ResponseEntity<UserResponse> {
+        return ResponseEntity.ok().body(
+            UserResponse.of(userService.findByuUsername(username)!!)
+            // service에서 null 처리를 수행함
+        )
     }//
 }
