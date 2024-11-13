@@ -12,6 +12,7 @@ enum class FrontServerError {
     PARSING_ERROR,           // can't read request body
     CANNOT_ACCESS_RESOURCE,  // can't access resources for network
     CREDENTIALS_ERROR,       // Login failed
+    NOT_FOUND_ENTITY,        // can not find by other parameter
     ACCESS_DENIED,           // Failed access to premium service
     BODY_TYPE_ERROR,
     FILE_NOT_EXIST,

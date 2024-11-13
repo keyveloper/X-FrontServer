@@ -1,6 +1,6 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.UserSummaryDto
+import com.example.frontServer.dto.user.UserSummaryDto
 import com.example.frontServer.entity.Follow
 import com.example.frontServer.repository.FollowRepository
 import com.example.frontServer.repository.UserRepository

@@ -1,4 +1,4 @@
-package com.example.frontServer.dto
+package com.example.frontServer.dto.auth
 
 import com.example.frontServer.annotaion.ValidPassword
 import jakarta.validation.constraints.NotBlank

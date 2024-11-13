@@ -1,6 +1,6 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.UserSummaryDto
+import com.example.frontServer.dto.user.UserSummaryDto
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.FollowService
 import org.springframework.http.ResponseEntity

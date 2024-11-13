@@ -1,6 +1,7 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.LoginRequest
+import com.example.frontServer.dto.auth.LoginRequest
+import com.example.frontServer.dto.auth.LoginResponse
 import com.example.frontServer.service.AuthService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
@@ -16,9 +17,12 @@ class AuthController(
     private val logger = KotlinLogging.logger {}
     @PostMapping("/login")
     fun login(
-        @Valid @RequestBody loginInfo: LoginRequest
-    ): ResponseEntity<String> {
-        val token : String? = authService.login(loginInfo)
-        return ResponseEntity.ok().body(token)
+        @Valid @RequestBody loginInRequest: LoginRequest
+    ): ResponseEntity<LoginResponse> {
+        return ResponseEntity.ok().body(
+            LoginResponse(
+                jwtToken = authService.login(loginInRequest).jwtToken
+            )
+        )
     }
 }

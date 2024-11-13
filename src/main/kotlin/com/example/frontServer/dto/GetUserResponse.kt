@@ -1,5 +1,6 @@
 package com.example.frontServer.dto
 
+import com.example.frontServer.dto.user.UserResult
 import java.time.LocalDate
 import java.time.LocalDateTime
 //
@@ -12,7 +13,7 @@ data class GetUserResponse(
     val country: String?,
 ) {
     companion object {
-        fun of(request: GetUserResult): GetUserResponse {
+        fun of(request: UserResult): GetUserResponse {
             return GetUserResponse(
                 email = request.email,
                 username = request.username,

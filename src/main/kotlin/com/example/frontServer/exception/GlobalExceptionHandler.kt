@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.ResourceAccessException
+import javax.naming.AuthenticationException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -88,6 +89,17 @@ class GlobalExceptionHandler {
 
     // Access Denied 필요
 
+
+    // Authentication Error 처리
+    @ExceptionHandler(AuthenticationException::class)
+    fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.ok().body(
+            ErrorResponse(
+                code = FrontServerError.CREDENTIALS_ERROR,
+                message = "Failed to authenticate user."
+            )
+        )
+    }
 
     // Invalid Id Error
     @ExceptionHandler(InValidIdException::class)

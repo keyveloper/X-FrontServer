@@ -1,15 +1,17 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.GetUserResult
-import com.example.frontServer.dto.SignUpRequest
+import com.example.frontServer.dto.user.UserResult
+import com.example.frontServer.dto.auth.SignUpRequest
 import com.example.frontServer.entity.User
 import com.example.frontServer.entity.UserRole
-import com.example.frontServer.enum.SignUpStatus
+import com.example.frontServer.exception.CanNotFindEntity
+import com.example.frontServer.exception.InValidIdException
 import com.example.frontServer.repository.UserRepository
 import com.example.frontServer.repository.UserRoleRepository
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class UserService(
@@ -18,12 +20,9 @@ class UserService(
     private val passwordEncoder: PasswordEncoder
 ) {
     @Transactional
-    fun signUp(request: SignUpRequest): SignUpStatus {
-        if (userRepository.existsUserByUsername(request.username) ||
-            userRepository.existsUserByEmail(request.email)) {
-            return SignUpStatus.DUPLICATED
-        }
-
+    fun signUp(request: SignUpRequest) {
+        // unique check: Exception Handler
+        //
         val user = User(
             email = request.email,
             username = request.username,
@@ -40,11 +39,21 @@ class UserService(
                 role = request.role.ordinal.toLong()
             )
         )
-        return SignUpStatus.SUCCESS
     }
 
-    fun findUserByLoginId(loginId: String): GetUserResult? {
-        val user = userRepository.findByUsername(loginId)
-        return user?.let{ GetUserResult.of(user) }
-    }//
+    fun findUserByuUsername(username: String): UserResult? {
+        val user = userRepository.findByUsername(username)
+            ?: throw CanNotFindEntity()
+
+        return UserResult.of(user)
+    }
+
+    fun findUsernameById(id: Long): String? {
+        val optionalUser: Optional<User> = userRepository.findById(id)
+        return if (optionalUser.isPresent) {
+            optionalUser.get().username
+        } else {
+            throw InValidIdException()
+        }
+    }
 }

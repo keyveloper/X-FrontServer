@@ -1,4 +1,4 @@
-package com.example.frontServer.dto
+package com.example.frontServer.dto.user
 
 import com.example.frontServer.entity.User
 
