@@ -1,8 +1,9 @@
-package com.example.frontServer.dto.board
+package com.example.frontServer.dto.timeline
 
+import com.example.frontServer.dto.board.BoardWithComment
 import java.time.LocalDateTime
 
-data class BoardResult(
+data class TimelineResult(
     val id: Long,
 
     val writerName: String,
@@ -27,10 +28,10 @@ data class BoardResult(
         fun of(
             boardWithComment: BoardWithComment,
             writerName: String,
-            likeCount: Int,
-        ) : BoardResult {
+            likeCount: Int
+        ): TimelineResult {
             val board = boardWithComment.board
-            return BoardResult(
+            return TimelineResult(
                 id = board.id!!,
                 writerName = writerName,
                 textContent = board.textContent,
@@ -41,7 +42,7 @@ data class BoardResult(
                 commentCount = boardWithComment.getCommentCount(),
                 jsonComment = boardWithComment.jsonComments,
                 likeCount = likeCount
-                )
-            }
+            )
         }
     }
+}

@@ -22,7 +22,7 @@ class BoardController(
         val results  = boardService.findAll();
         return ResponseEntity.ok().body(
             results.map {
-                BoardResponse.of(it)
+                BoardResponse.of(it, null)
             }
         )
     }
@@ -31,7 +31,7 @@ class BoardController(
     fun findById(@RequestBody id: Long): ResponseEntity<BoardResponse> {
         return boardService.findById(id)?.let {
             ResponseEntity.ok().body(
-                BoardResponse.of(it)
+                BoardResponse.of(it, null)
             )
         } ?: throw InvalidIdException()
     }

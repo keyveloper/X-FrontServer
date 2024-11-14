@@ -97,7 +97,7 @@ class BoardService(
 
     private fun countLikes(boardId: Long): Long {
         val users = likeService.findAllByBoardId(boardId)
-        if (users.isEmpty()) {
+        if (users!!.isEmpty()) {
             return -1
         }
         return users.size.toLong()

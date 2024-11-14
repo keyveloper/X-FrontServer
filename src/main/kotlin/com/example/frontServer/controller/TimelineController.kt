@@ -1,9 +1,10 @@
 package com.example.frontServer.controller
 
+import com.example.frontServer.dto.timeline.TimelineResponse
 import com.example.frontServer.service.TimelineService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -12,13 +13,13 @@ class TimelineController(
 ) {
    @GetMapping("/timeline")
    fun findAllByReceiverId(
-       @RequestParam receiverId: Long
-   ): ResponseEntity<ResponseToClientDto> {
+       @RequestBody receiverId: Long
+   ): ResponseEntity<List<TimelineResponse>> {
+       val timelineResults = timelineService.findByReceiverId(receiverId)
        return ResponseEntity.ok().body(
-           ResponseToClientDto(
-               errorCode = null,
-               data = timelineService.findByReceiverId(receiverId)
-           )
+           timelineResults.map {
+               TimelineResponse(it, null)
+           }
        )
    }
 }

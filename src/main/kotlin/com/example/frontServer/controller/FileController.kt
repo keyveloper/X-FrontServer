@@ -1,23 +1,25 @@
 package com.example.frontServer.controller
 
+import com.example.frontServer.dto.file.FileResponse
 import com.example.frontServer.service.FileService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class FileController(
     private val fileService: FileService
 ) {
-    @GetMapping("/img/:{token}")
-    fun findImgByBoardId(
-        @PathVariable token: String
-    ): ResponseEntity<ResponseToClientDto> {
+    @GetMapping("/img")
+    fun findByToken(
+        @RequestBody token: String
+    ): ResponseEntity<FileResponse> {
         return ResponseEntity.ok().body(
-            ResponseToClientDto(
-                errorCode = null,
-                data = fileService.findFilesByToken(token)
+            FileResponse(
+                fileResult = fileService.findFilesByToken(token),
+                errorResponse = null
             )
         )
     }

@@ -15,7 +15,7 @@ data class LikeSaveResult(
 
             return if (serverResult.error == ServiceServerError.UNKNOWN_ID) {
                 LikeSaveResult(
-                    error = FrontServerError.UNKNOWN_ID
+                    error = FrontServerError.INVALID_ID
                 )
             } else {
                 LikeSaveResult(

@@ -1,6 +1,7 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.like.LikeRequest
+import com.example.frontServer.dto.like.LikeRequestFromClient
+import com.example.frontServer.dto.like.LikeRequestToServer
 import com.example.frontServer.dto.like.LikeSaveResult
 import com.example.frontServer.dto.like.LikeServerSaveResponse
 import com.example.frontServer.enum.FrontServerError
@@ -23,7 +24,7 @@ class LikeService(
     @CircuitBreaker(
         name = "liveApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod")
-    fun save(boardId: Long, userId: Long): LikeSaveResult {
+    fun save(likeRequest: LikeRequestFromClient, userId: Long): LikeSaveResult {
         val response = client.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
@@ -31,9 +32,10 @@ class LikeService(
                     .build()
             }
             .bodyValue(
-                LikeRequest(
-                    boardId = boardId,
+                LikeRequestToServer(
+                    boardId = likeRequest.boardId,
                     userId = userId,
+                    likeType = likeRequest.likeType,
                 )
             )
             .headers { headers ->
@@ -57,32 +59,21 @@ class LikeService(
         name = "liveApiCircuitBreaker",
         fallbackMethod = "findAllByBoardIdFallbackMethod"
     )
-    fun findAllByBoardId(boardId: Long): List<Long> {
-        return  try {
-            val response = client.get()
-                .uri { uriBuilder: UriBuilder ->
-                    uriBuilder
-                        .path("/like/users")
-                        .queryParam("boardId", boardId)
-                        .build()
-                }
-                .retrieve()
-                .bodyToMono(ResponseToServerDto::class.java)
-                .block()
-
-            response?.data as? List<Long> ?: emptyList()
-        } catch (ex: Exception) {
-            logger.error { "Exception caught in findAllByBoardId: ${ex.message}"}
-            emptyList()
-        }
+    fun findAllByBoardId(boardId: Long): List<Long>? {
+        //"TODO"
+        return null
     }
 
     // save 메서드의 fallbackMethod
+    // 다시 만들기
     fun saveFallbackMethod(boardId: Long, userId: Long, throwable: Throwable): LikeSaveResult {
         logger.error { "Fallback called in save due to ${throwable.message}" }
         logCircuitBreakerInfo()
-        return LikeSaveResult(
-            error = FrontServerError.SERVICE_SERVER_ERROR
+        return LikeSaveResult.of(
+            LikeServerSaveResponse(
+                error = null,
+                details = null
+            )
         )
     }
 

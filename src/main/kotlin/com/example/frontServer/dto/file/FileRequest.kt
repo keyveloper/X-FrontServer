@@ -1,8 +1,7 @@
-package com.example.frontServer.dto
+package com.example.frontServer.dto.file
 
 import org.springframework.web.multipart.MultipartFile
 
-
-data class FilesDto(
+data class FileRequest(
     val files: List<MultipartFile>
 )

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 
 data class BoardWithComment(
     val board: Board,
-    val jsonComments: String?
+    val jsonComments: String
     ) {
     fun getCommentCount(): Int {
         val objectMapper = ObjectMapper()

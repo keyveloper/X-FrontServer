@@ -43,6 +43,35 @@ class BoardQueryDslRepositoryImpl(
             }
     }
 
+    override fun findAllBoardWithCommentByIds(ids: List<Long>): List<BoardWithComment> {
+        val jsonComments = Expressions.stringTemplate(
+            "JSON_ARRAYAGG(JSON_OBJECT('id', {0}.id, 'writer_id', {0}.writer_id, " +
+                    "'text_content', {0}.text_content, " + "'file_api_url', {0}.file_api_url, " +
+                    "'created_at', {0}.created_at, 'last_modified_at', {0}.last_modified_at, " +
+                    "'reading_count', {0}.reading_count, 'invalid', {0}.invalid))",
+            comment
+        )
+
+        return queryFactory
+            .select(
+                board,
+                jsonComments.`as`("comments")
+            )
+            .from(board)
+            .leftJoin(comment).on(comment.parentId.eq(board.id))
+            .where(board.parentId.isNull
+                .and(board.invalid.eq(false))
+                .and(board.id.`in`(ids)))
+            .groupBy(board.id)
+            .fetch()
+            .map {tuple ->
+                BoardWithComment(
+                    board = tuple.get(board)!!,
+                    jsonComments = tuple.get(jsonComments)?: "[]"
+                )
+            }
+    }
+
     override fun findBoardWithCommentById(boardId: Long): BoardWithComment? {
         val jsonComments = Expressions.stringTemplate(
             "JSON_ARRAYAGG(JSON_OBJECT('id', {0}.id, 'writer_id', {0}.writer_id, " +
