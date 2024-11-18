@@ -1,5 +1,6 @@
 package com.example.frontServer.controller
 
+import com.example.frontServer.dto.ErrorResponse
 import com.example.frontServer.dto.auth.LoginRequest
 import com.example.frontServer.dto.auth.LoginResponse
 import com.example.frontServer.service.AuthService
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import java.lang.Error
 
 @RestController
 class AuthController(
@@ -20,9 +22,7 @@ class AuthController(
         @Valid @RequestBody loginInRequest: LoginRequest
     ): ResponseEntity<LoginResponse> {
         return ResponseEntity.ok().body(
-            LoginResponse(
-                jwtToken = authService.login(loginInRequest).jwtToken
-            )
+            LoginResponse.of(authService.login(loginInRequest), null)
         )
     }
 }

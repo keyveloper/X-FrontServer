@@ -25,7 +25,7 @@ class User (
 
     var introduction: String? = null,
 
-    var birthday: LocalDate,
+    var birthday: LocalDate?,
 
     @CreatedDate
     @Column(name = "first_made_date")

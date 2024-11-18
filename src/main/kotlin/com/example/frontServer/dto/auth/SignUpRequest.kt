@@ -26,13 +26,11 @@ data class SignUpRequest (
     @field:NotEmpty(message = "email is required")
     val email: String,
 
-    val introduction: String? = null,
+    val introduction: String?,
 
-    @field:ValidBirthday(message = "Birth date must be after 2012 and before today")
-    @NotEmpty
-    val birthday: LocalDate,
+    val birthday: LocalDate?,
 
-    val country: String? = null,
+    val country: String?,
 
     var role: RoleNumber = RoleNumber.NORMAL
     )//

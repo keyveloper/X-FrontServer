@@ -2,6 +2,7 @@ package com.example.frontServer.controller
 
 import com.example.frontServer.dto.user.UserResponse
 import com.example.frontServer.dto.auth.SignUpRequest
+import com.example.frontServer.dto.auth.SignUpResponse
 import com.example.frontServer.service.UserService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
@@ -16,9 +17,13 @@ class UserController(
     @PostMapping("/sign-up")
     fun signUp(
         @Valid @RequestBody signUpRequest: SignUpRequest
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<SignUpResponse> {
         userService.signUp(signUpRequest)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok().body(
+            SignUpResponse(
+                errorResponse = null
+            )
+        )
     }
 
     @GetMapping("/user")

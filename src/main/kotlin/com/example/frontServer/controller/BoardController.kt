@@ -1,5 +1,6 @@
 package com.example.frontServer.controller
 
+import com.example.frontServer.dto.board.BoardAllResponse
 import com.example.frontServer.dto.board.BoardResponse
 import com.example.frontServer.dto.board.BoardSaveRequest
 import com.example.frontServer.exception.InvalidIdException
@@ -18,12 +19,13 @@ class BoardController(
     private val logger = KotlinLogging.logger {}
 
     @GetMapping("/boards")
-    fun findAll(): ResponseEntity<List<BoardResponse>> {
+    fun findAll(): ResponseEntity<BoardAllResponse> {
         val results  = boardService.findAll();
         return ResponseEntity.ok().body(
-            results.map {
-                BoardResponse.of(it, null)
-            }
+            BoardAllResponse(
+                boardResults = results,
+                errorResponse = null
+            )
         )
     }
 
