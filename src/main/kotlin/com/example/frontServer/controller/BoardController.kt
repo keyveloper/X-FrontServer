@@ -22,10 +22,7 @@ class BoardController(
     fun findAll(): ResponseEntity<BoardAllResponse> {
         val results  = boardService.findAll();
         return ResponseEntity.ok().body(
-            BoardAllResponse(
-                boardResults = results,
-                errorResponse = null
-            )
+            BoardAllResponse(results)
         )
     }
 

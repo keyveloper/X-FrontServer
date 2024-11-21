@@ -1,5 +1,6 @@
 package com.example.frontServer.dto.board
 
+import com.example.frontServer.entity.Board
 import java.time.LocalDateTime
 
 data class BoardResult(
@@ -17,19 +18,20 @@ data class BoardResult(
 
     val readingCount: Long,
 
-    val commentCount:Int,
+    val commentCount: Int,
 
-    val jsonComment: String?,
+    val comments: List<BoardCommentResult>,
 
     val likeCount: Int
 ) {
     companion object {
         fun of(
-            boardWithComment: BoardWithComment,
+            board: Board,
+            commentCount: Int,
             writerName: String,
             likeCount: Int,
+            boardCommentResult: List<BoardCommentResult>
         ) : BoardResult {
-            val board = boardWithComment.board
             return BoardResult(
                 id = board.id!!,
                 writerName = writerName,
@@ -38,8 +40,8 @@ data class BoardResult(
                 createdAt = board.createdAt!!,
                 lastModifiedAt = board.lastModifiedAt!!,
                 readingCount = board.readingCount,
-                commentCount = boardWithComment.getCommentCount(),
-                jsonComment = boardWithComment.jsonComments,
+                commentCount = commentCount,
+                comments = boardCommentResult,
                 likeCount = likeCount
                 )
             }

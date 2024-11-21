@@ -5,7 +5,6 @@ import com.example.frontServer.dto.board.BoardWithCommentCount
 import com.example.frontServer.entity.QBoard
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
-import com.querydsl.core.types.dsl.Expressions
 
 
 @Repository

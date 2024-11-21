@@ -1,7 +1,8 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.service.TimelineService
 import com.example.frontServer.dto.*
+import com.example.frontServer.dto.board.BoardAllResult
+import com.example.frontServer.dto.board.BoardCommentResult
 import com.example.frontServer.dto.board.BoardResult
 import com.example.frontServer.dto.board.BoardSaveRequest
 import com.example.frontServer.entity.Board
@@ -22,10 +23,10 @@ class BoardService(
 ) {
 
     @Transactional
-    fun findAll(): List<BoardResult> {
-        return boardRepository.findAllBoardWithComment()
+    fun findAll(): List<BoardAllResult> {
+        return boardRepository.findAllWithCommentCount()
             .map {
-                BoardResult.of(it, it.board.writerId.toString(), 0)
+                BoardAllResult.of(it, it.board.writerId.toString(), 0)
             }
     }
 
@@ -33,15 +34,30 @@ class BoardService(
     fun findById(id: Long): BoardResult? {
         val boardWithComment = boardRepository.findBoardWithCommentById(id)
         return boardWithComment?.let {
+            val board = boardWithComment.board
+            val commentCount = boardWithComment.getCommentCount()
+            val boardCommentResult: List<BoardCommentResult> = boardWithComment.comments.map {
+                BoardCommentResult.of(
+                    it,
+                    findUsernameByWriterId(it.id!!),
+                    countLikesByBoardId(it.id!!)
+                )
+            }
             addReadingCount(it.board)
-            BoardResult.of(it, it.board.writerId.toString(), 0)
+            BoardResult.of(
+                board = board,
+                commentCount = commentCount,
+                writerName = "",
+                likeCount = 0,
+                boardCommentResult
+            )
         }
     }
 
-    fun findAllByIds(ids: List<Long>): List<BoardResult> {
-        return boardRepository.findAllBoardWithCommentByIds(ids)
+    fun findAllByIds(ids: List<Long>): List<BoardAllResult> {
+        return boardRepository.findAllWithCommentCountByIds(ids)
             .map {
-                BoardResult.of(it, it.board.writerId.toString(), 0)
+                BoardAllResult.of(it, it.board.writerId.toString(), 0)
             }
     }
 

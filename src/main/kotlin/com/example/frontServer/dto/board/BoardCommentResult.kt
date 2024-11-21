@@ -1,8 +1,9 @@
 package com.example.frontServer.dto.board
 
+import com.example.frontServer.entity.Board
 import java.time.LocalDateTime
 
-data class BoardAllResult(
+data class BoardCommentResult(
     val id: Long,
 
     val writerName: String,
@@ -17,27 +18,23 @@ data class BoardAllResult(
 
     val readingCount: Long,
 
-    val commentCount:Long,
-
     val likeCount: Int
 ) {
-    companion object{
+    companion object {
         fun of(
-            boardWithCommentCount: BoardWithCommentCount,
+            board: Board,
             writerName: String,
             likeCount: Int,
-        ): BoardAllResult {
-            val board = boardWithCommentCount.board
-            return BoardAllResult(
+            ): BoardCommentResult {
+            return BoardCommentResult(
                 id = board.id!!,
                 writerName = writerName,
                 textContent = board.textContent,
                 fileApiUrl = board.fileApiUrl,
-                createdAt = board.createdAt!!,
                 lastModifiedAt = board.lastModifiedAt!!,
+                createdAt = board.createdAt!!,
                 readingCount = board.readingCount,
-                commentCount = boardWithCommentCount.commentCount,
-                likeCount = likeCount
+                likeCount = likeCount,
             )
         }
     }
