@@ -1,6 +1,7 @@
 package com.example.frontServer.repository
 
 import com.example.frontServer.dto.board.BoardWithComment
+import com.example.frontServer.dto.board.BoardWithCommentCount
 import com.example.frontServer.entity.QBoard
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
@@ -15,89 +16,72 @@ class BoardQueryDslRepositoryImpl(
     val comment = QBoard("comment") // 같은 테이블에 대해 두 번째 별칭 생성
 
     //
-    override fun findAllBoardWithComment(): List<BoardWithComment> {
-        val jsonComments = Expressions.stringTemplate(
-            "JSON_ARRAYAGG(JSON_OBJECT('id', {0}.id, 'writer_id', {0}.writerId, " +
-                    "'text_content', {0}.textContent, " + "'file_api_url', {0}.fileApiUrl, " +
-                    "'created_at', {0}.createdAt, 'last_modified_at', {0}.lastModifiedAt, " +
-                    "'reading_count', {0}.readingCount, 'invalid', {0}.invalid))",
-            comment
-        )
-
+    override fun findAllWithCommentCount() : List<BoardWithCommentCount> {
         return queryFactory
             .select(
                 board,
-                jsonComments.`as`("comments")
+                comment.count().`as`("commentCount")
             )
             .from(board)
             .leftJoin(comment).on(comment.parentId.eq(board.id))
-            .where(board.parentId.isNull
-                .and(board.invalid.eq(false)))
-            .groupBy(board.id)
+            .where(board.invalid.eq(false)
+            )
             .fetch()
-            .map {tuple ->
-                BoardWithComment(
+            .map { tuple ->
+                BoardWithCommentCount(
                     board = tuple.get(board)!!,
-                    jsonComments = tuple.get(jsonComments)?: "[]"
+                    commentCount = tuple.get(1, Long::class.java) ?: 0L
                 )
             }
+
     }
 
-    override fun findAllBoardWithCommentByIds(ids: List<Long>): List<BoardWithComment> {
-        val jsonComments = Expressions.stringTemplate(
-            "JSON_ARRAYAGG(JSON_OBJECT('id', {0}.id, 'writer_id', {0}.writerId, " +
-                    "'text_content', {0}.textContent, " + "'file_api_url', {0}.fileApiUrl, " +
-                    "'created_at', {0}.createdAt, 'last_modified_at', {0}.lastModifiedAt, " +
-                    "'reading_count', {0}.readingCount, 'invalid', {0}.invalid))",
-            comment
-        )
-
+    override fun findAllWithCommentCountByIds(ids: List<Long>): List<BoardWithCommentCount> {
         return queryFactory
             .select(
                 board,
-                jsonComments.`as`("comments")
+                comment.count().`as`("commentCount")
             )
             .from(board)
             .leftJoin(comment).on(comment.parentId.eq(board.id))
-            .where(board.parentId.isNull
-                .and(board.invalid.eq(false))
-                .and(board.id.`in`(ids)))
-            .groupBy(board.id)
+            .where(board.id.`in`(ids)
+                .and(board.invalid.eq(false)
+                    .and(board.parentId.isNull))
+            )
             .fetch()
-            .map {tuple ->
-                BoardWithComment(
+            .map { tuple ->
+                BoardWithCommentCount(
                     board = tuple.get(board)!!,
-                    jsonComments = tuple.get(jsonComments)?: "[]"
+                    commentCount = tuple.get(1, Long::class.java) ?: 0L
                 )
             }
+
     }
+
 
     override fun findBoardWithCommentById(boardId: Long): BoardWithComment? {
-        val jsonComments = Expressions.stringTemplate(
-            "JSON_ARRAYAGG(JSON_OBJECT('id', {0}.id, 'writer_id', {0}.writerId, " +
-                    "'text_content', {0}.textContent, " + "'file_api_url', {0}.fileApiUrl, " +
-                    "'created_at', {0}.createdAt, 'last_modified_at', {0}.lastModifiedAt, " +
-                    "'reading_count', {0}.readingCount, 'invalid', {0}.invalid))",
-            comment
-        )
-
-        val tuple = queryFactory
+        val result = queryFactory
             .select(
                 board,
-                jsonComments.`as`("comments")
+                comment
             )
             .from(board)
             .leftJoin(comment).on(comment.parentId.eq(boardId))
             .where(board.id.eq(boardId)
                 .and(board.invalid.eq(false)))
             .groupBy(board.id)
-            .fetchOne()
+            .fetch()
 
-        return tuple?.let {
-            BoardWithComment(
-                board = it.get(board)!!,
-                jsonComments = it.get(jsonComments)?: "[]"
-            )
+        if (result.isEmpty()) {
+            return null
         }
+
+        val boardEntity = result[0].get(board)
+        val comments = result.mapNotNull { it.get(comment) }
+
+        return BoardWithComment(
+            board = boardEntity!!,
+            comments = comments
+        )
     }
 }

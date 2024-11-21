@@ -1,5 +1,6 @@
 package com.example.frontServer.service
 
+import com.example.frontServer.service.TimelineService
 import com.example.frontServer.dto.*
 import com.example.frontServer.dto.board.BoardResult
 import com.example.frontServer.dto.board.BoardSaveRequest
@@ -18,7 +19,6 @@ class BoardService(
     val followRepository: FollowRepository,
     val timelineService: TimelineService,
     val likeService: LikeService
-
 ) {
 
     @Transactional
@@ -36,6 +36,13 @@ class BoardService(
             addReadingCount(it.board)
             BoardResult.of(it, it.board.writerId.toString(), 0)
         }
+    }
+
+    fun findAllByIds(ids: List<Long>): List<BoardResult> {
+        return boardRepository.findAllBoardWithCommentByIds(ids)
+            .map {
+                BoardResult.of(it, it.board.writerId.toString(), 0)
+            }
     }
 
     private fun findUsernameByWriterId(writerId: Long): String {

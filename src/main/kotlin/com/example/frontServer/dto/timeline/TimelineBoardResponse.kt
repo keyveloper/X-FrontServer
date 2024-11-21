@@ -2,16 +2,16 @@ package com.example.frontServer.dto.timeline
 
 import com.example.frontServer.dto.ErrorResponse
 
-data class TimelineResponse(
-    val timelineResult: TimelineResult?,
+data class TimelineBoardResponse(
+    val timelineResult: TimelineBoardResult?,
     val errorResponse: ErrorResponse?
 ) {
     companion object {
         fun of(
-            timelineResult: TimelineResult?,
+            timelineResult: TimelineBoardResult?,
             errorResponse: ErrorResponse?
-        ): TimelineResponse {
-            return TimelineResponse(
+        ): TimelineBoardResponse {
+            return TimelineBoardResponse(
                 timelineResult = timelineResult,
                 errorResponse = errorResponse
             )

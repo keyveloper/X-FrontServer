@@ -1,11 +1,10 @@
 package com.example.frontServer.repository
 
 import com.example.frontServer.dto.board.BoardWithComment
+import com.example.frontServer.dto.board.BoardWithCommentCount
 
 interface BoardQueryDslRepository {
-    fun findAllBoardWithComment(): List<BoardWithComment>
-
-    fun findAllBoardWithCommentByIds(ids: List<Long>): List<BoardWithComment>
-
+    fun findAllWithCommentCount() : List<BoardWithCommentCount>
+    fun findAllWithCommentCountByIds(ids: List<Long>): List<BoardWithCommentCount>
     fun findBoardWithCommentById(boardId: Long): BoardWithComment?
 }

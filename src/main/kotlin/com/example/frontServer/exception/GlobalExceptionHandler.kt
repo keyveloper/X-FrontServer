@@ -82,10 +82,7 @@ class GlobalExceptionHandler {
                 message = "can't access resource for network error."
             )
         )
-    }//
-
-    // Access Denied 필요
-
+    }
 
     // Authentication Error 처리
     @ExceptionHandler(AuthenticationException::class)

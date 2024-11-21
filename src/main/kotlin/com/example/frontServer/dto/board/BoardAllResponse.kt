@@ -1,19 +1,17 @@
 package com.example.frontServer.dto.board
 
 import com.example.frontServer.dto.ErrorResponse
+import com.example.frontServer.enum.FrontServerError
 
 data class BoardAllResponse(
-    val boardResults: List<BoardResult>,
-    val errorResponse: ErrorResponse?
-) {
+    val boardAllResults: List<BoardAllResult>,
+): ErrorResponse(FrontServerError.OK, null) {
     companion object {
         fun of(
-            boardResults: List<BoardResult>,
-            errorResponse: ErrorResponse?
+            boardAllResults: List<BoardAllResult>,
         ) : BoardAllResponse {
             return BoardAllResponse(
-                boardResults = boardResults,
-                errorResponse = errorResponse
+                boardAllResults = boardAllResults,
             )
         }
     }
