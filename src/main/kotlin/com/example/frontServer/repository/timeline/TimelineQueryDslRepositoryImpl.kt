@@ -1,10 +1,9 @@
-package com.example.frontServer.repository
+package com.example.frontServer.repository.timeline
 
 import com.example.frontServer.dto.timeline.TimelineSearchPolicy
 import com.example.frontServer.entity.QTimeline
 import com.example.frontServer.entity.Timeline
 import com.querydsl.jpa.impl.JPAQueryFactory
-import java.time.LocalDateTime
 
 class TimelineQueryDslRepositoryImpl(
     private val jpaQueryFactory: JPAQueryFactory

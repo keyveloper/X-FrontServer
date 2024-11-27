@@ -19,7 +19,7 @@ data class LikeSaveResult(
                 )
             } else {
                 LikeSaveResult(
-                    error = FrontServerError.UNEXPECTED_ERROR
+                    error = FrontServerError.OK // need change!!!
                 )
             }
         }

@@ -1,7 +1,8 @@
 package com.example.frontServer.dto.timeline
 
-import com.example.frontServer.dto.board.BoardResult
+import com.example.frontServer.dto.board.BoardCommentResult
 import com.example.frontServer.dto.board.BoardWithComment
+import com.example.frontServer.dto.board.BoardWithCommentCount
 import java.time.LocalDateTime
 
 data class TimelineBoardResult(
@@ -21,12 +22,10 @@ data class TimelineBoardResult(
 
     val commentCount:Int,
 
-    val jsonComment: String?,
-
     val likeCount: Int
 ) {
     companion object {
-        fun of(board: BoardWithComment): TimelineBoardResult {
+        fun of(board: BoardWithCommentCount): TimelineBoardResult {
             val boardResult = board.board
             return TimelineBoardResult(
                 id = boardResult.id!!,
@@ -37,7 +36,6 @@ data class TimelineBoardResult(
                 lastModifiedAt = boardResult.lastModifiedAt!!,
                 readingCount = boardResult.readingCount,
                 commentCount = 0,
-                jsonComment = board.jsonComments,
                 likeCount = 0
             )
         }

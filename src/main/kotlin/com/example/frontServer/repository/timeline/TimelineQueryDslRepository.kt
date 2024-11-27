@@ -1,4 +1,4 @@
-package com.example.frontServer.repository
+package com.example.frontServer.repository.timeline
 
 import com.example.frontServer.dto.timeline.TimelineSearchPolicy
 import com.example.frontServer.entity.Timeline

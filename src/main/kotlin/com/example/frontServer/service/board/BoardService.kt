@@ -1,25 +1,29 @@
-package com.example.frontServer.service
+package com.example.frontServer.service.board
 
 import com.example.frontServer.dto.*
 import com.example.frontServer.dto.board.BoardAllResult
 import com.example.frontServer.dto.board.BoardCommentResult
 import com.example.frontServer.dto.board.BoardResult
 import com.example.frontServer.dto.board.BoardSaveRequest
+import com.example.frontServer.dto.timeline.TimelineBoardResult
 import com.example.frontServer.entity.Board
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.FollowRepository
+import com.example.frontServer.service.FileService
+import com.example.frontServer.service.LikeService
+import com.example.frontServer.service.NotificationService
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class BoardService(
-    val boardRepository: BoardRepository,
-    val notificationService: NotificationService,
-    val fileService: FileService,
-    val followRepository: FollowRepository,
-    val timelineService: TimelineService,
-    val likeService: LikeService
+    private val boardRepository: BoardRepository,
+    private val notificationService: NotificationService,
+    private val fileService: FileService,
+    private val followRepository: FollowRepository,
+    private val likeService: LikeService,
+    private val boardTimelineService: BoardTimelineService
 ) {
 
     @Transactional
@@ -54,12 +58,10 @@ class BoardService(
         }
     }
 
-    fun findAllByIds(ids: List<Long>): List<BoardAllResult> {
-        return boardRepository.findAllWithCommentCountByIds(ids)
-            .map {
-                BoardAllResult.of(it, it.board.writerId.toString(), 0)
-            }
+    fun findTimelineByReceiverId(receiverId: Long): List<TimelineBoardResult> {
+        return boardTimelineService.findTimelineByIds(receiverId)
     }
+
 
     private fun findUsernameByWriterId(writerId: Long): String {
         /*TODO*/
@@ -110,8 +112,8 @@ class BoardService(
         saveTimeline(boardId, receivers)
     }
 
-    private fun saveTimeline(boardId: Long, followers: List<Long>) {
-        timelineService.save(boardId, followers)
+    private fun saveTimeline(boardId: Long, receivers: List<Long>) {
+        boardTimelineService.saveTimeline(boardId, receivers)
     }
 
     private fun sendNotification(boardNotificationInfo: NotificationInfoDto) {
