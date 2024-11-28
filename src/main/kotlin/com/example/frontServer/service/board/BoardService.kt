@@ -6,6 +6,7 @@ import com.example.frontServer.dto.board.BoardCommentResult
 import com.example.frontServer.dto.board.BoardResult
 import com.example.frontServer.dto.board.BoardSaveRequest
 import com.example.frontServer.dto.timeline.TimelineBoardResult
+import com.example.frontServer.dto.timeline.TimelineRequest
 import com.example.frontServer.entity.Board
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.FollowRepository
@@ -58,8 +59,12 @@ class BoardService(
         }
     }
 
-    fun findTimelineByReceiverId(receiverId: Long): List<TimelineBoardResult> {
-        return boardTimelineService.findTimelineByIds(receiverId)
+    fun findTimelineNext(timelineRequest: TimelineRequest): List<TimelineBoardResult> {
+        return boardTimelineService.findTimelineNext(timelineRequest)
+    }
+
+    fun findTimelineBefore(timelineRequest: TimelineRequest): List<TimelineBoardResult> {
+        return boardTimelineService.findTimelineBefore(timelineRequest)
     }
 
 

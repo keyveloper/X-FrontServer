@@ -1,7 +1,6 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.like.LikeRequestFromClient
-import com.example.frontServer.dto.like.LikeRequestToServer
 import com.example.frontServer.dto.like.LikeSaveResponse
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.LikeService
@@ -23,11 +22,8 @@ class LikeController(
     fun save(
         @Valid @RequestBody likeRequest: LikeRequestFromClient,
         @AuthenticationPrincipal user: AuthUserDetails
-    ): ResponseEntity<LikeSaveResponse> {
-        return ResponseEntity.ok().body(
-            LikeSaveResponse.of(
-                likeService.save(likeRequest, user.getUserId())
-            )
-        )
+    ): ResponseEntity<Valid> {
+        likeService.save(likeRequest, user.getUserId())
+        return ResponseEntity.ok().build()
     }
 }

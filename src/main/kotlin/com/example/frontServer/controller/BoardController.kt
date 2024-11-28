@@ -4,6 +4,7 @@ import com.example.frontServer.dto.board.BoardAllResponse
 import com.example.frontServer.dto.board.BoardResponse
 import com.example.frontServer.dto.board.BoardSaveRequest
 import com.example.frontServer.dto.timeline.TimelineBoardResponse
+import com.example.frontServer.dto.timeline.TimelineRequest
 import com.example.frontServer.exception.InvalidIdException
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.board.BoardService
@@ -37,14 +38,23 @@ class BoardController(
         } ?: throw InvalidIdException()
     }
 
-    @GetMapping("/board/timeline")
-    fun findTimelineByIds(
-        @RequestBody receiverId: Long
+    @GetMapping("/board/timeline/next")
+    fun findTimelineNext(
+        @RequestBody timelineRequest: TimelineRequest
     ): ResponseEntity<List<TimelineBoardResponse>> {
         return ResponseEntity.ok().body(
-            boardService.findTimelineByReceiverId(receiverId).map {
-                TimelineBoardResponse.of(it)
-            }
+            boardService.findTimelineNext(timelineRequest)
+                .map { TimelineBoardResponse.of(it) }
+        )
+    }
+
+    @GetMapping("/board/timeline/before")
+    fun findTimelineBefore(
+        @RequestBody timelineRequest: TimelineRequest
+    ): ResponseEntity<List<TimelineBoardResponse>> {
+        return ResponseEntity.ok().body(
+            boardService.findTimelineBefore(timelineRequest)
+                .map { TimelineBoardResponse.of(it) }
         )
     }
 

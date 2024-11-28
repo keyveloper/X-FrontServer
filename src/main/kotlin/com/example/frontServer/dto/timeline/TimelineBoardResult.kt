@@ -1,7 +1,5 @@
 package com.example.frontServer.dto.timeline
 
-import com.example.frontServer.dto.board.BoardCommentResult
-import com.example.frontServer.dto.board.BoardWithComment
 import com.example.frontServer.dto.board.BoardWithCommentCount
 import java.time.LocalDateTime
 

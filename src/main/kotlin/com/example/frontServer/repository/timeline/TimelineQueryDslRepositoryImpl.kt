@@ -1,6 +1,6 @@
 package com.example.frontServer.repository.timeline
 
-import com.example.frontServer.dto.timeline.TimelineSearchPolicy
+import com.example.frontServer.dto.timeline.TimelineRequest
 import com.example.frontServer.entity.QTimeline
 import com.example.frontServer.entity.Timeline
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -10,18 +10,25 @@ class TimelineQueryDslRepositoryImpl(
 ): TimelineQueryDslRepository {
     private val timeline = QTimeline.timeline
 
-    override fun findAllByPolicy(policy: TimelineSearchPolicy): List<Timeline> {
-        val threeDaysAgo = policy.currentTime.minusDays(3)
-
+    override fun findAllNextBoardIds(timelineRequest: TimelineRequest): List<Timeline> {
         return jpaQueryFactory
             .selectFrom(timeline)
-            .where(
-                timeline.receiverId.eq(policy.receiverId)
-                    .and(timeline.id.gt(policy.lastSeenId))
-                    .and(timeline.createdAt.between(threeDaysAgo, policy.currentTime))
+            .where(timeline.receiverId.eq(timelineRequest.receiverId)
+                .and(timeline.id.gt(timelineRequest.endBoardId))
             )
             .orderBy(timeline.createdAt.asc())
-            .limit(policy.pageSize)
+            .limit(15)
+            .fetch()
+    }
+
+    override fun findAllBeforeBoardIds(timelineRequest: TimelineRequest): List<Timeline> {
+        return jpaQueryFactory
+            .selectFrom(timeline)
+            .where(timeline.receiverId.eq(timelineRequest.receiverId)
+                .and(timeline.id.lt(timelineRequest.startBoardId))
+            )
+            .orderBy(timeline.createdAt.asc())
+            .limit(15)
             .fetch()
     }
 }

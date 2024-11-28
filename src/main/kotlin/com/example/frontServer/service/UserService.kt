@@ -4,7 +4,6 @@ import com.example.frontServer.dto.user.UserResult
 import com.example.frontServer.dto.auth.SignUpRequest
 import com.example.frontServer.entity.User
 import com.example.frontServer.entity.UserRole
-import com.example.frontServer.exception.CanNotFindEntityException
 import com.example.frontServer.exception.InvalidIdException
 import com.example.frontServer.repository.UserRepository
 import com.example.frontServer.repository.UserRoleRepository
@@ -43,9 +42,10 @@ class UserService(
 
     fun findByuUsername(username: String): UserResult? {
         val user = userRepository.findByUsername(username)
-            ?: throw CanNotFindEntityException()
 
-        return UserResult.of(user)
+        return user?.let {
+            UserResult.of(it)
+        }
     }
 
     fun findUsernameById(id: Long): String? {

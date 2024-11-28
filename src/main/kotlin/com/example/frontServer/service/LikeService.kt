@@ -24,7 +24,7 @@ class LikeService(
     @CircuitBreaker(
         name = "liveApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod")
-    fun save(likeRequest: LikeRequestFromClient, userId: Long): LikeSaveResult {
+    fun save(likeRequest: LikeRequestFromClient, userId: Long) {
         val response = client.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
@@ -44,15 +44,6 @@ class LikeService(
             .retrieve()
             .bodyToMono(LikeServerSaveResponse::class.java)
             .block()
-
-        if (response == null) {
-            return LikeSaveResult(
-                error = FrontServerError.UNEXPECTED_ERROR
-            )
-            // fallback으로 처리 할 수 는 없을까?
-        }
-
-        return LikeSaveResult.of(response)
     }
 
     @CircuitBreaker(
