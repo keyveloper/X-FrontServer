@@ -47,6 +47,7 @@ class BoardQueryDslRepositoryImpl(
                 .and(board.invalid.eq(false)
                     .and(board.parentId.isNull))
             )
+            .groupBy(board.id)
             .fetch()
             .map { tuple ->
                 BoardWithCommentCount(

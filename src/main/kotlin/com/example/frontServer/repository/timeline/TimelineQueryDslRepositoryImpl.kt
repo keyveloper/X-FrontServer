@@ -16,7 +16,7 @@ class TimelineQueryDslRepositoryImpl(
             .where(timeline.receiverId.eq(timelineRequest.receiverId)
                 .and(timeline.id.gt(timelineRequest.endBoardId))
             )
-            .orderBy(timeline.createdAt.asc())
+            .orderBy(timeline.createdAt.desc())
             .limit(15)
             .fetch()
     }

@@ -84,36 +84,35 @@ class BoardService(
     }
 
     @Transactional
-    fun save(request: BoardSaveRequest, userId: Long, username: String) {
+    fun save(request: BoardSaveRequest, writerId: Long, writerName: String) {
         val savedBoard: Board = if (request.files != null) {
             val token = UUID.randomUUID().toString()
             fileService.saveBoardFile(request.files, token)
             boardRepository.save(
                 Board(
-                    writerId = userId,
+                    writerId = writerId,
                     fileApiUrl = "/img/${token}",
-                    textContent = request.
-                    textContent
+                    textContent = request.textContent
                 )
             )
         } else {
             boardRepository.save(
                 Board(
-                    writerId = userId,
+                    writerId = writerId,
                     textContent = request.textContent
                 )
             )
         }
-        val boardId= savedBoard.id!!
-        val receivers = followRepository.findFollowersByUsername(username).map {it.id!!}
+        val boardId = savedBoard.id!!
+        val receivers: List<Long> = followRepository.findFollowersByUsername(writerName).map {it.id!!}
+        val notMaxLength = 50 //
+        val notificationMessage = if (request.textContent.length > notMaxLength) {
+            request.textContent.substring(0, notMaxLength)
+        } else {
+            request.textContent
+        }
 
-        sendNotification(
-            NotificationInfoDto(
-                message = "new post from $username \n${request.textContent}",
-                receivers = receivers
-            )
-        )
-
+        saveNotification(writerId, receivers, notificationMessage)
         saveTimeline(boardId, receivers)
     }
 
@@ -121,8 +120,8 @@ class BoardService(
         boardTimelineService.saveTimeline(boardId, receivers)
     }
 
-    private fun sendNotification(boardNotificationInfo: NotificationInfoDto) {
-        notificationService.save(boardNotificationInfo)
+    private fun saveNotification(publisherId: Long, receivers: List<Long>, message: String) {
+        notificationService.save(publisherId, receivers, message)
     }
 
     private fun countLikes(boardId: Long): Long {

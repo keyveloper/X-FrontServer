@@ -15,7 +15,7 @@ class BoardTimelineService( // board-timeline rep or api connection
     @Transactional
     fun findTimelineNext(timelineRequest: TimelineRequest): List<TimelineBoardResult> {
         val ids = findTimelineNextBoardIds(timelineRequest)
-        return boardRepository.findAllWithCommentCountByIds(ids)
+            return boardRepository.findAllWithCommentCountByIds(ids)
             .map { TimelineBoardResult.of(it) }
     }
 

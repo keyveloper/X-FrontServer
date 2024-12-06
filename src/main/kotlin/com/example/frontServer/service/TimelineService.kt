@@ -6,6 +6,7 @@ import com.example.frontServer.entity.Timeline
 import com.example.frontServer.repository.timeline.TimelineCursorRepository
 import com.example.frontServer.repository.timeline.TimelineRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TimelineService(
@@ -22,6 +23,7 @@ class TimelineService(
             .map { it.boardId }
     }
 
+    @Transactional
     fun save(boardId: Long, followersId: List<Long>) {
         followersId.map {
             timelineRepository.save(

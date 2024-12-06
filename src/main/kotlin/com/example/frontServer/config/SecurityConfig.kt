@@ -29,6 +29,7 @@ class SecurityConfig(
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/sign-up").permitAll()
                     .requestMatchers("/boards").permitAll()
+                    .requestMatchers("/board/timeline/next").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(JwtAuthenticationFilter(jwtAuthenticationProvider),

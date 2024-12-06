@@ -6,8 +6,6 @@ import org.springframework.data.annotation.CreatedBy
 @Entity
 @Table(
     name = "followes",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["star", "fan"])]
-
 )
 class Follow(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

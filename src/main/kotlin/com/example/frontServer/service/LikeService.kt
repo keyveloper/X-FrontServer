@@ -4,7 +4,6 @@ import com.example.frontServer.dto.like.LikeRequestFromClient
 import com.example.frontServer.dto.like.LikeRequestToServer
 import com.example.frontServer.dto.like.LikeSaveResult
 import com.example.frontServer.dto.like.LikeServerSaveResponse
-import com.example.frontServer.enum.FrontServerError
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
@@ -17,7 +16,6 @@ import org.springframework.web.util.UriBuilder
 class LikeService(
     private val client : WebClient,
     private val circuitBreakerRegistry: CircuitBreakerRegistry
-
 ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("liveApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}

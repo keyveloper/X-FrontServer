@@ -3,6 +3,8 @@ package com.example.frontServer.exception
 import com.example.frontServer.dto.ErrorResponse
 import com.example.frontServer.enum.FrontServerError
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.jdbc.CannotGetJdbcConnectionException
@@ -84,16 +86,11 @@ class GlobalExceptionHandler {
 //        )
 //    }
 //
-//    // Authentication Error 처리
-//    @ExceptionHandler(AuthenticationException::class)
-//    fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<ErrorResponse> {
-//        return ResponseEntity.ok().body(
-//            ErrorResponse(
-//                code = FrontServerError.CREDENTIALS_ERROR,
-//                message = "Failed to authenticate user."
-//            )
-//        )
-//    }
+    // Authentication Error 처리
+    @ExceptionHandler(AuthenticationException::class)
+    fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("jwt인증에러 ")
+    }
 
     // Invalid Id Error
     @ExceptionHandler(InvalidIdException::class)

@@ -2,6 +2,7 @@ package com.example.frontServer.service
 
 import com.example.frontServer.dto.user.UserSummaryDto
 import com.example.frontServer.entity.Follow
+import com.example.frontServer.exception.InvalidIdException
 import com.example.frontServer.repository.FollowRepository
 import com.example.frontServer.repository.UserRepository
 import jakarta.transaction.Transactional
@@ -13,7 +14,7 @@ class FollowService(
     private val userRepository: UserRepository
 ) {
     @Transactional
-    fun save(followingName: String, followerId: Long): String {
+    fun save(followingName: String, followerId: Long) {
         val userId = userRepository.findIdByUsername(followingName)
         if (userId != null) {
             followRepository.save(
@@ -22,9 +23,9 @@ class FollowService(
                     followerId = followerId
                 )
             )
-            return "save success"
+        } else {
+            throw InvalidIdException("can't find the user")
         }
-        return "Invalid Username"
     }
 
     @Transactional

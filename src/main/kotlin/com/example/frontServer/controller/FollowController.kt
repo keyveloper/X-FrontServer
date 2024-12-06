@@ -4,6 +4,7 @@ import com.example.frontServer.dto.user.UserSummaryDto
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.FollowService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,13 +18,10 @@ class FollowController(
 
     @PostMapping("/follow")
     fun save(
-        @RequestParam followingName: String
+        @RequestParam followingName: String,
+        @AuthenticationPrincipal user: AuthUserDetails
     ): ResponseEntity<Void> {
-        val authentication = SecurityContextHolder.getContext().authentication
-        val followerUser = authentication.principal as AuthUserDetails
-        val followerId = followerUser.getUserId()
-
-        followService.save(followingName, followerId)
+        followService.save(followingName, user.getUserId())
 
         return ResponseEntity.ok().build()
     }

@@ -11,6 +11,7 @@ import com.example.frontServer.service.board.BoardService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
 import org.apache.coyote.Response
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -38,7 +39,7 @@ class BoardController(
         } ?: throw InvalidIdException()
     }
 
-    @GetMapping("/board/timeline/next")
+    @PostMapping("/board/timeline/next")
     fun findTimelineNext(
         @RequestBody timelineRequest: TimelineRequest
     ): ResponseEntity<List<TimelineBoardResponse>> {
@@ -48,7 +49,7 @@ class BoardController(
         )
     }
 
-    @GetMapping("/board/timeline/before")
+    @PostMapping("/board/timeline/prev")
     fun findTimelineBefore(
         @RequestBody timelineRequest: TimelineRequest
     ): ResponseEntity<List<TimelineBoardResponse>> {
@@ -60,17 +61,16 @@ class BoardController(
 
     @PostMapping("/board")
     fun save(
-        @Valid @ModelAttribute saveBoardRequest: BoardSaveRequest,
+        @Valid @RequestBody saveBoardRequest: BoardSaveRequest,
         @AuthenticationPrincipal user: AuthUserDetails
     ): ResponseEntity<Void> {
         boardService.save(
             request = saveBoardRequest,
-            userId = user.getUserId(),
-            username = user.username
+            writerId = user.getUserId(),
+            writerName = user.username
         )
         return ResponseEntity.ok().build()
     }
-    // 예외 처리로 끝내기
 
 
     @DeleteMapping("/board")
