@@ -1,10 +1,10 @@
 package com.example.frontServer.dto.like
 
-import com.example.frontServer.enum.FrontServerError
+import com.example.frontServer.enum.FrontServerCode
 
 // controller to client
 data class LikeSaveResponse(
-    val error: FrontServerError?
+    val error: FrontServerCode?
 ) {
     companion object{
         fun of (result: LikeSaveResult): LikeSaveResponse {

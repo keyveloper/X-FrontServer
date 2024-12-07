@@ -1,5 +1,34 @@
 package com.example.frontServer.dto.notification
 
-data class NotificationGetResult(
+import java.time.LocalDateTime
 
-)
+data class NotificationGetResult(
+    val id: Long,
+
+    val publisherName: String,
+
+    val publisherImgUrl: String?,
+
+    val receiverId: Long, // optional
+
+    val message: String,
+
+    val createdAt: LocalDateTime
+) {
+    companion object {
+        fun of(
+            serverResult: NotificationGetServerResult,
+            publisherName: String,
+            publisherImgUrl: String?,
+        ): NotificationGetResult {
+            return NotificationGetResult(
+                id = serverResult.id,
+                publisherName = publisherName,
+                publisherImgUrl = publisherImgUrl,
+                receiverId = serverResult.receiverId,
+                message = serverResult.message,
+                createdAt = serverResult.createdAt
+            )
+        }
+    }
+}

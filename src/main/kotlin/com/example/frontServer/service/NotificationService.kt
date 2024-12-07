@@ -1,11 +1,9 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.NotificationDto
-import com.example.frontServer.dto.notification.NotificationGetRequest
-import com.example.frontServer.dto.notification.NotificationGetServerResponse
-import com.example.frontServer.dto.notification.NotificationSaveRequest
-import com.example.frontServer.dto.notification.NotificationSaveServerResponse
-import com.example.frontServer.entity.Notification
+import com.example.frontServer.dto.error.ServerErrorDetails
+import com.example.frontServer.dto.notification.*
+import com.example.frontServer.enum.ServerResponseCode
+import com.example.frontServer.repository.UserRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
@@ -16,7 +14,8 @@ import org.springframework.web.util.UriBuilder
 @Service
 class NotificationService(
     private val client: WebClient,
-    private val circuitBreakerRegistry: CircuitBreakerRegistry
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    private val userRepository: UserRepository,
     ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiBreaker")
     private val logger = KotlinLogging.logger {}
@@ -40,13 +39,28 @@ class NotificationService(
                     )
                 }
             )
+            .retrieve()
+            .bodyToMono(NotificationSaveServerResponse::class.java)
+            .block()
+
+        // response 처리 어떻게 해야하지 ?
+        return response?: NotificationSaveServerResponse(
+            savedRow = 0,
+            errorDetails = ServerErrorDetails(
+                type = "/notification/save",
+                status = ServerResponseCode.FALLBACK,
+                title = "response is null",
+                detail = "noti api server sends null response, something sent wrong..."
+            ),
+            responseCode = ServerResponseCode.FALLBACK,
+        )
     }
 
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "getFallbackMethod"
     )
-    fun fetchInitAll(receiverId: Long): List<NotificationGetServerResponse>  {
+    fun fetchInitAll(receiverId: Long): List<NotificationGetResult>  {
         val response = client.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
@@ -56,23 +70,37 @@ class NotificationService(
             .bodyValue(
                 receiverId
             )
+            .retrieve()
+            .bodyToMono(NotificationGetServerResponse::class.java)
+            .block()
 
+        val results = response?.notificationGetServerResult ?: emptyList()
+
+        return results.map {
+            NotificationGetResult.of(it, findUserNameById(it.id), findUserImgUrlById(it.id))
+        }
         // return noti server response
     }
 
-    fun fetchPrevAll(getRequest: NotificationGetRequest): List<NotificationGetServerResponse> {
+    fun fetchPrevAll(getRequest: NotificationGetRequest): List<NotificationGetResult> {
         val response = client.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
                     .path("/notification/prev")
                     .build()
             }
-            .bodyValue(
-                getRequest
-            )
-    }
+            .bodyValue(getRequest)
+            .retrieve()
+            .bodyToMono(NotificationGetServerResponse::class.java)
+            .block()
 
-    fun fetchNextAll(getRequest: NotificationGetRequest): List<NotificationGetServerResponse> {
+        val results = response?.notificationGetServerResult ?: emptyList()
+
+        return results.map {
+            NotificationGetResult.of(it, findUserNameById(it.id), findUserImgUrlById(it.id))
+        }    }
+
+    fun fetchNextAll(getRequest: NotificationGetRequest): List<NotificationGetResult> {
         val response = client.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
@@ -82,6 +110,23 @@ class NotificationService(
             .bodyValue(
                 getRequest
             )
+            .retrieve()
+            .bodyToMono(NotificationGetServerResponse::class.java)
+            .block()
+
+        val results = response?.notificationGetServerResult ?: emptyList()
+        return results.map {
+            NotificationGetResult.of(it, findUserNameById(it.id), findUserImgUrlById(it.id))
+        }
+    }
+
+    private fun findUserNameById(id: Long): String{
+        val user = userRepository.findById(id).orElse(null)
+        return user.username
+    }
+
+    private fun findUserImgUrlById(id: Long): String? {
+        return userRepository.findById(id).orElse(null).userImg
     }
 
     // fall back pattern : same parameter + Throwable , same return type,
@@ -92,7 +137,16 @@ class NotificationService(
         error: Throwable
     ): NotificationSaveServerResponse {
         logger.error {"run notification save fallback"}
-        return NotificationSaveServerResponse()
+        return NotificationSaveServerResponse(
+            0,
+            ServerErrorDetails(
+                type = "/notification/save",
+                status = ServerResponseCode.FALLBACK,
+                title = "save fallback",
+                detail = "noti api server dosen't work now",
+            ),
+            ServerResponseCode.SUCCESS
+        )
     }
 
     fun getFallbackMethod(getRequest: NotificationGetRequest): List<NotificationGetServerResponse> {

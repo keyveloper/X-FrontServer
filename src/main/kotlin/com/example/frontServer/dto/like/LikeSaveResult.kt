@@ -1,11 +1,11 @@
 package com.example.frontServer.dto.like
 
-import com.example.frontServer.enum.FrontServerError
+import com.example.frontServer.enum.FrontServerCode
 import com.example.frontServer.enum.ServiceServerError
 
 // service to controller
 data class LikeSaveResult(
-    val error: FrontServerError?
+    val error: FrontServerCode?
 ) {
     companion object {
         fun of(serverResult: LikeServerSaveResponse): LikeSaveResult {
@@ -15,11 +15,11 @@ data class LikeSaveResult(
 
             return if (serverResult.error == ServiceServerError.UNKNOWN_ID) {
                 LikeSaveResult(
-                    error = FrontServerError.INVALID_ID
+                    error = FrontServerCode.INVALID_ID
                 )
             } else {
                 LikeSaveResult(
-                    error = FrontServerError.OK // need change!!!
+                    error = FrontServerCode.OK // need change!!!
                 )
             }
         }

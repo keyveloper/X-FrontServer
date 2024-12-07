@@ -1,18 +1,10 @@
 package com.example.frontServer.exception
 
 import com.example.frontServer.dto.ErrorResponse
-import com.example.frontServer.enum.FrontServerError
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
-import org.springframework.http.converter.HttpMessageNotReadableException
-import org.springframework.jdbc.CannotGetJdbcConnectionException
-import org.springframework.validation.FieldError
-import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.client.ResourceAccessException
 import javax.naming.AuthenticationException
 
 @RestControllerAdvice
@@ -26,7 +18,7 @@ class GlobalExceptionHandler {
 //        }
 //        return ResponseEntity.ok().body(
 //            ErrorResponse(
-//                code = FrontServerError.VALIDATION_ERROR,
+//                code = FrontServerCode.VALIDATION_ERROR,
 //                message = message
 //            )
 //        )
@@ -40,13 +32,13 @@ class GlobalExceptionHandler {
 //        return when {
 //            rootCause.contains("UNIQUE") -> ResponseEntity.ok().body(
 //                ErrorResponse(
-//                    code = FrontServerError.DUPLICATED,
+//                    code = FrontServerCode.DUPLICATED,
 //                    message = "Duplicated value"
 //                )
 //            )
 //            else -> ResponseEntity.ok().body(
 //                ErrorResponse(
-//                    code = FrontServerError.BAD_REQUEST,
+//                    code = FrontServerCode.BAD_REQUEST,
 //                    message = "Something wrong..."
 //                )
 //            )
@@ -58,7 +50,7 @@ class GlobalExceptionHandler {
 //    fun handleDbConnectionException(ex: CannotGetJdbcConnectionException): ResponseEntity<ErrorResponse> {
 //        return ResponseEntity.ok().body(
 //            ErrorResponse(
-//                code = FrontServerError.FATAL_SERVER_ERROR,
+//                code = FrontServerCode.FATAL_SERVER_ERROR,
 //                message = "Fata Server Error..."
 //            )
 //        )
@@ -69,7 +61,7 @@ class GlobalExceptionHandler {
 //    fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> {
 //        return ResponseEntity.ok().body(
 //            ErrorResponse(
-//                code = FrontServerError.PARSING_ERROR,
+//                code = FrontServerCode.PARSING_ERROR,
 //                message = "Invalid Request Body"
 //            )
 //        )
@@ -80,7 +72,7 @@ class GlobalExceptionHandler {
 //    fun handleCredentialsException(ex: ResourceAccessException): ResponseEntity<ErrorResponse> {
 //        return ResponseEntity.ok().body(
 //            ErrorResponse(
-//                code = FrontServerError.CANNOT_ACCESS_RESOURCE,
+//                code = FrontServerCode.CANNOT_ACCESS_RESOURCE,
 //                message = "can't access resource for network error."
 //            )
 //        )

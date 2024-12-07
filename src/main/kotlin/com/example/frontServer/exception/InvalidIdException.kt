@@ -1,7 +1,7 @@
 package com.example.frontServer.exception
 
-import com.example.frontServer.enum.FrontServerError
+import com.example.frontServer.enum.FrontServerCode
 
 class InvalidIdException(
     message: String? = "Invalid Id"
-): CustomErrorException(FrontServerError.INVALID_ID, message)
+): CustomErrorException(FrontServerCode.INVALID_ID, message)

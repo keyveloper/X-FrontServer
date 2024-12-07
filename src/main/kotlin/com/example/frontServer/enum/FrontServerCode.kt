@@ -1,7 +1,7 @@
 package com.example.frontServer.enum
 
-enum class FrontServerError {
-    OK,
+enum class FrontServerCode {
+    SUCCESS,
     INVALID_ID,              // invalid Id : boardId, userId,..
     DUPLICATED,              // unique key
 }

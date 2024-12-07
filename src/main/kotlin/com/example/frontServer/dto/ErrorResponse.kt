@@ -1,8 +1,8 @@
 package com.example.frontServer.dto
 
-import com.example.frontServer.enum.FrontServerError
+import com.example.frontServer.enum.FrontServerCode
 
 open class ErrorResponse(
-    var code: FrontServerError,
+    var code: FrontServerCode,
     var message: String?
 )
