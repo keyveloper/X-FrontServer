@@ -53,6 +53,7 @@ dependencies {
     kapt ("jakarta.annotation:jakarta.annotation-api")
     kapt ("jakarta.persistence:jakarta.persistence-api")
 
+
     // jwt & security
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
@@ -73,7 +74,8 @@ dependencies {
     // Circuit Breaker : Resilience4j
     implementation("org.springframework.boot:spring-boot-starter-aop:3.3.4")
     implementation("io.github.resilience4j:resilience4j-spring-boot3:2.2.0")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.3.4")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:3.3.4")
+
 
 }
 
@@ -86,4 +88,3 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-//

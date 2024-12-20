@@ -7,4 +7,16 @@ data class NotificationGetResponse(
     // response to client from front
     val notificationGetResult: List<NotificationGetResult>,
     override val responseCode: FrontServerCode
-): FrontServerErrorResponse(responseCode)
+): FrontServerErrorResponse(responseCode) {
+    companion object {
+        fun of(
+            results: List<NotificationGetResult>,
+            responseCode: FrontServerCode
+        ): NotificationGetResponse {
+            return NotificationGetResponse(
+                notificationGetResult = results,
+                responseCode = responseCode
+            )
+        }
+    }
+}

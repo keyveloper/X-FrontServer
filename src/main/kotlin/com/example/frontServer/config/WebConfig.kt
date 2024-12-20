@@ -8,16 +8,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 class WebConfig: WebMvcConfigurer {
-    override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowedOrigins("*")
-            .allowedMethods("*")
-    }
-
-    @Bean
-    fun webClient(): WebClient {
+    fun createWebClient(baseUrl: String, language: String = "en"): WebClient {
         return WebClient.builder()
-            .baseUrl("http://localhost:8081")
+            .baseUrl(baseUrl)
+            .defaultHeaders { headers ->
+                headers.add("Accept-Language", language)
+                // can add header!!
+                headers.add("Content-Type", "application/json")
+            }
             .build()
     }
 }

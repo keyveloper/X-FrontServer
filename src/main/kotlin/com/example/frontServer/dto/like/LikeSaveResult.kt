@@ -19,7 +19,7 @@ data class LikeSaveResult(
                 )
             } else {
                 LikeSaveResult(
-                    error = FrontServerCode.OK // need change!!!
+                    error = FrontServerCode.SUCCESS // need change!!!
                 )
             }
         }

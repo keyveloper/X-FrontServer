@@ -1,5 +1,6 @@
 package com.example.frontServer.service
 
+import com.example.frontServer.config.WebConfig
 import com.example.frontServer.dto.error.ServerErrorDetails
 import com.example.frontServer.dto.notification.*
 import com.example.frontServer.enum.ServerResponseCode
@@ -13,18 +14,24 @@ import org.springframework.web.util.UriBuilder
 
 @Service
 class NotificationService(
-    private val client: WebClient,
+    private val webConfig: WebConfig,
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     private val userRepository: UserRepository,
     ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiBreaker")
     private val logger = KotlinLogging.logger {}
+    private val baseUrl = "http://localhost:8081"
+
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod"
     )
-    fun save(publisherId: Long, receiverIds: List<Long>, message: String): NotificationSaveServerResponse {
-        val response = client.post()
+
+    // from board
+    fun save(publisherId: Long, receiverIds: List<Long>, message: String, language: String): NotificationSaveServerResponse {
+        val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
+
+        val response = notiServerWebClient.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
                     .path("/notification/save")
@@ -60,8 +67,9 @@ class NotificationService(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "getFallbackMethod"
     )
-    fun fetchInitAll(receiverId: Long): List<NotificationGetResult>  {
-        val response = client.post()
+    fun fetchInitAll(receiverId: Long, language: String): List<NotificationGetResult>  {
+        val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
+        val response = notiServerWebClient.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
                     .path("/notification/init")
@@ -82,8 +90,10 @@ class NotificationService(
         // return noti server response
     }
 
-    fun fetchPrevAll(getRequest: NotificationGetRequest): List<NotificationGetResult> {
-        val response = client.post()
+    fun fetchPrevAll(getRequest: NotificationGetRequest, language: String): List<NotificationGetResult> {
+        val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
+
+        val response = notiServerWebClient.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
                     .path("/notification/prev")
@@ -100,8 +110,10 @@ class NotificationService(
             NotificationGetResult.of(it, findUserNameById(it.id), findUserImgUrlById(it.id))
         }    }
 
-    fun fetchNextAll(getRequest: NotificationGetRequest): List<NotificationGetResult> {
-        val response = client.post()
+    fun fetchNextAll(getRequest: NotificationGetRequest, language: String): List<NotificationGetResult> {
+        val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
+
+        val response = notiServerWebClient.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
                     .path("/notification/next")
@@ -134,7 +146,8 @@ class NotificationService(
         publisherId: Long,
         receiverIds: List<Long>,
         message: String,
-        error: Throwable
+        error: Throwable,
+        language: String
     ): NotificationSaveServerResponse {
         logger.error {"run notification save fallback"}
         return NotificationSaveServerResponse(
@@ -149,7 +162,7 @@ class NotificationService(
         )
     }
 
-    fun getFallbackMethod(getRequest: NotificationGetRequest): List<NotificationGetServerResponse> {
+    fun getFallbackMethod(getRequest: NotificationGetRequest, language: String): List<NotificationGetServerResponse> {
         logger.error {"run notification get fallback"}
         return listOf()
     }

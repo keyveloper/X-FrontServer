@@ -84,7 +84,7 @@ class BoardService(
     }
 
     @Transactional
-    fun save(request: BoardSaveRequest, writerId: Long, writerName: String) {
+    fun save(request: BoardSaveRequest, writerId: Long, writerName: String, language: String) {
         val savedBoard: Board = if (request.files != null) {
             val token = UUID.randomUUID().toString()
             fileService.saveBoardFile(request.files, token)
@@ -112,7 +112,7 @@ class BoardService(
             request.textContent
         }
 
-        saveNotification(writerId, receivers, notificationMessage)
+        saveNotification(writerId, receivers, notificationMessage, language)
         saveTimeline(boardId, receivers)
     }
 
@@ -120,8 +120,8 @@ class BoardService(
         boardTimelineService.saveTimeline(boardId, receivers)
     }
 
-    private fun saveNotification(publisherId: Long, receivers: List<Long>, message: String) {
-        notificationService.save(publisherId, receivers, message)
+    private fun saveNotification(publisherId: Long, receivers: List<Long>, message: String, language: String) {
+        notificationService.save(publisherId, receivers, message, language)
     }
 
     private fun countLikes(boardId: Long): Long {

@@ -62,12 +62,14 @@ class BoardController(
     @PostMapping("/board")
     fun save(
         @Valid @RequestBody saveBoardRequest: BoardSaveRequest,
-        @AuthenticationPrincipal user: AuthUserDetails
+        @AuthenticationPrincipal user: AuthUserDetails,
+        @RequestHeader(value = "Accept-Language", defaultValue = "en") language: String,
     ): ResponseEntity<Void> {
         boardService.save(
             request = saveBoardRequest,
             writerId = user.getUserId(),
-            writerName = user.username
+            writerName = user.username,
+            language = language,
         )
         return ResponseEntity.ok().build()
     }

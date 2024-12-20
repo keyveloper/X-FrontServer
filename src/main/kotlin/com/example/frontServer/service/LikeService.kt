@@ -1,5 +1,6 @@
 package com.example.frontServer.service
 
+import com.example.frontServer.config.WebConfig
 import com.example.frontServer.dto.like.LikeRequestFromClient
 import com.example.frontServer.dto.like.LikeRequestToServer
 import com.example.frontServer.dto.like.LikeSaveResult
@@ -7,6 +8,7 @@ import com.example.frontServer.dto.like.LikeServerSaveResponse
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -14,16 +16,21 @@ import org.springframework.web.util.UriBuilder
 
 @Service
 class LikeService(
-    private val client : WebClient,
+    private val webConfig: WebConfig,
     private val circuitBreakerRegistry: CircuitBreakerRegistry
 ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("liveApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
+    private val baseUrl = "http://localhost:8082"
+
     @CircuitBreaker(
         name = "liveApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod")
     fun save(likeRequest: LikeRequestFromClient, userId: Long) {
-        val response = client.post()
+        val likeServerWebClient = webConfig.createWebClient(
+            baseUrl = baseUrl
+        )
+        val response = likeServerWebClient.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
                     .path("/like")

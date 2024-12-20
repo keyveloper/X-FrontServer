@@ -22,6 +22,10 @@ spring:
         format_sql: true
     open-in-view: false
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+
 file:
   upload-dir: "C:/Users/dideh/Desktop/Spring/x/image"
 

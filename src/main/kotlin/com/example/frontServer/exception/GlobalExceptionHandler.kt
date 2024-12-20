@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import javax.naming.AuthenticationException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -78,11 +77,6 @@ class GlobalExceptionHandler {
 //        )
 //    }
 //
-    // Authentication Error 처리
-    @ExceptionHandler(AuthenticationException::class)
-    fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<String> {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("jwt인증에러 ")
-    }
 
     // Invalid Id Error
     @ExceptionHandler(InvalidIdException::class)
