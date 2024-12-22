@@ -5,9 +5,11 @@ import com.example.frontServer.dto.board.BoardAllResult
 import com.example.frontServer.dto.board.BoardCommentResult
 import com.example.frontServer.dto.board.BoardResult
 import com.example.frontServer.dto.board.BoardSaveRequest
+import com.example.frontServer.dto.notification.NotificationSaveRequest
 import com.example.frontServer.dto.timeline.TimelineBoardResult
 import com.example.frontServer.dto.timeline.TimelineRequest
 import com.example.frontServer.entity.Board
+import com.example.frontServer.enum.NotificationType
 import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.FollowRepository
 import com.example.frontServer.service.FileService
@@ -105,14 +107,18 @@ class BoardService(
         }
         val boardId = savedBoard.id!!
         val receivers: List<Long> = followRepository.findFollowersByUsername(writerName).map {it.id!!}
-        val notMaxLength = 50 //
-        val notificationMessage = if (request.textContent.length > notMaxLength) {
-            request.textContent.substring(0, notMaxLength)
-        } else {
-            request.textContent
-        }
 
-        saveNotification(writerId, receivers, notificationMessage, language)
+        saveNotification(
+            requests =  receivers.map {
+                NotificationSaveRequest(
+                    publisherId = writerId,
+                    receiverId = it,
+                    notificationType = NotificationType.BOARD,
+                    targetBoardId = boardId
+                )
+            },
+            language = language
+        )
         saveTimeline(boardId, receivers)
     }
 
@@ -120,8 +126,11 @@ class BoardService(
         boardTimelineService.saveTimeline(boardId, receivers)
     }
 
-    private fun saveNotification(publisherId: Long, receivers: List<Long>, message: String, language: String) {
-        notificationService.save(publisherId, receivers, message, language)
+    private fun saveNotification(
+        requests: List<NotificationSaveRequest>,
+        language: String
+    ) {
+        notificationService.save(requests, language)
     }
 
     private fun countLikes(boardId: Long): Long {

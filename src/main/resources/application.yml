@@ -51,3 +51,5 @@ resilience4j:
     instances:
       liveApiCircuitBreaker:
         base-config: default
+      notificationApiCircuitBreaker:
+        base-config: default

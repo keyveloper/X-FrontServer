@@ -3,22 +3,28 @@ package com.example.frontServer.service
 import com.example.frontServer.config.WebConfig
 import com.example.frontServer.dto.error.ServerErrorDetails
 import com.example.frontServer.dto.notification.*
+import com.example.frontServer.entity.Board
+import com.example.frontServer.enum.NotificationType
 import com.example.frontServer.enum.ServerResponseCode
+import com.example.frontServer.repository.BoardRepository
 import com.example.frontServer.repository.UserRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import org.springframework.context.MessageSource
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
+import java.util.*
 
 @Service
 class NotificationService(
     private val webConfig: WebConfig,
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     private val userRepository: UserRepository,
+    private val boardRepository: BoardRepository,
+    private val messageSource: MessageSource
     ) {
-    private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiBreaker")
+    private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
     private val baseUrl = "http://localhost:8081"
 
@@ -26,9 +32,8 @@ class NotificationService(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod"
     )
-
     // from board
-    fun save(publisherId: Long, receiverIds: List<Long>, message: String, language: String): NotificationSaveServerResponse {
+    fun save(requests: List<NotificationSaveRequest>, language: String): NotificationSaveServerResponse {
         val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
 
         val response = notiServerWebClient.post()
@@ -38,19 +43,14 @@ class NotificationService(
                     .build()
             }
             .bodyValue(
-                receiverIds.map {
-                    NotificationSaveRequest(
-                        publisherId = publisherId,
-                        receiverId = it,
-                        message = message
-                    )
-                }
+                requests
             )
             .retrieve()
             .bodyToMono(NotificationSaveServerResponse::class.java)
             .block()
 
-        // response 처리 어떻게 해야하지 ?
+        // response 처리 어떻게 새지 ?
+        logger.info {"response: ${response}"}
         return response?: NotificationSaveServerResponse(
             savedRow = 0,
             errorDetails = ServerErrorDetails(
@@ -65,7 +65,7 @@ class NotificationService(
 
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
-        fallbackMethod = "getFallbackMethod"
+        fallbackMethod = "getInitFallbackMethod"
     )
     fun fetchInitAll(receiverId: Long, language: String): List<NotificationGetResult>  {
         val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
@@ -79,17 +79,39 @@ class NotificationService(
                 receiverId
             )
             .retrieve()
-            .bodyToMono(NotificationGetServerResponse::class.java)
+            .onStatus({ it.isError }) { clientResponse ->
+                // HTTP 상태코드가 에러일 때 처리
+                clientResponse.bodyToMono(String::class.java).flatMap { errorBody ->
+                    // 이곳에서 에러 내용 로깅
+                    logger.error {"HTTP Error: ${clientResponse.statusCode()} / Body: $errorBody"}
+                    throw RuntimeException("HTTP Error: ${clientResponse.statusCode()} - $errorBody")
+                }
+            }
+                .bodyToMono(NotificationGetServerResponse::class.java)
             .block()
 
-        val results = response?.notificationGetServerResult ?: emptyList()
+        val results = response?.notificationGetServerResults ?: emptyList()
+        logger.info { "response: $results" }
 
         return results.map {
-            NotificationGetResult.of(it, findUserNameById(it.id), findUserImgUrlById(it.id))
+            // make message by result's parameter
+            val username = findUserNameById(it.publisherId)
+            val imgYrl = findUserImgUrlById(it.publisherId)
+            val targetBoard = it.targetBoardId?.let {
+                id -> boardRepository.findById(id).orElse(null)
+            }
+
+            val message = makeMessage(it, username, language, targetBoard)
+            NotificationGetResult.of(it, username, imgYrl, message)
         }
         // return noti server response
     }
 
+    @CircuitBreaker(
+        name = "notificationApiCircuitBreaker",
+        fallbackMethod = "getScrollFallbackMethod"
+    )
+    // circuit 연결
     fun fetchPrevAll(getRequest: NotificationGetRequest, language: String): List<NotificationGetResult> {
         val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
 
@@ -104,12 +126,24 @@ class NotificationService(
             .bodyToMono(NotificationGetServerResponse::class.java)
             .block()
 
-        val results = response?.notificationGetServerResult ?: emptyList()
+        val results = response?.notificationGetServerResults ?: emptyList()
 
         return results.map {
-            NotificationGetResult.of(it, findUserNameById(it.id), findUserImgUrlById(it.id))
-        }    }
+            val username = findUserNameById(it.publisherId)
+            val imgYrl = findUserImgUrlById(it.publisherId)
+            val targetBoard = it.targetBoardId?.let {
+                id -> boardRepository.findById(id).orElse(null)
+            }
 
+            val message = makeMessage(it, username, language, targetBoard)
+            NotificationGetResult.of(it, username, imgYrl, message)
+        }
+    }
+    @CircuitBreaker(
+        name = "notificationApiCircuitBreaker",
+        fallbackMethod = "getScrollFallbackMethod"
+    )
+    // circuit 연결
     fun fetchNextAll(getRequest: NotificationGetRequest, language: String): List<NotificationGetResult> {
         val notiServerWebClient = webConfig.createWebClient(baseUrl, language)
 
@@ -126,9 +160,16 @@ class NotificationService(
             .bodyToMono(NotificationGetServerResponse::class.java)
             .block()
 
-        val results = response?.notificationGetServerResult ?: emptyList()
+        val results = response?.notificationGetServerResults ?: emptyList()
         return results.map {
-            NotificationGetResult.of(it, findUserNameById(it.id), findUserImgUrlById(it.id))
+            val username = findUserNameById(it.publisherId)
+            val imgYrl = findUserImgUrlById(it.publisherId)
+            val targetBoard = it.targetBoardId?.let {
+                id -> boardRepository.findById(id).orElse(null)
+            }
+
+            val message = makeMessage(it, username, language, targetBoard)
+            NotificationGetResult.of(it, username, imgYrl, message)
         }
     }
 
@@ -141,13 +182,38 @@ class NotificationService(
         return userRepository.findById(id).orElse(null).userImg
     }
 
+
+    private fun makeMessage(
+        serverResult: NotificationGetServerResult,
+        username: String,
+        language: String,
+        targetBoard: Board?
+    ): String{
+        val locale = Locale.forLanguageTag(language)
+        return when (serverResult.notificationType) {
+            NotificationType.BOARD -> {
+                val builder: StringBuilder = StringBuilder()
+                val textContent = targetBoard?.textContent?.take(25) ?: "???"
+                val message = messageSource
+                    .getMessage("noti.BOARD", arrayOf(serverResult.targetBoardId, username), locale)
+
+                builder.append(message + "\n")
+                builder.append(textContent)
+                builder.toString()
+            }
+
+            NotificationType.LIKE -> {
+                messageSource.getMessage("noti.LIKE", arrayOf(username, targetBoard), locale)
+            }
+            NotificationType.FOLLOW -> messageSource.getMessage("noti.FOLLOW", arrayOf(username), locale)
+        }
+    }
+
     // fall back pattern : same parameter + Throwable , same return type,
-    fun saveFallBackMethod(
-        publisherId: Long,
-        receiverIds: List<Long>,
-        message: String,
-        error: Throwable,
-        language: String
+    fun saveFallbackMethod(
+        requests: List<*>,
+        language: String,
+        throwable: Throwable
     ): NotificationSaveServerResponse {
         logger.error {"run notification save fallback"}
         return NotificationSaveServerResponse(
@@ -156,14 +222,28 @@ class NotificationService(
                 type = "/notification/save",
                 status = ServerResponseCode.FALLBACK,
                 title = "save fallback",
-                detail = "noti api server dosen't work now",
+                detail = "noti api server doesn't work now",
             ),
             ServerResponseCode.SUCCESS
         )
     }
 
-    fun getFallbackMethod(getRequest: NotificationGetRequest, language: String): List<NotificationGetServerResponse> {
-        logger.error {"run notification get fallback"}
+    fun getInitFallbackMethod(
+        receiverId: Long,
+        language: String,
+        throwable: Throwable
+    ): List<NotificationGetServerResponse> {
+        logger.error {"run getInitFallbackMethod: ${throwable.message}"}
+        logCircuitBreakerInfo()
+        return listOf()
+    }
+
+    fun getScrollFallbackMethod(
+        getRequest: NotificationGetRequest,
+        language: String,
+        throwable: Throwable
+    ): List<NotificationGetServerResponse> {
+        logger.error { "run scrollFallbackMethod" }
         return listOf()
     }
 

@@ -31,6 +31,7 @@ class SecurityConfig(
                     .requestMatchers("/boards").permitAll()
                     .requestMatchers("/board/timeline/next").permitAll()
                     .requestMatchers("/lang").permitAll()
+                    .requestMatchers("/noti/lang").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(JwtAuthenticationFilter(jwtAuthenticationProvider),

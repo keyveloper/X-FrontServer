@@ -20,13 +20,14 @@ data class NotificationGetResult(
             serverResult: NotificationGetServerResult,
             publisherName: String,
             publisherImgUrl: String?,
+            message: String
         ): NotificationGetResult {
             return NotificationGetResult(
                 id = serverResult.id,
                 publisherName = publisherName,
                 publisherImgUrl = publisherImgUrl,
                 receiverId = serverResult.receiverId,
-                message = serverResult.message,
+                message = message,
                 createdAt = serverResult.createdAt
             )
         }

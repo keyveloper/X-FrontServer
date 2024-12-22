@@ -6,7 +6,7 @@ import com.example.frontServer.enum.ServerResponseCode
 
 data class NotificationGetServerResponse(
     // server response
-    val notificationGetServerResult: List<NotificationGetServerResult>,
-    override val errorDetails: ServerErrorDetails,
+    val notificationGetServerResults: List<NotificationGetServerResult>,
+    override val errorDetails: ServerErrorDetails?,
     override val responseCode: ServerResponseCode
 ): NotificationServerErrorResponse(errorDetails, responseCode)

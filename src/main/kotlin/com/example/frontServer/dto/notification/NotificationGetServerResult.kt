@@ -1,5 +1,6 @@
 package com.example.frontServer.dto.notification
 
+import com.example.frontServer.enum.NotificationType
 import java.time.LocalDateTime
 
 data class NotificationGetServerResult(
@@ -9,8 +10,9 @@ data class NotificationGetServerResult(
 
     val receiverId: Long, // optional
 
-    val message: String,
+    val notificationType: NotificationType,
 
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 
+    val targetBoardId: Long?
 )
