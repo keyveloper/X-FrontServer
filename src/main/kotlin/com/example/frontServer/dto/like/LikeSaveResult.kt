@@ -1,6 +1,5 @@
 package com.example.frontServer.dto.like
 
-import com.example.frontServer.enum.FrontServerCode
 import com.example.frontServer.enum.ServiceServerError
 
 // service to controller

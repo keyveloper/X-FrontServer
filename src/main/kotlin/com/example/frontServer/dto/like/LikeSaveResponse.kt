@@ -1,7 +1,5 @@
 package com.example.frontServer.dto.like
 
-import com.example.frontServer.enum.FrontServerCode
-
 // controller to client
 data class LikeSaveResponse(
     val error: FrontServerCode?

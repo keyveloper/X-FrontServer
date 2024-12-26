@@ -1,6 +1,6 @@
 package com.example.frontServer.security
 
-import com.example.frontServer.service.UserDetailsServiceImpl
+import com.example.frontServer.service.user.UserDetailsServiceImpl
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm

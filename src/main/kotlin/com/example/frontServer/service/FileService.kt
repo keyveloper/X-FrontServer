@@ -1,10 +1,9 @@
 package com.example.frontServer.service
 
-import com.example.frontServer.dto.CustomMultipartFile
 import com.example.frontServer.dto.file.FileRequest
 import com.example.frontServer.dto.file.FileResult
 import com.example.frontServer.entity.BoardImg
-import com.example.frontServer.repository.BoardImgRepository
+import com.example.frontServer.repository.board.BoardImgRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.File

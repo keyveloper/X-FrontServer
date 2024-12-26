@@ -1,17 +1,14 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.board.BoardAllResponse
-import com.example.frontServer.dto.board.BoardResponse
-import com.example.frontServer.dto.board.BoardSaveRequest
-import com.example.frontServer.dto.timeline.TimelineBoardResponse
-import com.example.frontServer.dto.timeline.TimelineRequest
-import com.example.frontServer.exception.InvalidIdException
+import com.example.frontServer.dto.board.request.*
+import com.example.frontServer.dto.board.response.CommentResponse
+import com.example.frontServer.dto.board.response.SingleBoardResponse
+import com.example.frontServer.dto.board.response.SingleBoardResult
+import com.example.frontServer.entity.Board
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.board.BoardService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
-import org.apache.coyote.Response
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -22,44 +19,8 @@ class BoardController(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @GetMapping("/boards")
-    fun findAll(): ResponseEntity<BoardAllResponse> {
-        val results  = boardService.findAll();
-        return ResponseEntity.ok().body(
-            BoardAllResponse(results)
-        )
-    }
-
-    @GetMapping("/board")
-    fun findById(@RequestBody id: Long): ResponseEntity<BoardResponse> {
-        return boardService.findById(id)?.let {
-            ResponseEntity.ok().body(
-                BoardResponse.of(it)
-            )
-        } ?: throw InvalidIdException()
-    }
-
-    @PostMapping("/board/timeline/next")
-    fun findTimelineNext(
-        @RequestBody timelineRequest: TimelineRequest
-    ): ResponseEntity<List<TimelineBoardResponse>> {
-        return ResponseEntity.ok().body(
-            boardService.findTimelineNext(timelineRequest)
-                .map { TimelineBoardResponse.of(it) }
-        )
-    }
-
-    @PostMapping("/board/timeline/prev")
-    fun findTimelineBefore(
-        @RequestBody timelineRequest: TimelineRequest
-    ): ResponseEntity<List<TimelineBoardResponse>> {
-        return ResponseEntity.ok().body(
-            boardService.findTimelineBefore(timelineRequest)
-                .map { TimelineBoardResponse.of(it) }
-        )
-    }
-
-    @PostMapping("/board")
+    // save
+    @PostMapping("/saveBoard")
     fun save(
         @Valid @RequestBody saveBoardRequest: BoardSaveRequest,
         @AuthenticationPrincipal user: AuthUserDetails,
@@ -74,12 +35,62 @@ class BoardController(
         return ResponseEntity.ok().build()
     }
 
-
+    // delete
+    // 1. 조회 -> delete() 호출
     @DeleteMapping("/board")
-    fun delete(@RequestParam id: Long): ResponseEntity<Void> {
-        if (!boardService.deleteById(id)) {
-            throw InvalidIdException()
+    fun deleteById(request: BoardDeleteRequest): ResponseEntity<Void> {
+        val result = boardService.deleteById(request.targetId)
+        return if (result != null) {
+           ResponseEntity.noContent().build()
+        } else {
+            ResponseEntity.notFound().build()
         }
-        return ResponseEntity.ok().build()
     }
+
+    // update
+    // case 1. 영속성 컨텍스트를 직접 변경 - 죄회후 필드 변경 후 save
+    // case 2. 바로 DB에 쿼리 날리기 - 영속성 컨텍스트와 동기화 되지 않음.
+    @PostMapping("/updateBoard")
+    fun updateContentById(request: BoardUpdateRequest): ResponseEntity<Board> {
+        val result = boardService.updateContentById(request)
+        return if (result != null) {
+            ResponseEntity.ok().body(result)
+        } else {
+            ResponseEntity.badRequest().build()
+        }
+    }
+
+    @PostMapping("/getComment/init")
+    fun findInItComment(
+        @Valid @RequestBody request: CommentGetRequest
+    ): ResponseEntity<CommentResponse> {
+        return ResponseEntity.ok().body(
+            CommentResponse.of(
+                boardService.findInitComment(request)
+            )
+        )
+    }
+
+    @PostMapping("/getComment/Next")
+    fun findNextComment(
+        @Valid @RequestBody request: CommentGetRequest
+    ): ResponseEntity<CommentResponse> {
+        return ResponseEntity.ok().body(
+            CommentResponse.of(
+                boardService.findNextComment(request)
+            )
+        )
+    }
+
+    @PostMapping("/getSingleBoard")
+    fun findSingleBoard(
+        @Valid @RequestBody request: SingleBoardRequest
+    ): ResponseEntity<SingleBoardResponse> {
+        return ResponseEntity.ok().body(
+            SingleBoardResponse.of(
+                boardService.findSingleBoard(request)
+            )
+        )
+    }
+
 }

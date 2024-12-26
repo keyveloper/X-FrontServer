@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 @EntityListeners(AuditingEntityListener::class)
 class User (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    var id: Long?,
 
     var email: String,
 
@@ -19,7 +19,7 @@ class User (
     var username: String,
 
     @Column(name = "user_img")
-    var userImg: String? = null,
+    var userImg: String?, // need modify !!
 
     var password: String,
 

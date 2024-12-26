@@ -1,16 +1,14 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.ErrorResponse
 import com.example.frontServer.dto.auth.LoginRequest
 import com.example.frontServer.dto.auth.LoginResponse
-import com.example.frontServer.service.AuthService
+import com.example.frontServer.service.user.AuthService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.lang.Error
 
 @RestController
 class AuthController(

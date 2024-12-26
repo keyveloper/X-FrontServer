@@ -1,9 +1,10 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.user.UserResponse
+import com.example.frontServer.dto.user.response.UserProfileGetResponse
 import com.example.frontServer.dto.auth.SignUpRequest
 import com.example.frontServer.dto.auth.SignUpResponse
-import com.example.frontServer.service.UserService
+import com.example.frontServer.dto.user.request.UserProfileGetRequest
+import com.example.frontServer.service.user.UserService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -26,13 +27,10 @@ class UserController(
         )
     }
 
-    @GetMapping("/user")
-    fun findUserByUsername(
-        @RequestParam username: String
-    ): ResponseEntity<UserResponse> {
-        return ResponseEntity.ok().body(
-            UserResponse.of(userService.findByuUsername(username)!!)
-            // service에서 null 처리를 수행함
-        )
-    }//
+    @GetMapping("/getUserProfile")
+    fun findUserProfile(
+        @Valid @RequestBody request: UserProfileGetRequest
+    ): ResponseEntity<UserProfileGetResponse> {
+        val result = userService.findMainUserProfile(request)
+    }
 }

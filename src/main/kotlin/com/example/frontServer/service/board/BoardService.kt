@@ -1,20 +1,23 @@
 package com.example.frontServer.service.board
 
-import com.example.frontServer.dto.*
-import com.example.frontServer.dto.board.BoardAllResult
-import com.example.frontServer.dto.board.BoardCommentResult
-import com.example.frontServer.dto.board.BoardResult
-import com.example.frontServer.dto.board.BoardSaveRequest
+import com.example.frontServer.dto.board.request.BoardSaveRequest
+import com.example.frontServer.dto.board.request.BoardUpdateRequest
+import com.example.frontServer.dto.board.request.CommentGetRequest
+import com.example.frontServer.dto.board.request.SingleBoardRequest
+import com.example.frontServer.dto.board.response.CommentResult
+import com.example.frontServer.dto.board.response.SingleBoardResult
 import com.example.frontServer.dto.notification.NotificationSaveRequest
-import com.example.frontServer.dto.timeline.TimelineBoardResult
-import com.example.frontServer.dto.timeline.TimelineRequest
+import com.example.frontServer.dto.timeline.request.TimelineSaveRequest
 import com.example.frontServer.entity.Board
 import com.example.frontServer.enum.NotificationType
-import com.example.frontServer.repository.BoardRepository
-import com.example.frontServer.repository.FollowRepository
+import com.example.frontServer.exception.NotFoundEntityException
+import com.example.frontServer.repository.board.BoardRepository
+import com.example.frontServer.repository.follow.FollowRepository
+import com.example.frontServer.repository.user.UserRepository
 import com.example.frontServer.service.FileService
-import com.example.frontServer.service.LikeService
-import com.example.frontServer.service.NotificationService
+import com.example.frontServer.service.like.LikeApiService
+import com.example.frontServer.service.noti.NotificationApiService
+import com.example.frontServer.service.timeline.TimelineApiService
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
@@ -22,69 +25,67 @@ import java.util.*
 @Service
 class BoardService(
     private val boardRepository: BoardRepository,
-    private val notificationService: NotificationService,
+    private val notificationService: NotificationApiService,
     private val fileService: FileService,
     private val followRepository: FollowRepository,
-    private val likeService: LikeService,
-    private val boardTimelineService: BoardTimelineService
+    private val likeApiService: LikeApiService,
+    private val timelineApiService: TimelineApiService,
+    private val userRepository: UserRepository
 ) {
-
     @Transactional
-    fun findAll(): List<BoardAllResult> {
-        return boardRepository.findAllWithCommentCount()
+    // get Comment init
+    fun findInitComment(request: CommentGetRequest): List<CommentResult> {
+        return boardRepository.findInitComment(request.parentId)
             .map {
-                BoardAllResult.of(it, it.board.writerId.toString(), 0)
+                val writerName = userRepository.findById(it.board.writerId)
+                    .map { user -> user.username}
+                    .orElse("")
+
+                val likeCount = fetchLikeCount(it.board.id!!)
+                CommentResult.of(
+                    boardWithCommentCount = it,
+                    writerName = writerName,
+                    likeCount = likeCount.toInt()
+                )
             }
     }
 
-    @Transactional
-    fun findById(id: Long): BoardResult? {
-        val boardWithComment = boardRepository.findBoardWithCommentById(id)
-        return boardWithComment?.let {
-            val board = boardWithComment.board
-            val commentCount = boardWithComment.getCommentCount()
-            val boardCommentResult: List<BoardCommentResult> = boardWithComment.comments.map {
-                BoardCommentResult.of(
-                    it,
-                    findUsernameByWriterId(it.id!!),
-                    countLikesByBoardId(it.id!!)
+    fun findNextComment(request: CommentGetRequest): List<CommentResult>  {
+        return boardRepository.findNextComment(request.parentId, request.endCommentId)
+            .map {
+                val writerName = userRepository.findById(it.board.writerId)
+                    .map { user -> user.username}
+                    .orElse("")
+
+                val likeCount = fetchLikeCount(it.board.id!!)
+                CommentResult.of(
+                    boardWithCommentCount = it,
+                    writerName = writerName,
+                    likeCount = likeCount.toInt()
                 )
             }
-            addReadingCount(it.board)
-            BoardResult.of(
-                board = board,
-                commentCount = commentCount,
-                writerName = "",
-                likeCount = 0,
-                boardCommentResult
+    }
+
+    fun findSingleBoard(request: SingleBoardRequest): SingleBoardResult {
+        val boardOptional = boardRepository.findById(request.boardId)
+        return if (boardOptional.isPresent) {
+            val writerName = userRepository.findById(boardOptional.get().writerId)
+                .map { user -> user.username}
+                .orElse("")
+
+            val likeCount = fetchLikeCount(boardOptional.get().id!!)
+            SingleBoardResult.of(
+                board = boardOptional.get(),
+                writerName = writerName,
+                likeCount = likeCount
             )
+        } else {
+            throw NotFoundEntityException("can't find this board: ${request.boardId}")
         }
     }
 
-    fun findTimelineNext(timelineRequest: TimelineRequest): List<TimelineBoardResult> {
-        return boardTimelineService.findTimelineNext(timelineRequest)
-    }
 
-    fun findTimelineBefore(timelineRequest: TimelineRequest): List<TimelineBoardResult> {
-        return boardTimelineService.findTimelineBefore(timelineRequest)
-    }
-
-
-    private fun findUsernameByWriterId(writerId: Long): String {
-        /*TODO*/
-        return ""
-    }
-
-    private fun countLikesByBoardId(boardId: Long): Int {
-        return 0
-    }
-
-
-    private fun addReadingCount(board: Board) {
-        board.readingCount++
-        boardRepository.save(board)
-    }
-
+    // save
     @Transactional
     fun save(request: BoardSaveRequest, writerId: Long, writerName: String, language: String) {
         val savedBoard: Board = if (request.files != null) {
@@ -122,9 +123,49 @@ class BoardService(
         saveTimeline(boardId, receivers)
     }
 
-    private fun saveTimeline(boardId: Long, receivers: List<Long>) {
-        boardTimelineService.saveTimeline(boardId, receivers)
+    // delete
+    fun deleteById(id: Long): Board? {
+        val targetBoardOptional = boardRepository.findById(id)
+
+        return if (targetBoardOptional.isPresent) {
+            boardRepository.delete(targetBoardOptional.get())
+            targetBoardOptional.get()
+        } else {
+            null
+        }
+        // 여기서 Exception 보내도 되고 ?
+        // 아니면 Int로 보내도 되고 ? 아니면 Board로 보내던가?
     }
+
+    // update
+    fun updateContentById(request: BoardUpdateRequest): Board? {
+        val targetBoardOptional = boardRepository.findById(request.boardId)
+        return if (targetBoardOptional.isPresent) {
+            val targetBoard = targetBoardOptional.get()
+            targetBoard.textContent = request.textContent
+            boardRepository.save(targetBoard)
+            targetBoard
+        } else {
+            null
+        }
+    }
+
+    private fun saveTimeline(boardId: Long, receivers: List<Long>) {
+        timelineApiService.saveRequest(
+            receivers.map {
+                TimelineSaveRequest(
+                    boardId = boardId,
+                    receiverId = it,
+                )
+            }
+        )
+    }
+
+    private fun addReadingCount(board: Board) {
+        board.readingCount++
+        boardRepository.save(board)
+    }
+
 
     private fun saveNotification(
         requests: List<NotificationSaveRequest>,
@@ -133,15 +174,9 @@ class BoardService(
         notificationService.save(requests, language)
     }
 
-    private fun countLikes(boardId: Long): Long {
-        val users = likeService.findAllByBoardId(boardId)
-        if (users!!.isEmpty()) {
-            return -1
-        }
-        return users.size.toLong()
+    private fun fetchLikeCount(boardId: Long): Long {
+        return likeApiService.fetchLikeCountByBoardId(boardId)
     }
 
-    fun deleteById(id: Long): Boolean {
-        return boardRepository.deleteBoardById(id) > 0
-    }
+
 }
