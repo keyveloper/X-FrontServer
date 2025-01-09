@@ -1,4 +1,4 @@
-package com.example.frontServer.dto.like
+package com.example.frontServer.dto.like.request
 
 import com.example.frontServer.enum.LikeType
 import jakarta.validation.constraints.NotNull

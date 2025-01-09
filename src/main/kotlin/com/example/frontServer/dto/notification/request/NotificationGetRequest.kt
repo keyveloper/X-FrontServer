@@ -1,4 +1,4 @@
-package com.example.frontServer.dto.notification
+package com.example.frontServer.dto.notification.request
 
 data class NotificationGetRequest(
     val startId: Long,

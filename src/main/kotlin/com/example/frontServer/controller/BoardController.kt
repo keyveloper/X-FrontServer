@@ -30,7 +30,6 @@ class BoardController(
             request = saveBoardRequest,
             writerId = user.getUserId(),
             writerName = user.username,
-            language = language,
         )
         return ResponseEntity.ok().build()
     }

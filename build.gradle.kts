@@ -11,7 +11,6 @@ plugins {
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
-
 // query DSL setting - Q class
 kapt{
     includeCompileClasspath = false

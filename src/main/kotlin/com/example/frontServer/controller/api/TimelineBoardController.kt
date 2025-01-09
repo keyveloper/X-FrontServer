@@ -1,6 +1,6 @@
 package com.example.frontServer.controller.api
 
-import com.example.frontServer.dto.timeline.response.TimelineBoardResponse
+import com.example.frontServer.dto.timeline.response.TimelineBoardGetResponse
 import com.example.frontServer.dto.timeline.request.TimelineGetRequest
 import com.example.frontServer.service.timeline.TimelineBoardService
 import jakarta.validation.Valid
@@ -17,26 +17,28 @@ class TimelineBoardController(
     @PostMapping("/getTimeline/init")
     fun findTimelineInit(
         @Valid @RequestBody request: TimelineGetRequest
-    ) {
-
+    ):ResponseEntity<TimelineBoardGetResponse> {
+        return ResponseEntity.ok().body(
+            TimelineBoardGetResponse.of(timelineBoardService.findTimelineInit(request))
+        )
     }
 
     // timeline용 -> 옮기기
     @PostMapping("/getTimeline/next")
     fun findTimelineNext(
-        @RequestBody timelineRequest: TimelineGetRequest
-    ): ResponseEntity<List<TimelineBoardResponse>> {
+        @RequestBody request: TimelineGetRequest
+    ): ResponseEntity<TimelineBoardGetResponse> {
         return ResponseEntity.ok().body(
-
+            TimelineBoardGetResponse.of(timelineBoardService.findTimelineNext(request))
         )
     }
 
     @PostMapping("/getTimeline/prev")
     fun findTimelineBefore(
-        @RequestBody timelineRequest: TimelineGetRequest
-    ): ResponseEntity<List<TimelineBoardResponse>> {
+        @RequestBody request: TimelineGetRequest
+    ): ResponseEntity<TimelineBoardGetResponse> {
         return ResponseEntity.ok().body(
-
+            TimelineBoardGetResponse.of(timelineBoardService.findTimelinePrev(request))
         )
     }
 

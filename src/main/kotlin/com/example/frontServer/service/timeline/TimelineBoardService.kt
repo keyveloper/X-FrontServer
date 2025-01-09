@@ -1,7 +1,7 @@
 package com.example.frontServer.service.timeline
 
 import com.example.frontServer.dto.timeline.request.TimelineGetRequest
-import com.example.frontServer.dto.timeline.response.TimelineBoardResult
+import com.example.frontServer.dto.timeline.response.TimelineBoardGetResult
 import com.example.frontServer.repository.board.BoardRepository
 import com.example.frontServer.repository.user.UserRepository
 import com.example.frontServer.service.like.LikeApiService
@@ -14,7 +14,7 @@ class TimelineBoardService(
     private val likeApiService: LikeApiService,
     private val userRepository: UserRepository
 ) {
-    fun findTimelineInit(request: TimelineGetRequest): List<TimelineBoardResult> {
+    fun findTimelineInit(request: TimelineGetRequest): List<TimelineBoardGetResult> {
         val boardsWithComment = boardRepository.findTimelineByBoardIds(
             fetchInitBoardIds(request)
         )
@@ -25,11 +25,11 @@ class TimelineBoardService(
                 .orElse("")
 
             val likeCount = fetchLikeCount(it.board.id!!)
-            TimelineBoardResult.of(it, writerName, likeCount)
+            TimelineBoardGetResult.of(it, writerName, likeCount)
         }
     }
 
-    fun findTimelineNext(request: TimelineGetRequest): List<TimelineBoardResult>{
+    fun findTimelineNext(request: TimelineGetRequest): List<TimelineBoardGetResult>{
         val boardsWithComment = boardRepository.findTimelineByBoardIds(
             fetchNextBoardIds(request)
         )
@@ -40,11 +40,11 @@ class TimelineBoardService(
                 .orElse("")
 
             val likeCount = fetchLikeCount(it.board.id!!)
-            TimelineBoardResult.of(it, writerName, likeCount)
+            TimelineBoardGetResult.of(it, writerName, likeCount)
         }
     }
 
-    fun findTimelinePrev(request: TimelineGetRequest): List<TimelineBoardResult> {
+    fun findTimelinePrev(request: TimelineGetRequest): List<TimelineBoardGetResult> {
         val boardsWithComment = boardRepository.findTimelineByBoardIds(
             fetchPrevBoardIds(request)
         )
@@ -55,7 +55,7 @@ class TimelineBoardService(
                 .orElse("")
 
             val likeCount = fetchLikeCount(it.board.id!!)
-            TimelineBoardResult.of(it, writerName, likeCount)
+            TimelineBoardGetResult.of(it, writerName, likeCount)
         }
     }
 

@@ -43,7 +43,7 @@ class TimelineApiService( // board-timeline rep or api connection
 
         if (response != null && response.errorCode != MSAServerErrorCode.SUCCESS) {
             // 실패시에 구체적인 내용을 확인한다.
-            logger.info {
+            logger.error {
                 "errorDetails: ${response.errorDetails}" +
                         "errorCode: ${response.errorCode}"
             }
@@ -71,8 +71,9 @@ class TimelineApiService( // board-timeline rep or api connection
             .bodyToMono(TimelineServerGetResponse::class.java)
             .block()
 
+        logger.info {"response: ${response}"}
         return response?.let {
-            response.result.map { it.boardId }
+            response.results.map { it.boardId }
         } ?: listOf()
     }
 
@@ -93,7 +94,7 @@ class TimelineApiService( // board-timeline rep or api connection
             .block()
 
         return response?.let {
-            response.result.map { it.boardId }
+            response.results.map { it.boardId }
         } ?: listOf()
     }
 
@@ -114,15 +115,15 @@ class TimelineApiService( // board-timeline rep or api connection
             .block()
 
         return response?.let {
-            response.result.map { it.boardId }
+            response.results.map { it.boardId }
         } ?: listOf()
     }
 
-    fun saveFallbackMethod(request: List<TimelineSaveRequest>) {
+    fun saveFallbackMethod(request: List<TimelineSaveRequest>, t: Throwable) {
         logger.error { "timeline api is not working..." }
     }
 
-    fun getFallbackMethod(request: TimelineGetRequest): List<Long> {
+    fun getFallbackMethod(request: TimelineGetRequest, t: Throwable): List<Long> {
         return listOf()
     }
 }

@@ -1,48 +1,78 @@
 package com.example.frontServer.service.follow
 
+import com.example.frontServer.dto.follow.FollowCounts
+import com.example.frontServer.dto.follow.FollowSaveRequest
+import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.user.UserSummaryDto
 import com.example.frontServer.entity.Follow
+import com.example.frontServer.enum.NotificationType
 import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.follow.FollowRepository
 import com.example.frontServer.repository.user.UserRepository
+import com.example.frontServer.service.noti.NotificationApiService
 import jakarta.transaction.Transactional
+import org.hibernate.exception.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
 class FollowService(
     private val followRepository: FollowRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val notificationApiService: NotificationApiService
 ) {
     @Transactional
-    fun save(followingName: String, followerId: Long) {
-        val userId = userRepository.findIdByUsername(followingName)
-        if (userId != null) {
+    fun save(request: FollowSaveRequest, followerId: Long) {
+        val targetUser = userRepository.findById(request.targetId)
+            .orElseThrow {
+                NotFoundEntityException(
+                    HttpStatus.NOT_FOUND,
+                    "can't find follow target id: ${request.targetId}"
+                )
+            }
+
+        try {
             followRepository.save(
                 Follow(
-                    followingId = userId,
-                    followerId = followerId
+                    id = null,
+                    followingId = targetUser.id!!,
+                    followerId = followerId,
+                    isFollow = true
                 )
             )
-        } else {
-            throw NotFoundEntityException("can't find follow target id: $followingName")
+
+            // send noti
+            notificationApiService.saveRequest(
+                listOf(
+                    NotificationSaveRequest(
+                        publisherId = followerId,
+                        receiverId = targetUser.id!!,
+                        notificationType = NotificationType.FOLLOW,
+                        targetBoardId = null
+                    )
+                )
+            )
+        } catch (e: DataIntegrityViolationException) {
+            // 원인을 분석하여 ConstraintViolationException 확인
+            val cause = e.cause
+            if (cause is ConstraintViolationException && cause.sqlState == "23000") {
+                // SQLState "23000"은 유니크 제약 조건 위반을 의미
+                unFollow(targetUser.id!!, followerId)
+            } else {
+                throw e // 다른 무결성 위반은 그대로 던지기
+            }
         }
     }
 
-    @Transactional
-    fun findFollowers(
-        username: String
-    ): List<UserSummaryDto>? {
-        return followRepository.findFollowersByUsername(username)
-            .map { UserSummaryDto.of(it) }
-        // exception? unknown username?
+    fun findFollowCounts(targetId: Long): FollowCounts{
+        return followRepository.findFollowCounts(targetId)
     }
 
-    @Transactional
-    fun findFollowings(
-        username: String,
-    ): List<UserSummaryDto> {
-        return followRepository.findFollowingsByUserId(username)
-            .map { UserSummaryDto.of(it) }
+    fun unFollow(followTargetId: Long, followerId: Long) {
+        val targetFollowEntityOpt = followRepository.findByFollowingIdAndFollowerId(followTargetId, followerId)
+        val targetFollowEntity = targetFollowEntityOpt.get()
+        targetFollowEntity.isFollow = false
+        followRepository.save(targetFollowEntity)
     }
-
 }

@@ -1,4 +1,4 @@
-package com.example.frontServer.dto.notification
+package com.example.frontServer.dto.notification.response
 
 import com.example.frontServer.dto.error.MSAServerErrorResponse
 import com.example.frontServer.dto.error.MSAServerErrorDetails
@@ -6,7 +6,7 @@ import com.example.frontServer.enum.MSAServerErrorCode
 
 data class NotificationGetServerResponse(
     // server response
-    val notificationGetServerResults: List<NotificationGetServerResult>,
+    val serverResults: List<NotificationGetServerResult>,
     override val errorDetails: MSAServerErrorDetails?,
-    override val responseCode: MSAServerErrorCode
-): MSAServerErrorResponse(errorDetails, responseCode)
+    override val errorCode: MSAServerErrorCode
+): MSAServerErrorResponse(errorDetails, errorCode)

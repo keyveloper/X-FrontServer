@@ -1,10 +1,11 @@
 package com.example.frontServer.service.like
 
 import com.example.frontServer.config.WebConfig
-import com.example.frontServer.dto.like.LikeSaveRequest
-import com.example.frontServer.dto.like.LikeSaveRequestToServer
-import com.example.frontServer.dto.like.LikeSaveResult
-import com.example.frontServer.dto.like.LikeServerSaveResponse
+import com.example.frontServer.dto.like.request.LikeSaveRequest
+import com.example.frontServer.dto.like.response.LikeSaveResult
+import com.example.frontServer.dto.like.response.LikeServerSaveResponse
+import com.example.frontServer.enum.MSAServerErrorCode
+import com.example.frontServer.service.noti.NotificationApiService
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
@@ -15,7 +16,8 @@ import org.springframework.web.util.UriBuilder
 @Service
 class LikeApiService(
     private val webConfig: WebConfig,
-    private val circuitBreakerRegistry: CircuitBreakerRegistry
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    private val notificationApiService: NotificationApiService
 ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("likeApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
@@ -24,9 +26,9 @@ class LikeApiService(
     @CircuitBreaker(
         name = "likeApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod")
-    fun save(likeRequest: LikeSaveRequest, userId: Long) {
+    fun saveRequest(likeRequest: LikeSaveRequest, userId: Long): LikeSaveResult { // controller에서 처리해ㅐ 줘야 해서. -클라이언트랑 직접 연관
         val likeServerWebClient = webConfig.createWebClient(
-            baseUrl = baseUrl
+            baseUrl = baseUrl,
         )
         val response = likeServerWebClient.post()
             .uri { uriBuilder: UriBuilder ->
@@ -35,7 +37,7 @@ class LikeApiService(
                     .build()
             }
             .bodyValue(
-                LikeSaveRequestToServer(
+                LikeSaveRequest(
                     boardId = likeRequest.boardId,
                     userId = userId,
                     likeType = likeRequest.likeType,
@@ -47,6 +49,20 @@ class LikeApiService(
             .retrieve()
             .bodyToMono(LikeServerSaveResponse::class.java)
             .block()
+
+        return if (response != null && response.errorCode != MSAServerErrorCode.SUCCESS) {
+            logger.error { response }
+            LikeSaveResult(
+                success = false,
+                message = "like save failed ..."
+            )
+        } else {
+            logger.info { response }
+            LikeSaveResult(
+                success = true,
+                message = "like save success!"
+            )
+        }
     }
 
     @CircuitBreaker(
@@ -62,11 +78,9 @@ class LikeApiService(
     fun saveFallbackMethod(boardId: Long, userId: Long, throwable: Throwable): LikeSaveResult {
         logger.error { "Fallback called in save due to ${throwable.message}" }
         logCircuitBreakerInfo()
-        return LikeSaveResult.of(
-            LikeServerSaveResponse(
-                error = null,
-                details = null
-            )
+        return LikeSaveResult(
+            success = false,
+            message = "Like api server closed ...\n${throwable.message}"
         )
     }
 

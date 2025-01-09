@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException::class)
     fun handleBusinessException(ex: BusinessException): ResponseEntity<String> {
-        return ResponseEntity.badRequest().body(
+        return ResponseEntity.status(ex.httpStatus).body(
             ex.message
         )
     }
-
 }

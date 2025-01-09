@@ -1,4 +1,4 @@
-package com.example.frontServer.dto.notification
+package com.example.frontServer.dto.notification.response
 
 import com.example.frontServer.enum.NotificationType
 import java.time.LocalDateTime

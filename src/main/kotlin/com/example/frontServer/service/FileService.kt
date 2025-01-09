@@ -33,15 +33,4 @@ class FileService(
             )
         }
     }
-
-    fun findFilesByToken(token: String): FileResult? {
-        val filePaths= boardImgRepository.findAllByToken(token).map {it.url}
-
-        val multipartFiles: List<MultipartFile> = filePaths.map { filePath ->
-            val file = File(filePath)
-
-            CustomMultipartFile(file)
-        }
-        return FileResult.of(files = multipartFiles)
-    }
 }

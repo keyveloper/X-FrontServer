@@ -26,7 +26,7 @@ data class CommentResult(
         fun of(
             boardWithCommentCount: BoardWithCommentCount,
             writerName: String,
-            likeCount: Int
+            likeCount: Long
         ): CommentResult {
             return CommentResult(
                 id = boardWithCommentCount.board.id!!,

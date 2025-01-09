@@ -1,15 +1,15 @@
-package com.example.frontServer.dto.notification
+package com.example.frontServer.dto.notification.response
 
 import java.time.LocalDateTime
 
 data class NotificationGetResult(
-    val id: Long,
+    val notiId: Long,
 
     val publisherName: String,
 
     val publisherImgUrl: String?,
 
-    val receiverId: Long, // optional
+    val publisherId: Long,
 
     val message: String,
 
@@ -23,10 +23,10 @@ data class NotificationGetResult(
             message: String
         ): NotificationGetResult {
             return NotificationGetResult(
-                id = serverResult.id,
+                notiId = serverResult.id,
                 publisherName = publisherName,
                 publisherImgUrl = publisherImgUrl,
-                receiverId = serverResult.receiverId,
+                publisherId = serverResult.publisherId,
                 message = message,
                 createdAt = serverResult.createdAt
             )

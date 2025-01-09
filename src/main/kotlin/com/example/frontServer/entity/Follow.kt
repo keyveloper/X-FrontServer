@@ -9,12 +9,13 @@ import org.springframework.data.annotation.CreatedBy
 )
 class Follow(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    var id: Long?,
 
-    @Column(name = "following_id")
-    var followingId: Long,
+    // follow당하는 타겟
+    val followingId: Long,
 
-    @CreatedBy
-    @Column(name = "follower_id")
-    var followerId: Long? = null
+    // follower 하고 있는 id
+    val followerId: Long,
+
+    var isFollow: Boolean,
 )

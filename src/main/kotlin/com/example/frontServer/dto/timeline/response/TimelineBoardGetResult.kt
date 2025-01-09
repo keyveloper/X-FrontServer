@@ -3,11 +3,14 @@ package com.example.frontServer.dto.timeline.response
 import com.example.frontServer.dto.board.BoardWithCommentCount
 import java.time.LocalDateTime
 
-data class TimelineBoardResult(
+data class TimelineBoardGetResult(
     val id: Long,
 
-    val writerName: String,
+    val userId: Long,
 
+    val username: String,
+
+    // profile image needed1!
     val textContent: String,
 
     val fileApiUrl: String?,
@@ -27,11 +30,12 @@ data class TimelineBoardResult(
             boardWithComment: BoardWithCommentCount,
             writerName: String,
             likeCount: Long
-            ): TimelineBoardResult {
+            ): TimelineBoardGetResult {
             val board = boardWithComment.board
-            return TimelineBoardResult(
+            return TimelineBoardGetResult(
                 id = board.id!!,
-                writerName = writerName,
+                userId = board.writerId,
+                username = writerName,
                 textContent = board.textContent,
                 fileApiUrl = board.fileApiUrl,
                 createdAt = board.createdAt!!,

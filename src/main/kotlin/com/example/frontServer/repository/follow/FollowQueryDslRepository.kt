@@ -1,15 +1,12 @@
 package com.example.frontServer.repository.follow
 
 import com.example.frontServer.dto.follow.FollowCounts
-import com.example.frontServer.entity.User
+import com.example.frontServer.entity.Follow
 import org.springframework.stereotype.Repository
 
 @Repository
 interface FollowQueryDslRepository {
-    // following Users
-    fun findFollowersByUsername(username: String): List<User>
+    fun findFollowCounts(targetUserId: Long): FollowCounts
 
-    fun findFollowingsByUserId(username: String): List<User>
-
-    fun findFollowCount(targetUserId: Long): FollowCounts
+    fun findFollowersById(targetUserId: Long): List<Follow>
 }

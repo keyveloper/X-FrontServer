@@ -8,11 +8,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 class WebConfig: WebMvcConfigurer {
-    fun createWebClient(baseUrl: String, language: String = "en"): WebClient {
+    fun createWebClient(baseUrl: String): WebClient {
         return WebClient.builder()
             .baseUrl(baseUrl)
             .defaultHeaders { headers ->
-                headers.add("Accept-Language", language)
                 // can add header!!
                 headers.add("Content-Type", "application/json")
             }

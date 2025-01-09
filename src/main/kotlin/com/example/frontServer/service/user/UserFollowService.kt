@@ -8,12 +8,7 @@ import org.springframework.stereotype.Service
 class UserFollowService(
     private val followerService: FollowService
 ) {
-    fun findFollowCount(targetUserName: String): FollowCounts {
-        val followerCount = followerService.findFollowings(targetUserName).size.toLong()
-        val followingCount = followerService.findFollowings(targetUserName).size.toLong()
-        return FollowCounts(
-            followerCount = followerCount,
-            followingCount = followingCount,
-        )
+    fun findFollowCount(id: Long): FollowCounts {
+        return followerService.findFollowCounts(id)
     }
 }

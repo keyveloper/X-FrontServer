@@ -1,11 +1,11 @@
-package com.example.frontServer.dto.notification
+package com.example.frontServer.dto.notification.response
 
 import com.example.frontServer.dto.error.MSAServerErrorResponse
 import com.example.frontServer.dto.error.MSAServerErrorDetails
 import com.example.frontServer.enum.MSAServerErrorCode
 
-class NotificationSaveServerResponse(
+class NotificationServerSaveResponse(
     val savedRow: Int,
     override val errorDetails: MSAServerErrorDetails?,
-    override val responseCode: MSAServerErrorCode
-): MSAServerErrorResponse(errorDetails, responseCode)
+    override val errorCode: MSAServerErrorCode
+): MSAServerErrorResponse(errorDetails, errorCode)

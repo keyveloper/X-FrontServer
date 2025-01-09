@@ -6,7 +6,7 @@ import com.example.frontServer.dto.board.request.CommentGetRequest
 import com.example.frontServer.dto.board.request.SingleBoardRequest
 import com.example.frontServer.dto.board.response.CommentResult
 import com.example.frontServer.dto.board.response.SingleBoardResult
-import com.example.frontServer.dto.notification.NotificationSaveRequest
+import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.timeline.request.TimelineSaveRequest
 import com.example.frontServer.entity.Board
 import com.example.frontServer.enum.NotificationType
@@ -19,6 +19,7 @@ import com.example.frontServer.service.like.LikeApiService
 import com.example.frontServer.service.noti.NotificationApiService
 import com.example.frontServer.service.timeline.TimelineApiService
 import jakarta.transaction.Transactional
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -45,7 +46,7 @@ class BoardService(
                 CommentResult.of(
                     boardWithCommentCount = it,
                     writerName = writerName,
-                    likeCount = likeCount.toInt()
+                    likeCount = likeCount
                 )
             }
     }
@@ -61,7 +62,7 @@ class BoardService(
                 CommentResult.of(
                     boardWithCommentCount = it,
                     writerName = writerName,
-                    likeCount = likeCount.toInt()
+                    likeCount = likeCount
                 )
             }
     }
@@ -80,14 +81,14 @@ class BoardService(
                 likeCount = likeCount
             )
         } else {
-            throw NotFoundEntityException("can't find this board: ${request.boardId}")
+            throw NotFoundEntityException(HttpStatus.NOT_FOUND ,"can't find this board: ${request.boardId}")
         }
     }
 
 
     // save
     @Transactional
-    fun save(request: BoardSaveRequest, writerId: Long, writerName: String, language: String) {
+    fun save(request: BoardSaveRequest, writerId: Long, writerName: String) {
         val savedBoard: Board = if (request.files != null) {
             val token = UUID.randomUUID().toString()
             fileService.saveBoardFile(request.files, token)
@@ -107,10 +108,10 @@ class BoardService(
             )
         }
         val boardId = savedBoard.id!!
-        val receivers: List<Long> = followRepository.findFollowersByUsername(writerName).map {it.id!!}
+        val receiverIds: List<Long> = followRepository.findFollowersById(writerId).map {it.id!!}
 
         saveNotification(
-            requests =  receivers.map {
+            requests =  receiverIds.map {
                 NotificationSaveRequest(
                     publisherId = writerId,
                     receiverId = it,
@@ -118,9 +119,8 @@ class BoardService(
                     targetBoardId = boardId
                 )
             },
-            language = language
         )
-        saveTimeline(boardId, receivers)
+        saveTimeline(boardId, receiverIds)
     }
 
     // delete
@@ -169,9 +169,8 @@ class BoardService(
 
     private fun saveNotification(
         requests: List<NotificationSaveRequest>,
-        language: String
     ) {
-        notificationService.save(requests, language)
+        notificationService.saveRequest(requests)
     }
 
     private fun fetchLikeCount(boardId: Long): Long {
