@@ -174,7 +174,23 @@ class NotificationApiService(
         return userRepository.findById(id).orElse(null).userImg
     }
 
+    @CircuitBreaker(
+        name = "notificationApiCircuitBreaker",
+        fallbackMethod = "testKafkaFallbackMethod"
+    )
+    fun testKafkaPublish(message: String) {
+        notificationProducer.testKafkaPublish(message)
+    }
+
     // fall back pattern : same parameter + Throwable , same return type,
+    fun testKafkaFallbackMethod(
+        message: String,
+        throwable: Throwable
+    ) {
+        logCircuitBreakerInfo()
+        logger.error { "run testKafkaFallback method! ${throwable.message}"}
+    }
+
     fun saveFallbackMethod(
         requests: List<*>,
         throwable: Throwable

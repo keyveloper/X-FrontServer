@@ -18,4 +18,9 @@ class NotificationKafkaProducer(
         }
         logger.info { "send request to Kafka server finished!" }
     }
+
+    fun testKafkaPublish(message: String) {
+        kafkaTemplate.send("test", message)
+        logger.info { "send message to kafka broker!! "}
+    }
 }
