@@ -34,6 +34,7 @@ class SecurityConfig(
                     .requestMatchers("/board/timeline/next").permitAll()
                     .requestMatchers("/lang").permitAll()
                     .requestMatchers("/noti/lang").permitAll()
+                    .requestMatchers("/test").permitAll()
                     .anyRequest().authenticated()
             }.exceptionHandling {
                 it.authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증 실패 처리
