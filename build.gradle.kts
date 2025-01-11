@@ -75,6 +75,8 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-spring-boot3:2.2.0")
     kapt("org.springframework.boot:spring-boot-configuration-processor:3.3.4")
 
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka")
 
 }
 

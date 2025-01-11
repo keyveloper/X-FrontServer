@@ -5,8 +5,6 @@ import com.example.frontServer.dto.notification.request.NotificationGetRequest
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.notification.response.NotificationGetResult
 import com.example.frontServer.dto.notification.response.NotificationGetServerResponse
-import com.example.frontServer.dto.notification.response.NotificationServerSaveResponse
-import com.example.frontServer.enum.MSAServerErrorCode
 import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.board.BoardRepository
 import com.example.frontServer.repository.user.UserRepository
@@ -14,8 +12,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.util.UriBuilder
-import java.util.*
 
 @Service
 class NotificationApiService(
@@ -24,6 +22,7 @@ class NotificationApiService(
     private val userRepository: UserRepository,
     private val boardRepository: BoardRepository,
     private val messageService: MessageService,
+    private val notificationProducer: NotificationKafkaProducer
     ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
@@ -33,35 +32,16 @@ class NotificationApiService(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod"
     )
-    // from board
+    // from board -> to kafka
     fun saveRequest(requests: List<NotificationSaveRequest>) {
-        val notiServerWebClient = webConfig.createWebClient(baseUrl)
-
-        val response = notiServerWebClient.post()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder
-                    .path("/notification/save")
-                    .build()
-            }
-            .bodyValue(
-                requests
-            )
-            .retrieve()
-            .bodyToMono(NotificationServerSaveResponse::class.java)
-            .block()
-
-        if (response != null && response.errorCode != MSAServerErrorCode.SUCCESS) {
-            logger.error { response }
-        } else {
-            logger.info { response?.errorCode }
-        }
-
+        notificationProducer.sendNotifications(requests)
     }
 
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "getInitFallbackMethod"
     )
+    @Transactional
     fun fetchInitAll(receiverId: Long, language: String): List<NotificationGetResult> {
         logger.info { "fetchInit start ${receiverId}, $language" }
         val notiServerWebClient = webConfig.createWebClient(baseUrl)
@@ -110,6 +90,7 @@ class NotificationApiService(
         // return noti server response
     }
 
+    @Transactional
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "getScrollFallbackMethod"
@@ -145,6 +126,8 @@ class NotificationApiService(
             NotificationGetResult.of(it, username, imgYrl, message)
         }
     }
+
+    @Transactional
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "getScrollFallbackMethod"
