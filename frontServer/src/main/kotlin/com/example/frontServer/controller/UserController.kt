@@ -1,11 +1,9 @@
 package com.example.frontServer.controller
 
-import com.example.frontServer.dto.GetUserResponse
-import com.example.frontServer.dto.ResponseToClientDto
-import com.example.frontServer.dto.SignUpRequest
-import com.example.frontServer.enum.FrontServerError
-import com.example.frontServer.enum.SignUpStatus
-import com.example.frontServer.service.UserService
+import com.example.frontServer.dto.user.response.UserProfileGetResponse
+import com.example.frontServer.dto.auth.SignUpRequest
+import com.example.frontServer.dto.user.request.UserProfileGetRequest
+import com.example.frontServer.service.user.UserService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -19,33 +17,18 @@ class UserController(
     @PostMapping("/sign-up")
     fun signUp(
         @Valid @RequestBody signUpRequest: SignUpRequest
-    ): ResponseEntity<ResponseToClientDto> {
-        val status: SignUpStatus = userService.signUp(signUpRequest)
-        return when (status) {
-            SignUpStatus.SUCCESS -> ResponseEntity.ok().body(
-                ResponseToClientDto(
-                    errorCode = null,
-                    data = status.message
-                )
-            )
-
-            SignUpStatus.DUPLICATED -> ResponseEntity.ok().body(
-                ResponseToClientDto(
-                    errorCode = FrontServerError.SAVE_FAILURE,
-                    data = status.message
-                )
-            )
-        }
+    ): ResponseEntity<Void> { // sign up 처리 다시
+        userService.signUp(signUpRequest)
+        return ResponseEntity.ok().build()
     }
 
-    @GetMapping("/user")
-    fun findUserInfoById(
-        @RequestParam loginId: String
-    ): ResponseEntity<GetUserResponse> {
-        val result = userService.findUserByLoginId(loginId)
-        if (result != null) {
-            return ResponseEntity.ok().body(GetUserResponse.of(result))
-        }
-        return ResponseEntity.notFound().build()
-    }//
+    @GetMapping("/getUserProfile")
+    fun findUserProfile(
+        @Valid @RequestBody request: UserProfileGetRequest
+    ): ResponseEntity<UserProfileGetResponse> {
+        val result = userService.findMainUserProfile(request)
+        return ResponseEntity.ok().body(
+            UserProfileGetResponse.of(result)
+        )
+    }
 }

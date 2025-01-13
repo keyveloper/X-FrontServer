@@ -1,6 +1,6 @@
 package com.example.frontServer.config
 
-import com.example.frontServer.repository.UserRepository
+import com.example.frontServer.repository.user.UserRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

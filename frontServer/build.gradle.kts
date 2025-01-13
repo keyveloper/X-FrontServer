@@ -4,14 +4,12 @@ plugins {
     id("org.springframework.boot") version "3.3.4"
     id("io.spring.dependency-management") version "1.1.6"
     kotlin("plugin.jpa") version "1.9.25"
-
     // for query DSL
     kotlin("kapt") version "1.9.25"
 }
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-
 
 // query DSL setting - Q class
 kapt{
@@ -54,6 +52,7 @@ dependencies {
     kapt ("jakarta.annotation:jakarta.annotation-api")
     kapt ("jakarta.persistence:jakarta.persistence-api")
 
+
     // jwt & security
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
@@ -74,7 +73,10 @@ dependencies {
     // Circuit Breaker : Resilience4j
     implementation("org.springframework.boot:spring-boot-starter-aop:3.3.4")
     implementation("io.github.resilience4j:resilience4j-spring-boot3:2.2.0")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.3.4")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:3.3.4")
+
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka")
 
 }
 
@@ -87,4 +89,3 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-//

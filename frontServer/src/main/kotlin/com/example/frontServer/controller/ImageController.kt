@@ -11,15 +11,10 @@ import org.springframework.web.bind.annotation.RestController
 class ImageController(
     private val fileService: FileService
 ) {
-    @GetMapping("/img")
-    fun findByToken(
-        @RequestBody token: String
-    ): ResponseEntity<FileResponse> {
-        return ResponseEntity.ok().body(
-            FileResponse(
-                fileResult = fileService.findFilesByToken(token),
-                errorResponse = null
-            )
-        )
-    }
+    // get
+
+    // save
+
+    // delete
+
 }

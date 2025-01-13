@@ -1,5 +1,8 @@
 package com.example.frontServer.exception
 
-import com.example.frontServer.enum.FrontServerError
+import org.springframework.http.HttpStatus
 
-class UnKnownIdException: ApplicationException(FrontServerError.UNKNOWN_ID.ordinal, "Unknown Id."){}
+class NotFoundEntityException(
+    override val httpStatus: HttpStatus = HttpStatus.NOT_FOUND,
+    override val message: String
+): BusinessException(httpStatus, message)

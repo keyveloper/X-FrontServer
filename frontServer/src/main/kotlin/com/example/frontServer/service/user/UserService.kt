@@ -44,7 +44,7 @@ class UserService(
     }
 
     @Transactional
-    fun findMainUserProfile(request: UserProfileGetRequest): UserProfileGetResult?{
+    fun findMainUserProfile(request: UserProfileGetRequest): UserProfileGetResult{
         // find user
         val user = userRepository.findById(request.userId).orElse(null)
         // find following, follower count
@@ -52,10 +52,10 @@ class UserService(
         if (user != null) {
             return UserProfileGetResult.of(
                 user,
-                userFollowService.findFollowCount(request.username),
+                userFollowService.findFollowCount(request.userId),
             )
         } else {
-            throw NotFoundEntityException("can't not find this user: ${request.userId}")
+            throw NotFoundEntityException(message = "can't not find this user: ${request.userId}")
         }
     }
 }

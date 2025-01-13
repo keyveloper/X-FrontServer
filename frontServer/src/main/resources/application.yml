@@ -22,6 +22,16 @@ spring:
         format_sql: true
     open-in-view: false
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 file:
   upload-dir: "C:/Users/dideh/Desktop/Spring/x/image"
 
@@ -46,4 +56,6 @@ resilience4j:
         automatic-transition-from-open-to-half-open-enabled: true
     instances:
       liveApiCircuitBreaker:
+        base-config: default
+      notificationApiCircuitBreaker:
         base-config: default
