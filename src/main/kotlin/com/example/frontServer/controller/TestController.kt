@@ -3,6 +3,7 @@ package com.example.frontServer.controller
 import com.example.frontServer.service.noti.NotificationApiService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -16,7 +17,7 @@ class TestController(
     }
 
     @PostMapping("/test/kafka")
-    fun testKafkaPublish(message: String) {
+    fun testKafkaPublish(@RequestBody message: String) {
         notificationApiService.testKafkaPublish(message)
     }
 }
