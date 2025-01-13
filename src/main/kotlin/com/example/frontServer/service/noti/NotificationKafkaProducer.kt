@@ -1,5 +1,6 @@
 package com.example.frontServer.service.noti
 
+import com.example.frontServer.dto.KafkaTestDto
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.kafka.core.KafkaTemplate
@@ -20,7 +21,10 @@ class NotificationKafkaProducer(
     }
 
     fun testKafkaPublish(message: String) {
-        kafkaTemplate.send("test", message)
+        // send(topic, message)
+        kafkaTemplate.send("test", KafkaTestDto(
+            id = 1, message = message
+        ))
         logger.info { "send message to kafka broker!! "}
     }
 }
