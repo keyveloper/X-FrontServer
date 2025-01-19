@@ -3,9 +3,11 @@ package com.example.frontServer.service.user
 import com.example.frontServer.dto.user.response.UserProfileGetResult
 import com.example.frontServer.dto.auth.SignUpRequest
 import com.example.frontServer.dto.user.request.UserProfileGetRequest
+import com.example.frontServer.entity.RedisUser
 import com.example.frontServer.entity.User
 import com.example.frontServer.entity.UserRole
 import com.example.frontServer.exception.NotFoundEntityException
+import com.example.frontServer.repository.user.RedisUserRepository
 import com.example.frontServer.repository.user.UserRepository
 import com.example.frontServer.repository.user.UserRoleRepository
 import jakarta.transaction.Transactional
@@ -17,7 +19,8 @@ class UserService(
     private val userRepository: UserRepository,
     private val userRoleRepository: UserRoleRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val userFollowService: UserFollowService
+    private val userFollowService: UserFollowService,
+    private val redisUserRepository: RedisUserRepository
 ) {
     @Transactional
     fun signUp(request: SignUpRequest) {
@@ -45,15 +48,28 @@ class UserService(
 
     @Transactional
     fun findMainUserProfile(request: UserProfileGetRequest): UserProfileGetResult{
+        // first find in redis
+        val redisUser: RedisUser? = redisUserRepository.findRedisUserByUserId(request.userId)
+        redisUser?.let {
+            return UserProfileGetResult.of(it)
+        }
+
         // find user
         val user = userRepository.findById(request.userId).orElse(null)
-        // find following, follower count
 
+        // find following, follower count
         if (user != null) {
-            return UserProfileGetResult.of(
+            val newProfileResult = UserProfileGetResult.of(
                 user,
-                userFollowService.findFollowCount(request.userId),
+                userFollowService.findFollowCount(request.userId)
             )
+
+            // save in redis
+            val newRedisUser = RedisUser.of(newProfileResult)
+            redisUserRepository.save(newRedisUser)
+
+            return newProfileResult
+
         } else {
             throw NotFoundEntityException(message = "can't not find this user: ${request.userId}")
         }

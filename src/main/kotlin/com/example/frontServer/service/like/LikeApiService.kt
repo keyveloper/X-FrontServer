@@ -4,7 +4,10 @@ import com.example.frontServer.config.WebConfig
 import com.example.frontServer.dto.like.request.LikeSaveRequest
 import com.example.frontServer.dto.like.response.LikeSaveResult
 import com.example.frontServer.dto.like.response.LikeServerSaveResponse
+import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.enum.MSAServerErrorCode
+import com.example.frontServer.enum.NotificationType
+import com.example.frontServer.service.noti.KafkaProducerService
 import com.example.frontServer.service.noti.NotificationApiService
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -17,7 +20,7 @@ import org.springframework.web.util.UriBuilder
 class LikeApiService(
     private val webConfig: WebConfig,
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
-    private val notificationApiService: NotificationApiService
+    private val kafkaProducerService: KafkaProducerService
 ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("likeApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
@@ -26,7 +29,7 @@ class LikeApiService(
     @CircuitBreaker(
         name = "likeApiCircuitBreaker",
         fallbackMethod = "saveFallbackMethod")
-    fun saveRequest(likeRequest: LikeSaveRequest, userId: Long): LikeSaveResult { // controller에서 처리해ㅐ 줘야 해서. -클라이언트랑 직접 연관
+    fun saveRequest(likeRequest: LikeSaveRequest, userId: Long): LikeSaveResult { // userId = active user
         val likeServerWebClient = webConfig.createWebClient(
             baseUrl = baseUrl,
         )
@@ -52,10 +55,21 @@ class LikeApiService(
 
         return if (response != null && response.errorCode != MSAServerErrorCode.SUCCESS) {
             logger.error { response }
+
+            kafkaProducerService.sendNoti(
+                NotificationSaveRequest(
+                    publisherId = userId,
+                    receiverId = likeRequest.userId,
+                    notificationType = NotificationType.LIKE,
+                    targetBoardId = null
+                )
+            )
             LikeSaveResult(
                 success = false,
                 message = "like save failed ..."
             )
+
+
         } else {
             logger.info { response }
             LikeSaveResult(

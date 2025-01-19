@@ -16,7 +16,7 @@ import com.example.frontServer.repository.follow.FollowRepository
 import com.example.frontServer.repository.user.UserRepository
 import com.example.frontServer.service.FileService
 import com.example.frontServer.service.like.LikeApiService
-import com.example.frontServer.service.noti.NotificationApiService
+import com.example.frontServer.service.noti.KafkaProducerService
 import com.example.frontServer.service.timeline.TimelineApiService
 import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
@@ -26,12 +26,12 @@ import java.util.*
 @Service
 class BoardService(
     private val boardRepository: BoardRepository,
-    private val notificationService: NotificationApiService,
     private val fileService: FileService,
     private val followRepository: FollowRepository,
     private val likeApiService: LikeApiService,
     private val timelineApiService: TimelineApiService,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val kafkaProducerService: KafkaProducerService
 ) {
     @Transactional
     // get Comment init
@@ -170,7 +170,9 @@ class BoardService(
     private fun saveNotification(
         requests: List<NotificationSaveRequest>,
     ) {
-        notificationService.saveRequest(requests)
+        requests.map {
+            kafkaProducerService.sendNoti(it)
+        }
     }
 
     private fun fetchLikeCount(boardId: Long): Long {

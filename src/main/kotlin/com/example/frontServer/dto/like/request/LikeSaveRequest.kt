@@ -8,7 +8,7 @@ data class LikeSaveRequest(
     val boardId: Long,
 
     @field:NotNull
-    val userId: Long,
+    val userId: Long, // target user
 
     @field:NotNull
     val likeType: LikeType

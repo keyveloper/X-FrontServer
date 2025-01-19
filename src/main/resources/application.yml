@@ -26,13 +26,12 @@ spring:
     basename: messages
     encoding: UTF-8
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.add.type.headers: true
+  # redis
+  data:
+    redis:
+      host: 192.168.17.79
+      port: 6379
+      password: "redis0378"
 
 file:
   upload-dir: "C:/Users/dideh/Desktop/Spring/x/image"

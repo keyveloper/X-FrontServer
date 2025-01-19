@@ -5,7 +5,6 @@ import com.example.frontServer.dto.notification.request.NotificationGetRequest
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.notification.response.NotificationGetResult
 import com.example.frontServer.dto.notification.response.NotificationGetServerResponse
-import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.board.BoardRepository
 import com.example.frontServer.repository.user.UserRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -22,20 +21,10 @@ class NotificationApiService(
     private val userRepository: UserRepository,
     private val boardRepository: BoardRepository,
     private val messageService: MessageService,
-    private val notificationProducer: NotificationKafkaProducer
     ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
     private val baseUrl = "http://localhost:8081"
-
-    @CircuitBreaker(
-        name = "notificationApiCircuitBreaker",
-        fallbackMethod = "saveFallbackMethod"
-    )
-    // from board -> to kafka
-    fun saveRequest(requests: List<NotificationSaveRequest>) {
-        notificationProducer.sendNotifications(requests)
-    }
 
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
@@ -114,16 +103,15 @@ class NotificationApiService(
 
         return results.map {
             val username = findUserNameById(it.publisherId)
-            val imgYrl = findUserImgUrlById(it.publisherId)
-            val targetBoard = it.targetBoardId?.let {
-                    id -> boardRepository.findById(id).orElseThrow {
-                NotFoundEntityException(message = "Can't find board... id : ${id}")
+            val imgUrl = findUserImgUrlById(it.publisherId)
+            val targetBoard = it.targetBoardId?.let { id ->
+                boardRepository.findById(id).orElse(null)
             }
-            }
-
+            logger.info {"make message start! ${username}, ${imgUrl}, ${targetBoard}"}
             val message = messageService.makeMessage(
-                it.notificationType, targetBoard, targetBoard!!.id!!, username, language)
-            NotificationGetResult.of(it, username, imgYrl, message)
+                it.notificationType, targetBoard, targetBoard?.id, username, language
+            )
+            NotificationGetResult.of(it, username, imgUrl, message)
         }
     }
 
@@ -152,16 +140,15 @@ class NotificationApiService(
         val results = response?.serverResults ?: emptyList()
         return results.map {
             val username = findUserNameById(it.publisherId)
-            val imgYrl = findUserImgUrlById(it.publisherId)
-            val targetBoard = it.targetBoardId?.let {
-                    id -> boardRepository.findById(id).orElseThrow {
-                NotFoundEntityException(message = "Can't find board... id : ${id}")
+            val imgUrl = findUserImgUrlById(it.publisherId)
+            val targetBoard = it.targetBoardId?.let { id ->
+                boardRepository.findById(id).orElse(null)
             }
-            }
-
+            logger.info {"make message start! ${username}, ${imgUrl}, ${targetBoard}"}
             val message = messageService.makeMessage(
-                it.notificationType, targetBoard, targetBoard!!.id!!, username, language)
-            NotificationGetResult.of(it, username, imgYrl, message)
+                it.notificationType, targetBoard, targetBoard?.id, username, language
+            )
+            NotificationGetResult.of(it, username, imgUrl, message)
         }
     }
 
@@ -178,18 +165,6 @@ class NotificationApiService(
         name = "notificationApiCircuitBreaker",
         fallbackMethod = "testKafkaFallbackMethod"
     )
-    fun testKafkaPublish(message: String) {
-        notificationProducer.testKafkaPublish(message)
-    }
-
-    // fall back pattern : same parameter + Throwable , same return type,
-    fun testKafkaFallbackMethod(
-        message: String,
-        throwable: Throwable
-    ) {
-        logCircuitBreakerInfo()
-        logger.error { "run testKafkaFallback method! ${throwable.message}"}
-    }
 
     fun saveFallbackMethod(
         requests: List<*>,
