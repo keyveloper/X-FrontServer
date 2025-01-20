@@ -13,11 +13,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 @Configuration
 @EnableRedisRepositories
 class RedisConfig {
-    @Bean
-    fun redisConnectionFactory(): RedisConnectionFactory {
-        // host, port 가 yaml을 통해 주입된다.
-        return LettuceConnectionFactory()
-    }
 
     @Bean
     fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {

@@ -45,8 +45,8 @@ class FollowService(
             // send noti
             kafkaProducerService.sendNoti(
                 NotificationSaveRequest(
-                    publisherId = targetUser.id!!,
-                    receiverId = followerId,
+                    publisherId = followerId,
+                    receiverId = targetUser.id!!,
                     notificationType = NotificationType.FOLLOW,
                     targetBoardId = null
                 )

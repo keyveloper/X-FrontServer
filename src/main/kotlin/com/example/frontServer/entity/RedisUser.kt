@@ -1,8 +1,8 @@
 package com.example.frontServer.entity
 
 import com.example.frontServer.dto.user.response.UserProfileGetResult
-import jakarta.persistence.Id
 import org.springframework.data.redis.core.RedisHash
+import org.springframework.data.annotation.Id
 import java.time.LocalDate
 import java.time.LocalDateTime
 

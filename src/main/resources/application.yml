@@ -60,3 +60,11 @@ resilience4j:
         base-config: default
       notificationApiCircuitBreaker:
         base-config: default
+
+
+# redis log
+logging:
+  level:
+    io.lettuce.core: DEBUG
+    io.netty: DEBUG
+    org.springframework.data.redis: DEBUG

@@ -108,10 +108,10 @@ class BoardService(
             )
         }
         val boardId = savedBoard.id!!
-        val receiverIds: List<Long> = followRepository.findFollowersById(writerId).map {it.id!!}
+        val receiverIds: List<Long> = followRepository.findFollowersById(writerId).map {it.followerId}
 
         saveNotification(
-            requests =  receiverIds.map {
+            requests = receiverIds.map {
                 NotificationSaveRequest(
                     publisherId = writerId,
                     receiverId = it,

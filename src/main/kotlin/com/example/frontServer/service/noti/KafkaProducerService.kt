@@ -35,9 +35,4 @@ class KafkaProducerService(
             logger.error { "sendMessage error: ${e.message}" }
         }
     }
-
-    // 일단 보류
-    fun sendNotis(requests: List<NotificationSaveRequest>) {
-        val topicName = "noti"
-    }
 }
