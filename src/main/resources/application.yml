@@ -1,18 +1,14 @@
 spring:
+  config:
+    import: application-db.yml, application-redis.yml, application-kafka.yml
+  profiles:
+    group:  # group name & profile names
+      local: db-local-window, redis-local-window, kafka-local-window
+      beta: db-beta-linux, redis-beta-linux, kafka-beta-linux
+  profiles.default: local
+
   application:
     name: x
-
-  datasource:
-    url: jdbc:mariadb://localhost:3306/x?useSSL=false&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
-    username: root
-    password: 1234
-    driver-class-name: org.mariadb.jdbc.Driver
-    hikari:
-      connection-timeout: 20000
-      minimum-idle: 10
-      maximum-pool-size: 10
-      idle-timeout: 300000
-      pool-name: SpringBootJPAHikariCP
 
   jpa:
     database: mysql
@@ -21,17 +17,9 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
-
   messages:
     basename: messages
     encoding: UTF-8
-
-  # redis
-  data:
-    redis:
-      host: 192.168.17.79
-      port: 6379
-      password: "redis0378"
 
 file:
   upload-dir: "C:/Users/dideh/Desktop/Spring/x/image"
