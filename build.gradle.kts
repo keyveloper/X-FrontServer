@@ -80,6 +80,10 @@ dependencies {
 
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    // logstash-logback-encoder
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
+
 }
 
 kotlin {
