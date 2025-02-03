@@ -7,5 +7,5 @@ import com.example.frontServer.enum.MSAServerErrorCode
 class NotificationServerSaveResponse(
     val savedRow: Int,
     override val errorDetails: MSAServerErrorDetails?,
-    override val errorCode: MSAServerErrorCode
+    override val errorCode: Int
 ): MSAServerErrorResponse(errorDetails, errorCode)

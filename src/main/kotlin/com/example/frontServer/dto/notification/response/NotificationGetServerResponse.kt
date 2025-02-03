@@ -8,5 +8,5 @@ data class NotificationGetServerResponse(
     // server response
     val serverResults: List<NotificationGetServerResult>,
     override val errorDetails: MSAServerErrorDetails?,
-    override val errorCode: MSAServerErrorCode
+    override val errorCode: Int
 ): MSAServerErrorResponse(errorDetails, errorCode)

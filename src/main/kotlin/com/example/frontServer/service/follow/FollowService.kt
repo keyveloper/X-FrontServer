@@ -4,16 +4,15 @@ import com.example.frontServer.dto.follow.FollowCounts
 import com.example.frontServer.dto.follow.FollowSaveRequest
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.entity.Follow
+import com.example.frontServer.enum.EntityType
 import com.example.frontServer.enum.NotificationType
 import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.follow.FollowRepository
 import com.example.frontServer.repository.user.UserRepository
 import com.example.frontServer.service.noti.KafkaProducerService
-import com.example.frontServer.service.noti.NotificationApiService
 import jakarta.transaction.Transactional
 import org.hibernate.exception.ConstraintViolationException
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
@@ -27,8 +26,8 @@ class FollowService(
         val targetUser = userRepository.findById(request.targetId)
             .orElseThrow {
                 NotFoundEntityException(
-                    HttpStatus.NOT_FOUND,
-                    "can't find follow target id: ${request.targetId}"
+                    entityType = EntityType.USER.code,
+                    id = request.targetId
                 )
             }
 

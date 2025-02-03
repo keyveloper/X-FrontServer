@@ -37,7 +37,7 @@ class AuthController(
         return ResponseEntity.ok().body(
                 TokenValidationResponse(
                     id = user.getUserId(),
-                    statusDetailsCode = StatusDetailCode.SUCCESS,
+                    statusDetailsCode = StatusDetailCode.SUCCESS.code,
                     message = null
                 )
         )

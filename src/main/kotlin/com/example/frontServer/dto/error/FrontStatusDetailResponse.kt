@@ -1,8 +1,6 @@
 package com.example.frontServer.dto.error
 
-import com.example.frontServer.enum.StatusDetailCode
-
 open class FrontStatusDetailResponse(
-    open val statusDetailsCode: StatusDetailCode,
+    open val statusDetailsCode: Long,
     open val message: String?,
 )

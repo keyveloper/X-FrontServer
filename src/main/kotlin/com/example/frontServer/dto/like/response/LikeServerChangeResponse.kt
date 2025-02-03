@@ -2,8 +2,8 @@ package com.example.frontServer.dto.like.response
 
 import com.example.frontServer.dto.error.MSAServerErrorDetails
 
-data class LikeServerSaveResponse(
-    val result: LikeServerSaveResult,
+data class LikeServerChangeResponse(
+    val result: LikeServerChangeResult,
     val errorCode: Int,
     val errorDetails: MSAServerErrorDetails?
 )

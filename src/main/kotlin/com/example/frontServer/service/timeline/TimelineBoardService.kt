@@ -71,7 +71,7 @@ class TimelineBoardService(
         return timelineService.requestTimelinePrevBoardIds(request)
     }
 
-    private fun fetchLikeCount(boardId: Long): Long {
-        return likeApiService.fetchLikeCountByBoardId(boardId)
+    private fun fetchLikeCount(targetBoardId: Long): Long {
+        return likeApiService.fetchLikeCounts(targetBoardId)
     }
 }

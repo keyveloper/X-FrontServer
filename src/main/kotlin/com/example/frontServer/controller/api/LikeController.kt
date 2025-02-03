@@ -1,11 +1,14 @@
 package com.example.frontServer.controller.api
 
+import com.example.frontServer.dto.like.request.LikeChangeRequest
 import com.example.frontServer.dto.like.request.LikeSaveRequest
+import com.example.frontServer.dto.like.response.LikeChangeResponse
+import com.example.frontServer.dto.like.response.LikeSaveResponse
+import com.example.frontServer.enum.StatusDetailCode
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.like.LikeApiService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,20 +21,31 @@ class LikeController(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @PostMapping("/like")
+    @PostMapping("/saveLike")
     fun save(
         @Valid @RequestBody likeRequest: LikeSaveRequest,
-        @AuthenticationPrincipal user: AuthUserDetails
-    ): ResponseEntity<String> {
-        val result = likeService.saveRequest(likeRequest, user.getUserId())
-
-        return if (result.success) {
-            ResponseEntity.ok().body(
-                result.message
+    ): ResponseEntity<LikeSaveResponse> {
+        val result = likeService.saveRequest(likeRequest)
+        return ResponseEntity.ok().body(
+            LikeSaveResponse.of(
+                result,
+                StatusDetailCode.SUCCESS.code,
+                message = null
             )
-        } else {
-            ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(result.message)
-            // 이렇게 보내는거  괜찮??
-        }
+        )
+    }
+
+    @PostMapping("/changeLike")
+    fun changeType(
+        @Valid @RequestBody request: LikeChangeRequest
+    ): ResponseEntity<LikeChangeResponse> {
+        val result = likeService.changeRequest(request)
+        return ResponseEntity.ok().body(
+            LikeChangeResponse.of(
+                result,
+                StatusDetailCode.SUCCESS.code,
+                message = "change success"
+            )
+        )
     }
 }

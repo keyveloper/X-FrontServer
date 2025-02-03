@@ -9,6 +9,7 @@ import com.example.frontServer.dto.board.response.SingleBoardResult
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.timeline.request.TimelineSaveRequest
 import com.example.frontServer.entity.Board
+import com.example.frontServer.enum.EntityType
 import com.example.frontServer.enum.NotificationType
 import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.board.BoardRepository
@@ -19,7 +20,6 @@ import com.example.frontServer.service.like.LikeApiService
 import com.example.frontServer.service.noti.KafkaProducerService
 import com.example.frontServer.service.timeline.TimelineApiService
 import jakarta.transaction.Transactional
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -81,7 +81,10 @@ class BoardService(
                 likeCount = likeCount
             )
         } else {
-            throw NotFoundEntityException(HttpStatus.NOT_FOUND ,"can't find this board: ${request.boardId}")
+            throw NotFoundEntityException(
+                entityType = EntityType.BOARD.code,
+                id = request.boardId
+            )
         }
     }
 
@@ -175,9 +178,7 @@ class BoardService(
         }
     }
 
-    private fun fetchLikeCount(boardId: Long): Long {
-        return likeApiService.fetchLikeCountByBoardId(boardId)
+    private fun fetchLikeCount(targetBoardId: Long): Long {
+        return likeApiService.fetchLikeCounts(targetBoardId)
     }
-
-
 }

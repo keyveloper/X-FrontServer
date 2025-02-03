@@ -6,6 +6,7 @@ import com.example.frontServer.dto.user.request.UserProfileGetRequest
 import com.example.frontServer.entity.RedisUser
 import com.example.frontServer.entity.User
 import com.example.frontServer.entity.UserRole
+import com.example.frontServer.enum.EntityType
 import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.user.RedisUserRepository
 import com.example.frontServer.repository.user.UserRepository
@@ -71,7 +72,10 @@ class UserService(
             return newProfileResult
 
         } else {
-            throw NotFoundEntityException(message = "can't not find this user: ${request.userId}")
+            throw NotFoundEntityException(
+                entityType = EntityType.USER.code,
+                id = request.userId
+            )
         }
     }
 }

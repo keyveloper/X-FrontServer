@@ -29,7 +29,7 @@ class JwtAuthenticationEntryPoint : AuthenticationEntryPoint {
             // DTO 객체 생성
             val tokenValidationResponse = TokenValidationResponse(
                 id = null, // 오류 상황에는 id가 없을 수도 있음
-                statusDetailsCode = StatusDetailCode.FAILED, // 예시로 사용한 코드, 실제 코드로 대체
+                statusDetailsCode = StatusDetailCode.FAILED.code, // 예시로 사용한 코드, 실제 코드로 대체
                 message = "Invalid or expired JWT token."
             )
 
