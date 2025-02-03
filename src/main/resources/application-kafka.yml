@@ -21,4 +21,4 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       acks: 1
 
-    bootstrap-servers: localhost:9092  # localhost
+    bootstrap-servers: 192.168.198.79:9092  # localhost
