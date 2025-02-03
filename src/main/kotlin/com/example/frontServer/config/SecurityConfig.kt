@@ -36,6 +36,7 @@ class SecurityConfig(
                     .requestMatchers("/noti/lang").permitAll()
                     .requestMatchers("/test").permitAll()
                     .requestMatchers("/test/kafka").permitAll()
+                    .requestMatchers("/saveLog").permitAll()
                     .anyRequest().authenticated()
             }.exceptionHandling {
                 it.authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증 실패 처리
