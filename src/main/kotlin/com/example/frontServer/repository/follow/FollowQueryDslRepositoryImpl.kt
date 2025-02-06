@@ -3,7 +3,6 @@ package com.example.frontServer.repository.follow
 import com.example.frontServer.dto.follow.FollowCounts
 import com.example.frontServer.entity.Follow
 import com.example.frontServer.entity.QFollow
-import com.example.frontServer.entity.QUser
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
@@ -13,7 +12,6 @@ class FollowQueryDslRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ): FollowQueryDslRepository {
     private val follow = QFollow.follow
-    private val qUser = QUser.user
 
     override fun findFollowCounts(targetUserId: Long): FollowCounts {
         val followingCountExpr = CaseBuilder()

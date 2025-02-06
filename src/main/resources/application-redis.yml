@@ -1,22 +1,22 @@
 spring:
   config:
-    active:
+    activate:
       on-profile: redis-local-window
 
   data:
     redis:
-      host: 192.168.198.79
+      host: 192.168.210.79
       port: 6379
       password: "redis0378"
 
 ---
 spring:
   config:
-    active:
+    activate:
       on-profile: redis-beta-linux
 
   data:
     redis:
-      host: localhost
+      host: localhost:79
       port: 6379
       password: "redis0378"

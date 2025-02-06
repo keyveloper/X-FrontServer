@@ -1,13 +1,12 @@
 package com.example.frontServer.dto.user.response
 
 import com.example.frontServer.dto.follow.FollowCounts
-import com.example.frontServer.entity.RedisUser
 import com.example.frontServer.entity.User
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class UserProfileGetResult(
-    val id: Long,
+    val id: Long, // userId
     val username: String,
     val email: String,
     val profileImgUrl: String?,
@@ -31,21 +30,6 @@ data class UserProfileGetResult(
                 firstMadeDate = user.firstMadeDate!!,
                 followingCount = followCounts.followingCount,
                 followerCount = followCounts.followerCount
-            )
-        }
-
-        fun of(redisUser: RedisUser): UserProfileGetResult {
-            return UserProfileGetResult(
-                id = redisUser.userId,
-                username = redisUser.username,
-                email = redisUser.email,
-                profileImgUrl = redisUser.userImg,
-                introduction = redisUser.introduction,
-                birthday = redisUser.birthday,
-                country = redisUser.country,
-                firstMadeDate = redisUser.firstMadeDate,
-                followingCount = redisUser.followingCount,
-                followerCount = redisUser.followerCount
             )
         }
     }

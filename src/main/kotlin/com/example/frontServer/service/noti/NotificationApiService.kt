@@ -66,7 +66,7 @@ class NotificationApiService(
                 val targetBoard = it.targetBoardId?.let { id ->
                     boardRepository.findById(id).orElse(null)
                 }
-                logger.info {"make message start! ${username}, ${imgUrl}, ${targetBoard}"}
+                logger.info {"make message start! ${username}, ${imgUrl}, $targetBoard"}
                 val message = messageService.makeMessage(
                     it.notificationType, targetBoard, targetBoard?.id, username, language
                 )
@@ -107,7 +107,7 @@ class NotificationApiService(
             val targetBoard = it.targetBoardId?.let { id ->
                 boardRepository.findById(id).orElse(null)
             }
-            logger.info {"make message start! ${username}, ${imgUrl}, ${targetBoard}"}
+            logger.info {"make message start! ${username}, ${imgUrl}, $targetBoard"}
             val message = messageService.makeMessage(
                 it.notificationType, targetBoard, targetBoard?.id, username, language
             )
@@ -144,7 +144,7 @@ class NotificationApiService(
             val targetBoard = it.targetBoardId?.let { id ->
                 boardRepository.findById(id).orElse(null)
             }
-            logger.info {"make message start! ${username}, ${imgUrl}, ${targetBoard}"}
+            logger.info {"make message start! ${username}, ${imgUrl}, $targetBoard"}
             val message = messageService.makeMessage(
                 it.notificationType, targetBoard, targetBoard?.id, username, language
             )

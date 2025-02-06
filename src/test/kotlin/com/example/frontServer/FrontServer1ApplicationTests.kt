@@ -6,9 +6,7 @@ import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
 class FrontServer1ApplicationTests {
-
     @Test
     fun contextLoads() {
     }
-
 }
