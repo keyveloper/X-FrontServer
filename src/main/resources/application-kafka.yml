@@ -6,8 +6,7 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: 1
-    bootstrap-servers: 192.168.198.79:9092
+    bootstrap-servers: 192.168.210.79:9092
 
 ---
 spring:
@@ -19,6 +18,5 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: 1
 
-    bootstrap-servers: 192.168.198.79:9092  # localhost
+    bootstrap-servers: localhost:9092  # localhost
