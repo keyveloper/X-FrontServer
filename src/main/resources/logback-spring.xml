@@ -36,10 +36,8 @@
         </encoder>
     </appender>
 
-    <!-- 기본 로그레벨 INFO 이상 로그는 LOGSTASH appender로 전송 -->
-    <root level="INFO">
-        <appender-ref ref="LOGSTASH" />
-    </root>
+    <logger name="com.example.logstash" level="INFO" additivity="false">
+        <appender-ref ref="LOGSTASH"/>
+    </logger>
 
-    <!-- 추가 설정이 필요한 경우 여기에 계속 작성 -->
 </configuration>

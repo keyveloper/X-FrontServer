@@ -6,10 +6,12 @@ import com.example.frontServer.dto.board.request.CommentGetRequest
 import com.example.frontServer.dto.board.request.SingleBoardRequest
 import com.example.frontServer.dto.board.response.CommentResult
 import com.example.frontServer.dto.board.response.SingleBoardResult
+import com.example.frontServer.dto.logstash.BoardWriteEventLog
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.timeline.request.TimelineSaveRequest
 import com.example.frontServer.entity.Board
 import com.example.frontServer.enum.EntityType
+import com.example.frontServer.enum.LogEvent
 import com.example.frontServer.enum.NotificationType
 import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.board.BoardRepository
@@ -19,7 +21,10 @@ import com.example.frontServer.service.FileService
 import com.example.frontServer.service.like.LikeApiService
 import com.example.frontServer.service.noti.KafkaProducerService
 import com.example.frontServer.service.timeline.TimelineApiService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
+import net.logstash.logback.argument.StructuredArguments
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -33,6 +38,9 @@ class BoardService(
     private val userRepository: UserRepository,
     private val kafkaProducerService: KafkaProducerService
 ) {
+    private val logstashLogger = LoggerFactory.getLogger("com.example.logstash")
+    private val logger = KotlinLogging.logger {}
+
     @Transactional
     // get Comment init
     fun findInitComment(request: CommentGetRequest): List<CommentResult> {
@@ -123,7 +131,17 @@ class BoardService(
                 )
             },
         )
+
+        val event = BoardWriteEventLog(
+            logEvent = LogEvent.BOARD_WRITE.code,
+            boardId = boardId,
+            userId = writerId
+        )
         saveTimeline(boardId, receiverIds)
+        logstashLogger.info(
+            "Board event occurred",
+            StructuredArguments.keyValue("boardWriteEvent", event)
+        )
     }
 
     // delete
