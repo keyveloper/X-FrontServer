@@ -13,37 +13,32 @@
         </encoder>
     </appender>
 
+    <springProfile name="kafka-local-window">
+        <!-- logstash ip:port-->
+        <property name="LOGSTASH_HOST" value="192.168.210.79"/>
+    </springProfile>
+
+    <springProfile name="kafka-beta-linux">
+        <property name="LOGSTASH_HOST" value="localhost"/>
+    </springProfile>
+
+
     <!-- error level의 log가 저장된다. -->
     <logger name="com.example.frontServer.testFileSaveLogger" level="ERROR" additivity="false">
         <appender-ref ref="TEST_FILE" />
     </logger>
 
-    <!-- 파일 경로 설정: root 프로젝트의 log/board/save/ -->
-    <property name="BOARD_SAVE_LOG_PATH" value="${LOG_HOME:-./log}/board/save" />
-    <!-- 날짜별 롤링 파일 명칭 -->
-    <property name="BOARD_SAVE_LOG_FILE" value="${BOARD_SAVE_LOG_PATH}/board-save-%d{yyyy-MM-dd}.json" />
-
-    <!-- JSON 로깅을 위한 dependency: net.logstash.logback:logstash-logback-encoder -->
-    <appender name="BOARD_JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${BOARD_SAVE_LOG_PATH}/board-save-current.json</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${BOARD_SAVE_LOG_FILE}.gz</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${LOGSTASH_HOST}</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <!-- 추가 필드 삽입: 예를 들어 service명, 작성자 아이디 등 MDC에서 전달 -->
-            <customFields>{"service":"frontServer", "logType":"board-save"}</customFields>
+            <!-- 커스텀 필드 추가 (필요 시)) -->
+            <customFields>{"appName":"MySpringBootApp"}</customFields>
         </encoder>
     </appender>
 
-    <!-- 게시글 저장 관련 로거 지정 (패키지 또는 클래스 단위) -->
-    <logger name="com.example.frontServer.service.board.BoardService" level="INFO" additivity="false">
-        <appender-ref ref="BOARD_JSON" />
-    </logger>
-
-    <!-- 기본 콘솔 로그 등 다른 로깅은 기본 설정 사용 -->
+    <!-- 기본 로그레벨 INFO 이상 로그는 LOGSTASH appender로 전송 -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="LOGSTASH" />
     </root>
 
     <!-- 추가 설정이 필요한 경우 여기에 계속 작성 -->
