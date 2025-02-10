@@ -27,6 +27,7 @@ import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.math.log
 
 @Service
 class BoardService(
@@ -142,6 +143,7 @@ class BoardService(
             "Board event occurred",
             StructuredArguments.keyValue("boardWriteEvent", event)
         )
+        logger.info {"send Event logger to logstash server: $event"}
     }
 
     // delete

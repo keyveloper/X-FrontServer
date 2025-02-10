@@ -15,14 +15,14 @@
 
     <springProfile name="kafka-local-window">
         <!-- logstash ip:port-->
-        <property name="LOGSTASH_HOST" value="192.168.210.79"/>
+        <property name="LOGSTASH_HOST" value="192.168.16.79:5044"/>
     </springProfile>
 
     <springProfile name="kafka-beta-linux">
-        <property name="LOGSTASH_HOST" value="localhost"/>
+        <property name="LOGSTASH_HOST" value="localhost:5044"/>
     </springProfile>
 
-
+ddd
     <!-- error level의 log가 저장된다. -->
     <logger name="com.example.frontServer.testFileSaveLogger" level="ERROR" additivity="false">
         <appender-ref ref="TEST_FILE" />
