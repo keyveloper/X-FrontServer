@@ -2,7 +2,6 @@ package com.example.frontServer.service.noti
 
 import com.example.frontServer.config.WebConfig
 import com.example.frontServer.dto.notification.request.NotificationGetRequest
-import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.notification.response.NotificationGetResult
 import com.example.frontServer.dto.notification.response.NotificationGetServerResponse
 import com.example.frontServer.repository.board.BoardRepository
@@ -24,7 +23,7 @@ class NotificationApiService(
     ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
-    private val baseUrl = "http://localhost:8081"
+    private val baseUrl = "http://localhost:8083"
 
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",
