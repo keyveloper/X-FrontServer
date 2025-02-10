@@ -6,7 +6,7 @@ import com.example.frontServer.dto.board.request.CommentGetRequest
 import com.example.frontServer.dto.board.request.SingleBoardRequest
 import com.example.frontServer.dto.board.response.CommentResult
 import com.example.frontServer.dto.board.response.SingleBoardResult
-import com.example.frontServer.dto.logstash.BoardWriteEventLog
+import com.example.frontServer.dto.logstash.BoardEventLog
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
 import com.example.frontServer.dto.timeline.request.TimelineSaveRequest
 import com.example.frontServer.entity.Board
@@ -27,7 +27,6 @@ import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
-import kotlin.math.log
 
 @Service
 class BoardService(
@@ -79,11 +78,25 @@ class BoardService(
     fun findSingleBoard(request: SingleBoardRequest): SingleBoardResult {
         val boardOptional = boardRepository.findById(request.boardId)
         return if (boardOptional.isPresent) {
-            val writerName = userRepository.findById(boardOptional.get().writerId)
+            val board = boardOptional.get()
+            val writerName = userRepository.findById(board.writerId)
                 .map { user -> user.username}
                 .orElse("")
 
-            val likeCount = fetchLikeCount(boardOptional.get().id!!)
+            val likeCount = fetchLikeCount(board.id!!)
+
+            // log
+            val eventLog = BoardEventLog(
+                logEvent = LogEvent.BOARD_GET.code,
+                boardId = board.id!!,
+                userId = board.writerId
+            )
+
+            logstashLogger.info(
+                "Board get occurred",
+                StructuredArguments.keyValue("boardEvent", eventLog)
+            )
+
             SingleBoardResult.of(
                 board = boardOptional.get(),
                 writerName = writerName,
@@ -133,7 +146,7 @@ class BoardService(
             },
         )
 
-        val event = BoardWriteEventLog(
+        val eventLog = BoardEventLog(
             logEvent = LogEvent.BOARD_WRITE.code,
             boardId = boardId,
             userId = writerId
@@ -141,9 +154,9 @@ class BoardService(
         saveTimeline(boardId, receiverIds)
         logstashLogger.info(
             "Board event occurred",
-            StructuredArguments.keyValue("boardWriteEvent", event)
+            StructuredArguments.keyValue("boardEvent", eventLog)
         )
-        logger.info {"send Event logger to logstash server: $event"}
+        logger.info {"send Event logger to logstash server: $eventLog"}
     }
 
     // delete

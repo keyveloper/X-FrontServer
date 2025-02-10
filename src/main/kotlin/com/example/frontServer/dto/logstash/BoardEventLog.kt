@@ -1,6 +1,6 @@
 package com.example.frontServer.dto.logstash
 
-data class BoardWriteEventLog(
+data class BoardEventLog(
     val logEvent: Long,
     val boardId: Long,
     val userId: Long,
