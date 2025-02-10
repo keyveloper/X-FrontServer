@@ -13,12 +13,12 @@
         </encoder>
     </appender>
 
-    <springProfile name="kafka-local-window">
+    <springProfile name="logstash-local-window">
         <!-- logstash ip:port-->
         <property name="LOGSTASH_HOST" value="192.168.16.79:5044"/>
     </springProfile>
 
-    <springProfile name="kafka-beta-linux">
+    <springProfile name="logstash-beta-linux">
         <property name="LOGSTASH_HOST" value="localhost:5044"/>
     </springProfile>
 

@@ -1,10 +1,10 @@
 spring:
   config:
-    import: application-db.yml, application-redis.yml, application-kafka.yml
+    import: application-db.yml, application-redis.yml, application-kafka.yml, application-logstash.yml
   profiles:
     group:  # group name & profile names
-      local: db-local-window, redis-local-window, kafka-local-window
-      beta: db-beta-linux, redis-beta-linux, kafka-beta-linux
+      local: db-local-window, redis-local-window, kafka-local-window, logstash-local-window
+      beta: db-beta-linux, redis-beta-linux, kafka-beta-linux, logstash-beta-linux
 
   application:
     name: x
