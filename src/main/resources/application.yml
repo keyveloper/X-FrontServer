@@ -42,12 +42,6 @@ resilience4j:
         sliding-window-type: COUNT_BASED
         wait-duration-in-open-state: 10s # 해당 시간 이후 Open이 유지된다.
         automatic-transition-from-open-to-half-open-enabled: true
-    instances:
-      liveApiCircuitBreaker:
-        base-config: default
-      notificationApiCircuitBreaker:
-        base-config: default
-
 
 # redis log
 logging:

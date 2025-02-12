@@ -146,7 +146,6 @@ class LikeApiService(
     }
 
     // save 메서드의 fallbackMethod
-    // 다시 만들기
     fun saveFallback(boardId: Long, userId: Long, throwable: Throwable): Long {
         logger.error { "run save fallback ${throwable.message}" }
         logCircuitBreakerInfo()

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class RedisUserService(
@@ -15,7 +16,7 @@ class RedisUserService(
 
     fun save(redisDto: UserProfileGetResult) {
         val json = objectMapper.writeValueAsString(redisDto)
-        redisTemplate.opsForValue().set("user:profile:${redisDto.id}", json)
+        redisTemplate.opsForValue().set("user:profile:${redisDto.id}", json, 60, TimeUnit.MINUTES)
     }
 
     fun findByUserId(userId: Long): UserProfileGetResult? {

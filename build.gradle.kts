@@ -87,6 +87,10 @@ dependencies {
     // logstash-logback-encoder
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 
+    // swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
+
 }
 
 kotlin {
