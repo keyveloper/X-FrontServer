@@ -60,3 +60,10 @@ springdoc:
     groups-order: DESC
     tags-sorter: alpha
     operations-sorter: method
+
+# actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *
