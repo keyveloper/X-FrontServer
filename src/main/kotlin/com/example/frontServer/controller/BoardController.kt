@@ -8,11 +8,14 @@ import com.example.frontServer.entity.Board
 import com.example.frontServer.security.AuthUserDetails
 import com.example.frontServer.service.board.BoardService
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
+@Tag(name = "Board Api", description = "you can test Board Api!")
 @RestController
 class BoardController(
     private val boardService: BoardService,
@@ -20,6 +23,10 @@ class BoardController(
     private val logger = KotlinLogging.logger {}
 
     // save
+    @Operation(
+        summary = "save Board!",
+        description = "save Board Api test!"
+    )
     @PostMapping("/saveBoard")
     fun save(
         @Valid @RequestBody saveBoardRequest: BoardSaveRequest,

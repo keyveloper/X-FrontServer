@@ -14,13 +14,22 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val jwtAuthenticationProvider: JwtAuthenticationProvider
 ) : OncePerRequestFilter() {
-    private val logger = KotlinLogging.logger {}
+    private val authFilterLogger = KotlinLogging.logger {}
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        val path = request.requestURI
 
+        val skip = path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/webjars")
+        authFilterLogger.info { "shouldNotFilter() for path: $path, skip filter: $skip" }
+        return skip
+    }
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain) {
         val token = getTokenFromRequest(request)
+        authFilterLogger.info { "JwtAuthenticationFilter executed for request URI: ${request.requestURI}" }
         if (token != null && jwtAuthenticationProvider.validateToken(token)) {
             val userDetails = jwtAuthenticationProvider.getUserFromToken(token)
 
@@ -40,4 +49,6 @@ class JwtAuthenticationFilter(
             bearerToken.substring(7)
         } else null
     }
+
+
 }

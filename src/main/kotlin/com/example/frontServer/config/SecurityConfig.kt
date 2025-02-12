@@ -1,6 +1,5 @@
 package com.example.frontServer.config
 
-import com.example.frontServer.security.JwtAuthenticationEntryPoint
 import com.example.frontServer.security.JwtAuthenticationFilter
 import com.example.frontServer.security.JwtAuthenticationProvider
 import org.springframework.context.annotation.Bean
@@ -18,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
     private val jwtAuthenticationProvider: JwtAuthenticationProvider,
     private val userDetailsService: UserDetailsService
 ){
@@ -28,20 +26,16 @@ class SecurityConfig(
         http.csrf { csrf -> csrf.disable() }
             .authorizeHttpRequests { auth ->
                 auth
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**").permitAll()
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/sign-up").permitAll()
-                    .requestMatchers("/boards").permitAll()
-                    .requestMatchers("/board/timeline/next").permitAll()
-                    .requestMatchers("/lang").permitAll()
-                    .requestMatchers("/noti/lang").permitAll()
-                    .requestMatchers("/test").permitAll()
-                    .requestMatchers("/test/kafka").permitAll()
                     .requestMatchers("/saveLog").permitAll()
+                    .requestMatchers("/webjars/**").permitAll()
                     .anyRequest().authenticated()
-            }.exceptionHandling {
-                it.authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증 실패 처리
             }
-            .addFilterBefore(JwtAuthenticationFilter(jwtAuthenticationProvider),
+            .addFilterBefore(
+                JwtAuthenticationFilter(jwtAuthenticationProvider),
                 UsernamePasswordAuthenticationFilter::class.java,)
         return http.build()
     }
