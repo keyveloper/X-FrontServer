@@ -1,7 +1,6 @@
 <configuration>
     <!-- 기본 설정을 포함 -->
     <include resource="org/springframework/boot/logging/logback/base.xml" />
-    g
     <springProfile name="logstash-local-window">
         <!-- logstash ip:port-->
         <property name="LOGSTASH_HOST" value="192.168.16.79:5044"/>
@@ -10,12 +9,6 @@
     <springProfile name="logstash-beta-linux">
         <property name="LOGSTASH_HOST" value="localhost:5044"/>
     </springProfile>
-
-ddd
-    <!-- error level의 log가 저장된다. -->
-    <logger name="com.example.frontServer.testFileSaveLogger" level="ERROR" additivity="false">
-        <appender-ref ref="TEST_FILE" />
-    </logger>
 
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>${LOGSTASH_HOST}</destination>
