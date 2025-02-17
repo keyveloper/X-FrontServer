@@ -2,7 +2,8 @@
     <!-- 기본 설정을 포함 -->
     <include resource="org/springframework/boot/logging/logback/base.xml" />
 
-    <!-- 추가: test login  -->
+    <!-- 블로그에 정리하고 지우기 -->
+    <!-- 추가: test login
     <appender name="TEST_FILE" class="ch.qos.logback.core.FileAppender">
         <file>./log/test_log.json</file>
         <append>true</append>
@@ -12,6 +13,7 @@
             </layout>
         </encoder>
     </appender>
+    -->
 
     <springProfile name="logstash-local-window">
         <!-- logstash ip:port-->

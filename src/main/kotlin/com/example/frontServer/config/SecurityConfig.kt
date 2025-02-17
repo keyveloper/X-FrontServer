@@ -33,6 +33,7 @@ class SecurityConfig(
                     .requestMatchers("/sign-up").permitAll()
                     .requestMatchers("/saveLog").permitAll()
                     .requestMatchers("/webjars/**").permitAll()
+                    .requestMatchers("/jenkins").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(
