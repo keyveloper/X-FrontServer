@@ -46,6 +46,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 
@@ -106,5 +107,5 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    jvmArgs("-Dspring.profiles.active=local")
+    jvmArgs("-Dspring.profiles.active=test")
 }

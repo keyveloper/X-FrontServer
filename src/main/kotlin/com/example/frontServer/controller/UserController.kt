@@ -14,6 +14,7 @@ class UserController(
     private val userService: UserService
 ) {
     private val logger = KotlinLogging.logger {}
+
     @PostMapping("/sign-up")
     fun signUp(
         @Valid @RequestBody signUpRequest: SignUpRequest

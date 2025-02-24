@@ -1,10 +1,11 @@
 spring:
   config:
-    import: application-db.yml, application-redis.yml, application-kafka.yml, application-logstash.yml
+    import: application-db.yml, application-redis.yml, application-kafka.yml, application-logstash.yml, application-test.yml
   profiles:
     group:  # group name & profile names
       local: db-local-window, redis-local-window, kafka-local-window, logstash-local-window
       beta: db-beta-linux, redis-beta-linux, kafka-beta-linux, logstash-beta-linux
+      test: test, kafka-local-window
 
   application:
     name: x
@@ -57,7 +58,7 @@ springdoc:
     path: /swagger-ui
     groups-order: DESC
     tags-sorter: alpha
-    operations-sorter: method
+    operations-sorter: methodn
 
 # actuator
 management:

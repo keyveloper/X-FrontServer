@@ -1,11 +1,11 @@
 package com.example.frontServer.config
 
-import com.fasterxml.jackson.databind.ser.std.StringSerializer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import java.util.*
 
 @Configuration

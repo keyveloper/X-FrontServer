@@ -1,0 +1,5 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <!-- Logstash appender 제거 -->
+    <!-- 테스트에 필요한 최소한의 로깅 설정만 포함 -->
+</configuration>
