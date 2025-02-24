@@ -13,5 +13,5 @@ class FrontServerApplication
 fun main(args: Array<String>) {
     runApplication<FrontServerApplication>(*args)
 
-    // jar build test!
+    // jar build test! 2
 }
