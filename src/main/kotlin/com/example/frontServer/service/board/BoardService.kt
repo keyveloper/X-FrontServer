@@ -97,6 +97,8 @@ class BoardService(
                 StructuredArguments.keyValue("boardEvent", eventLog)
             )
 
+            logger.info {"get log sent !!"}
+
             SingleBoardResult.of(
                 board = boardOptional.get(),
                 writerName = writerName,
