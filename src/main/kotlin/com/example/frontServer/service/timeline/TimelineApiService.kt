@@ -9,6 +9,7 @@ import com.example.frontServer.enum.MSAServerErrorCode
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriBuilder
 
@@ -19,6 +20,7 @@ class TimelineApiService( // board-timeline rep or api connection
 ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("timelineApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
+    private val logstashLogger = LoggerFactory.getLogger("com.example.logstash")
     private val baseUrl = "http://localhost:8083"
     val timelineWebClient = webConfig.createWebClient(baseUrl)
 
@@ -73,7 +75,9 @@ class TimelineApiService( // board-timeline rep or api connection
 
         logger.info {"response: ${response}"}
         return response?.let {
-            response.results.map { it.boardId }
+            response.results.map {
+                it.boardId
+            }
         } ?: listOf()
     }
 

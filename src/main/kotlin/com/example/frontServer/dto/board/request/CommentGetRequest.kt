@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Positive
 
 data class CommentGetRequest(
 
-    @field:NotNull(message = "parentId is required")
+    @filed:NotNull(message = "parentId is required")
     val parentId: Long,
 
     @field:NotNull(message = "endCommentId is required")

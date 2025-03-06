@@ -85,9 +85,9 @@ class BoardService(
 
             val likeCount = fetchLikeCount(board.id!!)
 
-            // log
+            // log for logstash!
             val eventLog = BoardEventLog(
-                logEvent = LogEvent.BOARD_GET.code,
+                logEvent = LogEvent.BOARD_GET,
                 boardId = board.id!!,
                 userId = board.writerId
             )
@@ -147,7 +147,7 @@ class BoardService(
         )
 
         val eventLog = BoardEventLog(
-            logEvent = LogEvent.BOARD_WRITE.code,
+            logEvent = LogEvent.BOARD_WRITE,
             boardId = boardId,
             userId = writerId
         )
