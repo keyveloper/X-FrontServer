@@ -34,6 +34,7 @@ class SecurityConfig(
                     .requestMatchers("/saveLog").permitAll()
                     .requestMatchers("/webjars/**").permitAll()
                     .requestMatchers("/jenkins").permitAll()
+                    .requestMatchers("/test/**").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(
