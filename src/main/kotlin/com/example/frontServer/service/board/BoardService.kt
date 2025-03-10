@@ -121,16 +121,29 @@ class BoardService(
             fileService.saveBoardFile(request.files, token)
             boardRepository.save(
                 Board(
+                    id = null,
                     writerId = writerId,
+                    textContent = request.textContent,
                     fileApiUrl = "/img/${token}",
-                    textContent = request.textContent
+                    createdAt = null,
+                    lastModifiedAt = null,
+                    readingCount = 0L,
+                    parentId = null,
+                    invalid = false
                 )
             )
         } else {
             boardRepository.save(
                 Board(
+                    id = null,
                     writerId = writerId,
-                    textContent = request.textContent
+                    textContent = request.textContent,
+                    fileApiUrl = null,
+                    createdAt = null,
+                    lastModifiedAt = null,
+                    readingCount = 0,
+                    parentId = null,
+                    invalid = false
                 )
             )
         }

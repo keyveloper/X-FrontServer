@@ -11,23 +11,23 @@ import java.time.LocalDateTime
 @EntityListeners(AuditingEntityListener::class)
 class Board (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    var id: Long?,
 
     val writerId : Long,
 
     var textContent: String,
 
-    var fileApiUrl: String? = null, // api url
+    var fileApiUrl: String?, // api url
 
     @CreatedDate
-    var createdAt: LocalDateTime? = null,
+    var createdAt: LocalDateTime?,
 
     @LastModifiedDate
-    var lastModifiedAt: LocalDateTime? = null,
+    var lastModifiedAt: LocalDateTime?,
 
-    var readingCount : Long = 0,
+    var readingCount : Long,
 
-    var parentId: Long? = null,
+    var parentId: Long?,
 
-    var invalid: Boolean = false,
+    var invalid: Boolean,
     )

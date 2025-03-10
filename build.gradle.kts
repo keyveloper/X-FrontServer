@@ -97,6 +97,10 @@ dependencies {
     // prometheus
     implementation("io.micrometer:micrometer-registry-prometheus")
 
+    // mockito
+    testImplementation("org.mockito:mockito-core:5.4.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
+
 }
 
 kotlin {

@@ -34,6 +34,7 @@ class UserService(
             introduction = request.introduction,
             birthday = request.birthday,
             country = request.country,
+            firstMadeDate = null
         )
         userRepository.save(user)
 

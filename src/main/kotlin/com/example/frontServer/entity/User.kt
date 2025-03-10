@@ -23,14 +23,13 @@ class User (
 
     var password: String,
 
-    var introduction: String? = null,
+    var introduction: String?,
 
     var birthday: LocalDate?,
 
     @CreatedDate
-    @Column(name = "first_made_date")
-    var firstMadeDate : LocalDateTime? = null,
+    var firstMadeDate : LocalDateTime?,
 
-    var country: String? = null,
+    var country: String?,
     )
 
