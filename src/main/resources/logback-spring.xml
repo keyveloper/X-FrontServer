@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/base.xml" />
     <springProfile name="logstash-local-window">
         <!-- logstash ip:port-->
-        <property name="LOGSTASH_HOST" value="192.168.5.131:5044"/>
+        <property name="LOGSTASH_HOST" value="192.168.1.17:5044"/>
     </springProfile>
 
     <springProfile name="logstash-beta-linux">
