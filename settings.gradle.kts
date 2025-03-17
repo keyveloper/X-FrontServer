@@ -1,1 +1,1 @@
-rootProject.name = "frontServer"
+rootProject.name = "X-FrontServer"
