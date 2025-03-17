@@ -1,6 +1,6 @@
 spring:
   config:
-    import: application-db.yml, application-redis.yml, application-kafka.yml, application-logstash.yml, ../../test/resources/application-test.yml
+    import: application-db.yml, application-redis.yml, application-kafka.yml, application-logstash.yml
   profiles:
     group:  # group name & profile names
       local: db-local-window, redis-local-window, kafka-local-window, logstash-local-window
