@@ -28,7 +28,7 @@ class LikeApiService(
 ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("likeApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
-    private val baseUrl = "http://localhost:8082"
+    private val baseUrl = "http://192.168.182.79:8090"
 
     val likeServerWebClient = webConfig.createWebClient(
         baseUrl = baseUrl,

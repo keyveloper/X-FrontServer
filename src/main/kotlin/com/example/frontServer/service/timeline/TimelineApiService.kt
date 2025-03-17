@@ -21,7 +21,7 @@ class TimelineApiService( // board-timeline rep or api connection
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("timelineApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
     private val logstashLogger = LoggerFactory.getLogger("com.example.logstash")
-    private val baseUrl = "http://localhost:8083"
+    private val baseUrl = "http://192.168.182.79:8092"
     val timelineWebClient = webConfig.createWebClient(baseUrl)
 
     // save timeline
