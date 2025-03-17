@@ -7,9 +7,6 @@ spring:
       beta: db-beta-linux, redis-beta-linux, kafka-beta-linux, logstash-beta-linux
       test: test, kafka-local-window
 
-  application:
-    name: x
-
   jpa:
     database: mysql
     show-sql: true
