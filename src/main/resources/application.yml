@@ -55,7 +55,7 @@ springdoc:
     path: /swagger-ui
     groups-order: DESC
     tags-sorter: alpha
-    operations-sorter: methodn
+    operations-sorter: method
 
 # actuator
 management:
