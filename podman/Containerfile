@@ -6,7 +6,7 @@ WORKDIR /x-front-server
 
 # Jenkins 빌드 결과로 생성된 JAR 파일을 컨테이너로 복사
 # (아래 예시 이름을 빌드 산출물의 실제 JAR 이름에 맞게 바꿔주세요)
-COPY X-FrontServer-0.0.1-SNAPSHOT.jar /x-front-server/front.jar
+COPY build/libs/X-FrontServer-0.0.1-SNAPSHOT.jar /x-front-server/front.jar
 
 # 컨테이너가 사용하는 포트 문서화 (예시 8080)
 EXPOSE 8080
