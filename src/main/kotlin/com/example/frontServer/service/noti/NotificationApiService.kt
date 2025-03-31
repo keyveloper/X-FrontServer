@@ -23,7 +23,7 @@ class NotificationApiService(
     ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificationApiCircuitBreaker")
     private val logger = KotlinLogging.logger {}
-    private val baseUrl = "http://192.168.182.79:8091"
+    private val baseUrl = "http://x-noti-api-service:8080"
 
     @CircuitBreaker(
         name = "notificationApiCircuitBreaker",

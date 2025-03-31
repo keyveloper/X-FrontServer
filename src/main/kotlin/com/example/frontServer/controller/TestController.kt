@@ -34,6 +34,5 @@ class TestController {
             "alerting test ... ",
             StructuredArguments.keyValue("boardEvent", event)
         )
-
     }
 }
