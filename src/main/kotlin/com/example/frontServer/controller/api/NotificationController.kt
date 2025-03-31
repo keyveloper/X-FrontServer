@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.*
 class NotificationController(
     private val notificationService: NotificationApiService
 ) {
+
+    @GetMapping("/test/kubernetes")
+    fun kubernetes(): ResponseEntity<String> {
+        return ResponseEntity.ok().body(
+            notificationService.kubernetes()
+        )
+    }
     @PostMapping("/getNotification/init")
     fun findInitAll(
         @Valid @RequestBody request: NotificationGetInitRequest,
