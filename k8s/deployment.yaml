@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: x-front
-          image: docker.io/toolod/x-frontserver:latest
+          image: docker.io/toolod/x-frontserver:1.0.0-20250407-a68606f
           args: ["--spring.profiles.active=beta"]
           ports:
             - containerPort: 8080
