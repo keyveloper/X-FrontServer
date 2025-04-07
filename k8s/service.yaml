@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: x-front-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: x-front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
