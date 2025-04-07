@@ -1,5 +1,5 @@
 # 사용할 오픈JDK 버전을 명시적으로 지정 (예: 17.0.2)
-FROM docker.io/openjdk:17.0.2-jdk-bullseye
+FROM docker.io/openjdk@sha256:a996cdcc040704ec6badaf5fecf1e144c096e00231a29188596c784bcf858d05
 
 # 작업 디렉터리 설정
 WORKDIR /x-front-server
