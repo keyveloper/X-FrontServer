@@ -1,12 +1,20 @@
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: x-front-service
+  name: x-front
 spec:
-  type: LoadBalancer
+  replicas: 3
   selector:
-    app: x-front
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
+    matchLabels:
+      app: x-front
+  template:
+    metadata:
+      labels:
+        app: x-front
+    spec:
+      containers:
+        - name: x-front
+          image: docker.io/toolod/x-frontserver:latest
+          args: ["--spring.profiles.active=beta"]
+          ports:
+            - containerPort: 8080
