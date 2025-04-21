@@ -1,4 +1,4 @@
-package com.example.frontServer.service.like
+package com.example.frontServer.service
 
 import com.example.frontServer.config.WebConfig
 import com.example.frontServer.dto.like.request.LikeChangeRequest

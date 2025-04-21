@@ -5,12 +5,10 @@ import com.example.frontServer.dto.like.request.LikeSaveRequest
 import com.example.frontServer.dto.like.response.LikeChangeResponse
 import com.example.frontServer.dto.like.response.LikeSaveResponse
 import com.example.frontServer.enum.StatusDetailCode
-import com.example.frontServer.security.AuthUserDetails
-import com.example.frontServer.service.like.LikeApiService
+import com.example.frontServer.service.LikeApiService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController

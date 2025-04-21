@@ -3,10 +3,9 @@ package com.example.frontServer.controller
 import com.example.frontServer.dto.board.request.*
 import com.example.frontServer.dto.board.response.CommentResponse
 import com.example.frontServer.dto.board.response.SingleBoardResponse
-import com.example.frontServer.dto.board.response.SingleBoardResult
 import com.example.frontServer.entity.Board
 import com.example.frontServer.security.AuthUserDetails
-import com.example.frontServer.service.board.BoardService
+import com.example.frontServer.service.BoardService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

@@ -1,4 +1,4 @@
-package com.example.frontServer.service.follow
+package com.example.frontServer.service
 
 import com.example.frontServer.dto.follow.FollowCounts
 import com.example.frontServer.dto.follow.FollowSaveRequest

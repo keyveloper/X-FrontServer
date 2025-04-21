@@ -4,7 +4,7 @@ import com.example.frontServer.dto.timeline.request.TimelineGetRequest
 import com.example.frontServer.dto.timeline.response.TimelineBoardGetResult
 import com.example.frontServer.repository.board.BoardRepository
 import com.example.frontServer.repository.user.UserRepository
-import com.example.frontServer.service.like.LikeApiService
+import com.example.frontServer.service.LikeApiService
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,7 +1,7 @@
 package com.example.frontServer.service.user
 
 import com.example.frontServer.dto.follow.FollowCounts
-import com.example.frontServer.service.follow.FollowService
+import com.example.frontServer.service.FollowService
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,9 +1,8 @@
 package com.example.frontServer.controller
 
 import com.example.frontServer.dto.follow.FollowSaveRequest
-import com.example.frontServer.dto.user.UserSummaryDto
 import com.example.frontServer.security.AuthUserDetails
-import com.example.frontServer.service.follow.FollowService
+import com.example.frontServer.service.FollowService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*

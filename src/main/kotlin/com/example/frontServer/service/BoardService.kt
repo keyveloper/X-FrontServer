@@ -1,4 +1,4 @@
-package com.example.frontServer.service.board
+package com.example.frontServer.service
 
 import com.example.frontServer.dto.board.request.BoardSaveRequest
 import com.example.frontServer.dto.board.request.BoardUpdateRequest
@@ -17,8 +17,6 @@ import com.example.frontServer.exception.NotFoundEntityException
 import com.example.frontServer.repository.board.BoardRepository
 import com.example.frontServer.repository.follow.FollowRepository
 import com.example.frontServer.repository.user.UserRepository
-import com.example.frontServer.service.FileService
-import com.example.frontServer.service.like.LikeApiService
 import com.example.frontServer.service.noti.KafkaProducerService
 import com.example.frontServer.service.timeline.TimelineApiService
 import io.github.oshai.kotlinlogging.KotlinLogging
