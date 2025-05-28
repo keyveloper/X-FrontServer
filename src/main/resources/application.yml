@@ -5,6 +5,7 @@ spring:
     group:  # group name & profile names
       local: db-local-window, redis-local-window, kafka-local-window, logstash-local-window
       beta: db-beta-linux, redis-beta-linux, kafka-beta-linux, logstash-beta-linux
+      cloud: db-cloud-aws, redis-local-window, kafka-local-window, logstash-local-window
 
   jpa:
     database: mysql

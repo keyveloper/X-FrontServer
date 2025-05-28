@@ -31,3 +31,21 @@ spring:
       maximum-pool-size: 10
       idle-timeout: 300000
       pool-name: SpringBootJPAHikariCP
+
+---
+spring:
+  config:
+    activate:
+      on-profile: db-cloud-aws
+
+  datasource:
+    url: jdbc:mariadb://x-spring-database.cde8w2owejft.ap-southeast-2.rds.amazonaws.com:3306/x?useSSL=false&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    username: admin
+    password: testforxprojec
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      connection-timeout: 20000
+      minimum-idle: 10
+      maximum-pool-size: 10
+      idle-timeout: 300000
+      pool-name: SpringBootJPAHikariCP
