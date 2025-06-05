@@ -1,6 +1,7 @@
 package com.example.frontServer.service.noti
 
 import com.example.frontServer.dto.notification.request.NotificationSaveRequest
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -9,15 +10,15 @@ import org.springframework.stereotype.Service
 
 @Service
 class KafkaProducerService(
-    private val kafkaProducer: KafkaProducer<String, String>
+    private val kafkaProducer: KafkaProducer<String, String>,
+    private val objectMapper: ObjectMapper
 ) {
     private val logger = KotlinLogging.logger {}
-    private val objectMapper = jacksonObjectMapper()
 
     fun sendNoti(request: NotificationSaveRequest) {
         val topicName = "noti" // 예: Consumer가 구독 중인 동일 토픽
         try {
-            // DTO를 JSON 문자열로 직렬화
+            // DTO -> JSON
             val jsonValue = objectMapper.writeValueAsString(request)
 
             // ProducerRecord 생성 후 send

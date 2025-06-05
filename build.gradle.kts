@@ -80,7 +80,7 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor:3.3.4")
 
     // kafka
-    implementation("org.apache.kafka:kafka-clients:3.7.1")
+    implementation("org.apache.kafka:kafka-clients:3.9.1")
 
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
