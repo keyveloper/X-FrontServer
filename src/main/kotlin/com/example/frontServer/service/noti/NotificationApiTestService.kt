@@ -39,6 +39,6 @@ class NotificationApiTestService( // open 인 이유는 kotlin-spring 플러그�
 
 
     fun testRequestFallback(throwable: Throwable): String {
-        return "notification server is not working"
+        return "notification server is not working!"
     }
 }
