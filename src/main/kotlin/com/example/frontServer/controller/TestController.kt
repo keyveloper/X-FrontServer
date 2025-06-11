@@ -2,13 +2,13 @@ package com.example.frontServer.controller
 
 import com.example.frontServer.dto.logstash.BoardEventLog
 import com.example.frontServer.enum.LogEvent
-import com.example.frontServer.service.noti.NotificationApiTestService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import com.example.frontServer.service.noti.NotificationApiTestService
 
 @RestController
 class TestController(
@@ -40,7 +40,9 @@ class TestController(
     }
 
     @GetMapping("/test/noti-server")
-    fun testNoti() {
-
+    fun testNoti(): ResponseEntity<String> {
+        return ResponseEntity.ok().body(
+            notificationApiTestService.testRequest()
+        )
     }
 }
