@@ -27,7 +27,7 @@ class NotificationApiTestService( // open 인 이유는 kotlin-spring 플러그�
         val response = notiWebClient.get()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder
-                    .path("/test/front-connection")
+                    .path("/test/frontServer-connection")
                     .build()
             }
             .retrieve()
